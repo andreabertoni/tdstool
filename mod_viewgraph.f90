@@ -356,7 +356,7 @@ END SUBROUTINE
 
 SUBROUTINE SHOW_GRAPH
 
-  INTEGER :: hViewForm, hNull, hOk
+  INTEGER :: hViewForm, hNull, hOk, ctrlh
   REAL*8 :: next_write_time
   INTEGER :: iter
   CHARACTER(40) :: vstr
@@ -379,38 +379,46 @@ SUBROUTINE SHOW_GRAPH
     ! Main navigation
   CALL SWGTIT('Display Wave Function')
   CALL WGINI('FORM', hViewForm)
+  if (OSV == 0) then
+    CALL SWGFNT ("fixed", 10)  ! lunux
+    ctrlh = 30
+  else
+    CALL SWGFNT ("fixed", 14)  ! windows
+    ctrlh = 22
+  end if
+
   CALL SWGWIN(5, 5, 100, 35)
   CALL WGDLIS(hViewForm, list_str, 1, hViewList)
   CALL SWGCBK(hViewList, ViewListCbk)
   CALL SWGWIN(110, 5, 50, 35)
   CALL WGLAB(hViewForm, 'Cut off:', hNull)
-  CALL SWGWIN(160, 5, 30, 35)
+  CALL SWGWIN(160, 5, 30, ctrlh)
   CALL WGTXT(hViewForm, '10', hCutoff)
   CALL SWGWIN(190, 5, 30, 35)
   CALL WGLAB(hViewForm, '%', hNull)
   CALL SWGWIN(230, 8, 50, 28)
   CALL WGOK(hViewForm, hOk)
-  CALL SWGWIN(290, 5, 70, 35)
+  CALL SWGWIN(290, 5, 100, 28)
   CALL WGBUT(hViewForm, "Show Modulus", 1, hShowModulus)
   CALL SWGCBK(hShowModulus, ViewListCbk)
 
     ! Integral bar
   CALL SWGWIN(5, 45, 25, 30)
   CALL WGLAB(hViewForm, 'X0:', hNull)
-  CALL SWGWIN(30, 45, 70, 30)
+  CALL SWGWIN(30, 45, 70, ctrlh)
   CALL WGTXT(hViewForm, '0', hIntegX0)
   CALL SWGWIN(80, 45, 25, 30)
   CALL WGLAB(hViewForm, 'Y0:', hNull)
-  CALL SWGWIN(105, 45, 70, 30)
+  CALL SWGWIN(105, 45, 70, ctrlh)
   CALL WGTXT(hViewForm, '0', hIntegY0)
   CALL SWGWIN(180, 45, 25, 30)
   CALL WGLAB(hViewForm, 'X1:', hNull)
-  CALL SWGWIN(205, 45, 70, 30)
+  CALL SWGWIN(205, 45, 70, ctrlh)
   write (vstr, '(ES10.4)') size_x
   CALL WGTXT(hViewForm, TRIM(vstr), hIntegX1)
   CALL SWGWIN(280, 45, 25, 30)
   CALL WGLAB(hViewForm, 'X1:', hNull)
-  CALL SWGWIN(305, 45, 70, 30)
+  CALL SWGWIN(305, 45, 70, ctrlh)
   write (vstr, '(ES10.4)') size_y
   CALL WGTXT(hViewForm, TRIM(vstr), hIntegY1)
 

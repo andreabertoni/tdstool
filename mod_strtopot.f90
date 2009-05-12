@@ -241,15 +241,16 @@ SUBROUTINE strtopot_countcmds(strpot, num_cmd)
 
   num_cmd = 0
   lenstr= LEN_TRIM(strpot)
-  IF ( strpot(lenstr:lenstr) /= ";" ) THEN
-    num_cmd = 1
-  END IF
-
-  DO nn= 1, lenstr
-    IF ( strpot(nn:nn) == ';' ) THEN
-      num_cmd = num_cmd + 1
+  IF (lenstr > 0) THEN
+    IF ( strpot(lenstr:lenstr) /= ";" ) THEN
+      num_cmd = 1
     END IF
-  END DO
+    DO nn= 1, lenstr
+      IF ( strpot(nn:nn) == ';' ) THEN
+        num_cmd = num_cmd + 1
+      END IF
+    END DO
+  END IF
 
 END SUBROUTINE strtopot_countcmds
 

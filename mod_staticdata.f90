@@ -14,5 +14,7 @@ MODULE mod_staticdata
        &                BOLTZ= 1.3807e-23,                         &
        &                PIG=3.14159265,                            &
        &                EPSILON0= 8.854e-12
+  
+  INTEGER, PARAMETER :: OSV = 1
 
 END MODULE mod_staticdata

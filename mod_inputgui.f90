@@ -40,11 +40,20 @@ SUBROUTINE MAIN_GUI
   DO
     CALL SWGTIT('TDS Tool')
     CALL WGINI('FORM', hMainForm)
-    CALL SWGFNT ("fixed", 10)
+    if (OSV == 0) then
+      CALL SWGFNT ("fixed", 10)  ! linux
+    else
+      CALL SWGFNT ("fixed", 14)  ! windows
+    end if
+
     CALL SWGWIN(0, 0, 400, 28)
     CALL WGLAB(hMainForm, nml_file_name, hNull)
 
-    CALL SWGWIN(5, 35, 70, 125)
+    if (OSV == 0) then
+      CALL SWGWIN(5, 35, 70, 125)
+    else
+      CALL SWGWIN(5, 35, 70, 25)
+    end if
     CALL WGBOX(hMainForm, 'Edit|Run|View|Quit', MainMenuCmd, hMainCmd)
     CALL SWGWIN(100, 70, 50, 28)
     CALL WGOK(hMainForm, hMainOk)
@@ -72,12 +81,18 @@ END SUBROUTINE
 SUBROUTINE SHOW_IN_GUI
 
   CHARACTER(80) :: vstr
-  INTEGER :: mode, mode2
+  INTEGER :: mode, mode2, ctrlh
   REAL tv
 
   CALL SWGTIT('TDS Tools')
   CALL WGINI('FORM', hForm)
-  CALL SWGFNT ("fixed", 10)
+  if (OSV == 0) then
+    CALL SWGFNT ("fixed", 10)  ! lunux
+    ctrlh = 30
+  else
+    CALL SWGFNT ("fixed", 14)  ! windows
+    ctrlh = 24
+  end if
 
     ! Setup frames
   CALL SWGWIN(10, 10, 250, 40)
@@ -125,43 +140,43 @@ SUBROUTINE SHOW_IN_GUI
   else
     mode = 1
   endif
-  CALL SWGWIN(150, 0, 100, 35)
+  CALL SWGWIN(150, 0, 100, 33)
   CALL WGDLIS(hPsi, "Gaussian|File", mode, hPsiMode)
   write (vstr, '(ES11.5)') x0
-  CALL SWGWIN(0, 40, 120, 30)
+  CALL SWGWIN(0, 40, 120, ctrlh)
   CALL WGLTXT(hPsi, 'x0', TRIM(vstr), 70, hPsiX0)
   write (vstr, '(ES11.5)') y0
-  CALL SWGWIN(130, 40, 120, 30)
+  CALL SWGWIN(130, 40, 120, ctrlh)
   CALL WGLTXT(hPsi, 'y0', TRIM(vstr), 70, hPsiY0)
   write (vstr, '(ES11.5)') sigmax
-  CALL SWGWIN(0, 75, 120, 30)
+  CALL SWGWIN(0, 75, 120, ctrlh)
   CALL WGLTXT(hPsi, 'SigX', TRIM(vstr), 70, hPsiSigX)
   write (vstr, '(ES11.5)') sigmay
-  CALL SWGWIN(130, 75, 120, 30)
+  CALL SWGWIN(130, 75, 120, ctrlh)
   CALL WGLTXT(hPsi, 'SigY', TRIM(vstr), 70, hPsiSigY)
   write (vstr, '(ES11.5)') xenergy
-  CALL SWGWIN(0, 110, 120, 30)
+  CALL SWGWIN(0, 110, 120, ctrlh)
   CALL WGLTXT(hPsi, 'Xnrg', TRIM(vstr), 70, hPsiXenergy)
   write (vstr, '(ES11.5)') yenergy
-  CALL SWGWIN(130, 110, 120, 30)
+  CALL SWGWIN(130, 110, 120, ctrlh)
   CALL WGLTXT(hPsi, 'Ynrg', TRIM(vstr), 70, hPsiYenergy)
-  CALL SWGWIN(0, 145, 37, 35)
+  CALL SWGWIN(0, 145, 37, 33)
   CALL WGLAB(hPsi, "File:", hNull)
-  CALL SWGWIN(37, 145, 213, 35)
+  CALL SWGWIN(37, 145, 213, ctrlh)
   CALL WGFIL (hPsi, 'Select Initial Wave File', psi_file_in, '*.dat', hPsiFile)
 
     ! Time Frame
   write (vstr, '(ES11.5)') dt
-  CALL SWGWIN(0, 0, 160, 30)
+  CALL SWGWIN(0, 0, 160, ctrlh)
   CALL WGLTXT(hTime, 'Time Step:', TRIM(vstr), 55, hTimeDelta)
   write (vstr, '(I10)') MAXIT
-  CALL SWGWIN(0, 35, 160, 30)
+  CALL SWGWIN(0, 35, 160, ctrlh)
   CALL WGLTXT(hTime, 'Num Steps:', TRIM(vstr), 55, hTimeSteps)
 
     ! Grid Frame
-  CALL SWGWIN(0, 0, 80, 35)
+  CALL SWGWIN(0, 0, 80, 33)
   CALL WGLAB(hGrid, "GRID", hNull)
-  CALL SWGWIN(110, 0, 40, 35)
+  CALL SWGWIN(110, 0, 40, 33)
   CALL WGLAB(hGrid, "Mode:", hNull)
   if (grid_mode == "file") then
     mode = 2
@@ -174,31 +189,31 @@ SUBROUTINE SHOW_IN_GUI
   else
     mode = 1
   endif
-  CALL SWGWIN(150, 0, 100, 35)
+  CALL SWGWIN(150, 0, 100, 33)
   CALL WGDLIS(hGrid, "Uniform|File|Pot|Estimate|Adaptive", mode, hGridMode)
   write (vstr, '(I5)') numx
-  CALL SWGWIN(0, 40, 120, 30)
+  CALL SWGWIN(0, 40, 120, ctrlh)
   CALL WGLTXT(hGrid, 'NumX', TRIM(vstr), 70, hGridNumX)
   write (vstr, '(I5)') numy
-  CALL SWGWIN(130, 40, 120, 30)
+  CALL SWGWIN(130, 40, 120, ctrlh)
   CALL WGLTXT(hGrid, 'NumY', TRIM(vstr), 70, hGridNumY)
   write (vstr, '(ES11.5)') size_x
-  CALL SWGWIN(0, 75, 120, 30)
+  CALL SWGWIN(0, 75, 120, ctrlh)
   CALL WGLTXT(hGrid, 'SizeX', TRIM(vstr), 70, hGridSizeX)
   write (vstr, '(ES11.5)') size_y
-  CALL SWGWIN(130, 75, 120, 30)
+  CALL SWGWIN(130, 75, 120, ctrlh)
   CALL WGLTXT(hGrid, 'SizeY', TRIM(vstr), 70, hGridSizeY)
-  CALL SWGWIN(0, 110, 37, 35)
+  CALL SWGWIN(0, 110, 37, 33)
   CALL WGLAB(hGrid, "File:", hNull)
-  CALL SWGWIN(37, 110, 213, 35)
+  CALL SWGWIN(37, 110, 213, ctrlh)
   CALL WGFIL (hGrid, 'Select Grid File', grid_file_in, '*.dat', hGridFile)
 
     ! Potential Frame
-  CALL SWGWIN(0, 0, 80, 35)
+  CALL SWGWIN(0, 0, 80, 33)
   CALL WGLAB(hPot, "POTENTIAL", hNull)
-  CALL SWGWIN(108, 0, 40, 35)
+  CALL SWGWIN(108, 0, 40, 33)
   CALL WGLAB(hPot, "Mode:", hNull)
-  CALL SWGWIN(148, 0, 100, 35)
+  CALL SWGWIN(148, 0, 100, 33)
   if (pot_mode == 'string') then
     mode = 2
   else if (pot_mode == 'file') then
@@ -209,41 +224,41 @@ SUBROUTINE SHOW_IN_GUI
   CALL WGDLIS(hPot, "Zero|Command|File", mode, hPotMode)
   CALL SWGWIN(0, 40, 150, 28)
   CALL WGBUT(hPot, 'Allow interpolation', allow_pot_interpolation, hPotInterp)
-  CALL SWGWIN(0, 70, 40, 35)
+  CALL SWGWIN(0, 70, 40, 33)
   CALL WGLAB(hPot, "File:", hNull)
-  CALL SWGWIN(40, 70, 200, 35)
+  CALL SWGWIN(40, 70, 200, ctrlh)
   CALL WGFIL(hPot, 'Select Potential File', pot_file_in, '*.dat', hPotFile)
 
   CALL strtopot_countcmds(strpotentialX, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 110, 150, 30)
+  CALL SWGWIN(0, 110, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd X num of lines:', vstr, 23, hPotStrX)
-  CALL SWGWIN(155, 110, 40, 30)
+  CALL SWGWIN(155, 110, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrXEdit)
   CALL SWGCBK(hPotStrXEdit, PotStrCbk)
 
   CALL strtopot_countcmds(strpotentialy, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 145, 150, 30)
+  CALL SWGWIN(0, 145, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd Y num of lines:', vstr, 23, hPotStrY)
-  CALL SWGWIN(155, 145, 40, 30)
+  CALL SWGWIN(155, 145, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrYEdit)
   CALL SWGCBK(hPotStrYEdit, PotStrCbk)
 
   CALL strtopot_countcmds(strpotentialXY, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 180, 150, 30)
+  CALL SWGWIN(0, 180, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd XY num of lines:', vstr, 23, hPotStrXY)
-  CALL SWGWIN(155, 180, 40, 30)
+  CALL SWGWIN(155, 180, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrXYEdit)
   CALL SWGCBK(hPotStrXYEdit, PotStrCbk)
 
     ! Output Frame
-  CALL SWGWIN(0, 0, 80, 30)
+  CALL SWGWIN(0, 0, 80, 33)
   CALL WGLAB(hOut, "OUTPUT", hNull)
-  CALL SWGWIN(0, 30, 40, 35)
+  CALL SWGWIN(0, 30, 40, 33)
   CALL WGLAB(hOut, "Dir:", hNull)
-  CALL SWGWIN(40, 30, 200, 35)
+  CALL SWGWIN(40, 30, 200, ctrlh)
   CALL WGFIL(hOut, 'Select Output Dir', write_folder, '*.dat', hOutDir)
   CALL SWGWIN(0, 65, 100, 20)
   CALL WGLAB(hOut, "Write Grid:", hNull)
@@ -281,20 +296,20 @@ SUBROUTINE SHOW_IN_GUI
   endif
   CALL SWGWIN(160, 115, 55, 20)
   CALL WGBUT(hOut, 'Bin', mode, hOutWPsiBin)
-  CALL SWGWIN(0, 140, 100, 30)
+  CALL SWGWIN(0, 140, 100, ctrlh)
   CALL WGLAB(hOut, 'Time Step:', hNull)
   write (vstr, '(ES11.5)') write_timestep
-  CALL SWGWIN(100, 140, 90, 35)
+  CALL SWGWIN(100, 140, 90, 33)
   CALL WGTXT(hOut, TRIM(vstr), hOutTime)
   CALL SWGWIN(0, 175, 100, 30)
   CALL WGLAB(hOut, "Downsample:    X", hNull)
   write (vstr, '(I2)') write_downsample_x
-  CALL SWGWIN(100, 175, 30, 30)
+  CALL SWGWIN(100, 175, 30, ctrlh)
   CALL WGTXT(hOut, TRIM(vstr), hOutDownX)
   CALL SWGWIN(150, 175, 10, 30)
   CALL WGLAB(hOut, "Y", hNull)
   write (vstr, '(I2)') write_downsample_y
-  CALL SWGWIN(160, 175, 30, 30)
+  CALL SWGWIN(160, 175, 30, ctrlh)
   CALL WGTXT(hOut, TRIM(vstr), hOutDownY)
 
     ! Displays the dialog
@@ -401,7 +416,7 @@ END SUBROUTINE
 
 SUBROUTINE PotStrCbk(ID)
   INTEGER, INTENT(IN) :: ID
-  INTEGER hFormPot, ii, num, hCmd(99)
+  INTEGER hFormPot, ii, num, hCmd(99), ctrlh
   CHARACTER(500) strcmd
   CHARACTER(999) fullcmd
 
@@ -416,6 +431,13 @@ SUBROUTINE PotStrCbk(ID)
     CALL SWGTIT('Potential XY Commands')
   end if
   CALL WGINI('FORM', hFormPot)
+  if (OSV == 0) then
+    CALL SWGFNT ("fixed", 10)  ! lunux
+    ctrlh = 30
+  else
+    CALL SWGFNT ("fixed", 14)  ! windows
+    ctrlh = 24
+  end if
 
   DO ii = 1,num
     if (ID == hPotStrXEdit) then
@@ -425,7 +447,7 @@ SUBROUTINE PotStrCbk(ID)
     else
       CALL strtopot_extractcmd(strcmd, strpotentialXY, ii)
     end if
-    CALL SWGWIN(0, 32*(ii-1), 400, 30)
+    CALL SWGWIN(0, 32*(ii-1), 400, ctrlh)
     CALL WGTXT(hFormPot, TRIM(ADJUSTL(strcmd)), hCmd(ii))
   END DO
   CALL SWGWIN(0, 4 + 32*num, 50, 28)
