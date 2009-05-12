@@ -17,8 +17,8 @@
  /
  &GRID
  GRID_MODE       = "uniform                         ",
- NUMX    =        1000,
- NUMY    =        1000,
+ NUMX    =         200,
+ NUMY    =         200,
  SIZE_X  =  1.000000000000000E-006,
  SIZE_Y  =  1.000000000000000E-006,
  GRID_FILE_IN    = "                                                                                "
@@ -60,6 +60,6 @@
  WRITE_POT       = "bin                           ",
  WRITE_PSI       = "bin                           ",
  WRITE_TIMESTEP  =  1.000000000000000E-013,
- WRITE_DOWNSAMPLE_X      =           5,
- WRITE_DOWNSAMPLE_Y      =           5
+ WRITE_DOWNSAMPLE_X      =           1,
+ WRITE_DOWNSAMPLE_Y      =           1
  /
