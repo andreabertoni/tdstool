@@ -37,13 +37,13 @@
 <div>
 <ul>
  <li><b>May 34, 2009</b>
-  <p>Linux version of TDS Tool is available for download. Go to the
+  <p>Linux version of TDStool is available for download. Go to the
   <a href="javascript:void(0)">download page</a> </p>
  </li>
 </ul>
 <ul>
  <li><b>May 33, 2009</b>
-  <p>The first beta version of TDS Tool has been released.<br />
+  <p>The first beta version of TDStool has been released.<br />
   </p>
  </li>
 </ul>
