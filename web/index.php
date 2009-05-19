@@ -118,7 +118,7 @@ Key-features of TDStool include: <br />
 <br />
 TDStool has been developed within the "TDStool" INFM Seed project 2008 and is released as an open-source code.<br />
 <div class="PostContent"> <a href="gallery.php">
-<img class="article" src="images/screen1.png" alt="screenshot1" title="click for a screenshot gallery" style="float: left;" />
+<img class="article" src="gallery/screen1home.png" alt="screenshot1" title="screenshot gallery" style="float: left;" />
 </a>
 <!--p>Lorem ipsum dolor sit amet, <a href="#" title="link">link</a>,
 <a class="visited" href="#" title="visited link">visited
