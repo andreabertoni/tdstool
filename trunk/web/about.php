@@ -79,7 +79,7 @@ Fax: +39 059 374794<br />
 <h2 class="PostHeaderIcon-wrapper">
 <span class="PostHeader"> Acknowledgments</span></h2>
 TDStool has been developed within the "TDStool" <a href="http://www.infm.it">INFM</a> Seed project 2008.<br />
-We are please to thank Guido Goldoni (<a href="http://www.fisica.unimore.it">UniMoRe</a>)
+We are pleased to thank Guido Goldoni (<a href="http://www.fisica.unimore.it">UniMoRe</a>)
 and Massimo Rudan (<a href="http://www.deis.unibo.it">UniBo</a>) for most helpful discussions.
 
 
