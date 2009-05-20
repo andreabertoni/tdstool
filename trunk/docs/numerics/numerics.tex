@@ -1,20 +1,133 @@
-\documentclass[a4paper,10pt]{article}
-\usepackage{array}
-\usepackage{theorem}
+\documentclass[a4paper,11pt]{article}
+%\usepackage{array}
+%\usepackage{theorem}
 \usepackage{graphicx}
+\usepackage{fancyhdr}
+%\usepackage{times,mathptm}
+%\usepackage[pdftex]{graphicx}
+%\usepackage{color}
+%\usepackage{caption}
+%\usepackage{graphpap}
+%\usepackage{rotating}
+%\usepackage{epsfig}
+%\usepackage{epsfig,psfrag}
+
+%\setlength{\textwidth}{6.0in}
+%\setlength{\textheight}{8.0in}
+%\setlength{\topmargin}{0.in}
+%\setlength{\headheight}{0.8in}
+%\setlength{\headsep}{0.in}
+%\setlength{\parindent}{0.25in}
+%\setlength{\oddsidemargin}{0.2in}
+%\setlength{\evensidemargin}{0.2in}
 
 \newcommand{\ve}[1]{\mbox{\boldmath $ #1$}}
 %opening
-\title{Notes on Discretization of Schr\"{o}dinger equation}
-\author{A. Bertoni, T. Serafini}
+\title{TDStool: Notes on Numerical Methods}
+\author{Andrea Bertoni, Thomas Serafini}
+
+
 
 \begin{document}
 
-\maketitle
+%\setlength{\leftmargini}{\parindent} % Controls the indenting of the "bullets" in a list
+%\pagestyle{empty}
+%\pagenumbering{alph}
+%\begin{minipage}[t][7.5in][s]{6.25in}
+\begin{titlepage}
 
-\begin{abstract}
+\flushright{
+\Huge
+TDS{\hspace{1mm}}tool}
 
-\end{abstract}
+\flushright{
+\LARGE
+\mbox{Time Dependent Schr{\"o}dinger equation simulation tool}}
+
+\vspace{40mm}
+\flushright{
+\huge
+\bf Notes on Numerical Methods}
+
+\vspace{20mm}
+\flushright{
+\Large
+Andrea Bertoni \\
+\vspace{2mm}
+Thomas Serafini}
+
+\vspace{60mm}
+\flushright{
+\large
+\today \\
+Version 0.2 \\
+TDStool Version 0.2}
+
+\vspace{10mm}
+\flushright{
+\Large
+S3 National Research Center, CNR-INFM \\ Modena, Italy}
+
+\normalsize
+%\vfill
+% \flushright{\includegraphics[width=2.in]{FIGURES/nistident_flright_vec}}
+
+\newpage
+\pagestyle{empty}
+\mbox{}
+\end{titlepage}
+%\end{minipage}
+%\maketitle
+%\begin{abstract}
+%\end{abstract}
+
+\section*{Preface}
+The software TDStool is a numerical solver for the Time Dependent (linear)
+Schr\"odinger equation and (nonlinear) Gross-Pitaevskii equation.
+This document provides the theoretical basis for TDStool.
+It describes the discretization methods and the main numerical
+algorithms used in the code. It aims to be a technical reference guide
+and a means to reach an in-depth understanding of the source code.
+In fact, it should be the starting point for whoever is willing to
+modify the code (released as an open-source project) and hopefully contribute
+to the project.
+Since the discussion in this note has been kept at a tutorial level, 
+it can represent a nimble introduction to some of the numerical techniques
+used in the code. However, we urge any 
+
+
+\section*{Disclaimer}
+We make no warranty to users of TDStool and accept no responsability for
+its use and for any conclusion drawn from its results.  Although we endeavor
+to 
+
+
+TDStool is intended
+for use only by those competent in the field of quantum mechnaics and
+numerical analysis.
+
+\section*{Copyright}
+ccc
+
+\section*{About the Authors}
+(up-to-date as of \today)
+
+{\bf Andrea Bertoni} is
+
+{\bf Thomas Serafini} is
+
+\section*{Acknowledgments}
+zzz
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\pagestyle{fancy}
+\fancyhead[RO,RE]{TDStool: Notes on Numerical Methods}
+\fancyhead[LO,LE]{ver. 0.2}
 
 \section{Notation}
 Let $f$ be a functional $f:R^n\mapsto C$.
