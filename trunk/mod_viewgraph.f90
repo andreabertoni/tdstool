@@ -198,7 +198,7 @@ SUBROUTINE ViewListCbk(ID)
   ALLOCATE(psi_t(numx, numy))
   do nx = 1, numx
     do ny = 1, numy
-      vstr_t(nx, ny) = REAL(vstr(ny, nx))
+      vstr_t(nx, ny) = REAL(vstr(ny, nx)) / ELCH
       psi_t(nx, ny) = REAL(psi(ny, nx))
     end do
   end do
@@ -208,7 +208,13 @@ SUBROUTINE ViewListCbk(ID)
   psimax= MAXVAL(psi_t(:,:))
   vmax= MAXVAL(vstr_t(:,:))
 
+!  CALL METAFL('PNG')
+!  CALL SETPAG('DA4P')
+!  CALL FILMOD('DELETE')
+!  CALL SETFIL(TRIM(write_folder)//'/img'//str_num//'.png')
+
   CALL METAFL('CONS')
+
   CALL SETXID(hWaveGraph, 'WIDGET')
   CALL page(3500, 2600)
   CALL PAGMOD('LAND')
@@ -222,19 +228,19 @@ SUBROUTINE ViewListCbk(ID)
 !...............................................crea gli assi X e Y (e Z per il pot)
   CALL WINMOD('NOERASE')
   CALL AUTRES(NUMX, NUMY)
-  CALL AXSPOS(200, 2400)
+  CALL AXSPOS(280, 2400)
   CALL AX3LEN(2200, 2200, 1800)
   CALL DIGITS(-1, 'XY')
   CALL DIGITS(2, 'Z')
   CALL NAME('x (nm)', 'X')
   CALL NAME('y (nm)', 'Y')
 
-  CALL LABELS ('FEXP', 'XY')
+  CALL LABELS ('FEXP', 'XYZ')
   CALL NAME('potential (eV)', 'Z')
   CALL SETVLT('GREY')
   CALL COLRAN(20, 120)
-  CALL GRAF3(REAL(new_xnodes(1)), REAL(new_xnodes(NUMX)), REAL(new_xnodes(1)), REAL(new_xnodes(NUMX))/5., &
-           & REAL(new_ynodes(1)), REAL(new_ynodes(NUMY)), REAL(new_ynodes(1)), REAL(new_ynodes(NUMY))/5., &
+  CALL GRAF3(REAL(new_xnodes(1))*1e9, REAL(new_xnodes(NUMX))*1e9, REAL(new_xnodes(1))*1e9, REAL(new_xnodes(NUMX))*1e9/5., &
+           & REAL(new_ynodes(1))*1e9, REAL(new_ynodes(NUMY))*1e9, REAL(new_ynodes(1))*1e9, REAL(new_ynodes(NUMY))*1e9/5., &
            & 0., vmax, 0., vmax / 5.)
   CALL ENDGRF
 
@@ -243,13 +249,13 @@ SUBROUTINE ViewListCbk(ID)
   CALL MYVLT( (/ (nx/250., nx= 1, 250) /), (/ (nx*1e-3, nx= 1, 250) /),      &
        &      (/ (nx*1e-3, nx= 1, 250) /), 250)
   CALL COLRAN(50, 250)
-  CALL GRAF3(REAL(new_xnodes(1)), REAL(new_xnodes(NUMX)), REAL(new_xnodes(1)), REAL(new_xnodes(NUMX))/5., &
-           & REAL(new_ynodes(1)), REAL(new_ynodes(NUMY)), REAL(new_ynodes(1)), REAL(new_ynodes(NUMY))/5., &
+  CALL GRAF3(REAL(new_xnodes(1))*1e9, REAL(new_xnodes(NUMX))*1e9, REAL(new_xnodes(1))*1e9, REAL(new_xnodes(NUMX))*1e9/5., &
+           & REAL(new_ynodes(1))*1e9, REAL(new_ynodes(NUMY))*1e9, REAL(new_ynodes(1))*1e9, REAL(new_ynodes(NUMY))*1e9/5., &
            & psimax*cutoff, psimax, psimax*cutoff, psimax / 50.)
   CALL SMXALF('GREEK', '@', '@', 1)
   CALL MIXALF
   CALL LABELS ('FEXP', 'Z')
-  CALL ZAXIS(0., psimax, 0., psimax / 5., 1800,'|@u@|[2$ elettrone',0,0,2900,2400 )
+  CALL ZAXIS(0., psimax, 0., psimax / 5., 1800,'|@u@|[2$ probability density',0,0,3020,2400 )
   CALL ENDGRF
 
   !..................................grafica il potenziale
@@ -257,8 +263,8 @@ SUBROUTINE ViewListCbk(ID)
   CALL COLRAN(20, 120)
 !  CALL SETIND(255, 0.4, 0.3, 0.6)  ! crea il colore del pot infinito
 !  CALL SETCLR(254)                 ! colore da usare per le scritte
-  CALL GRAF3(REAL(new_xnodes(1)), REAL(new_xnodes(NUMX)), REAL(new_xnodes(1)), REAL(new_xnodes(NUMX))/5., &
-           & REAL(new_ynodes(1)), REAL(new_ynodes(NUMY)), REAL(new_ynodes(1)), REAL(new_ynodes(NUMY))/5., &
+  CALL GRAF3(REAL(new_xnodes(1))*1e9, REAL(new_xnodes(NUMX))*1e9, REAL(new_xnodes(1))*1e9, REAL(new_xnodes(NUMX))*1e9/5., &
+           & REAL(new_ynodes(1))*1e9, REAL(new_ynodes(NUMY))*1e9, REAL(new_ynodes(1))*1e9, REAL(new_ynodes(NUMY))*1e9/5., &
            & 0., vmax, 0., vmax / 5.)
   CALL CRVMAT(vstr_t, NUMX, NUMY, 1, 1)
   CALL ENDGRF
@@ -267,8 +273,8 @@ SUBROUTINE ViewListCbk(ID)
   CALL MYVLT( (/ (nx/250., nx= 1, 250) /), (/ (nx*1e-3, nx= 1, 250) /),      &
        &      (/ (nx*1e-3, nx= 1, 250) /), 250)
   CALL COLRAN(50, 240)
-  CALL GRAF3(REAL(new_xnodes(1)), REAL(new_xnodes(NUMX)), REAL(new_xnodes(1)), REAL(new_xnodes(NUMX))/5., &
-           & REAL(new_ynodes(1)), REAL(new_ynodes(NUMY)), REAL(new_ynodes(1)), REAL(new_ynodes(NUMY))/5., &
+  CALL GRAF3(REAL(new_xnodes(1))*1e9, REAL(new_xnodes(NUMX))*1e9, REAL(new_xnodes(1))*1e9, REAL(new_xnodes(NUMX))*1e9/5., &
+           & REAL(new_ynodes(1))*1e9, REAL(new_ynodes(NUMY))*1e9, REAL(new_ynodes(1))*1e9, REAL(new_ynodes(NUMY))*1e9/5., &
            & psimax*cutoff, psimax, psimax*0.02, psimax / 50.)
 
   CALL NOBGD
@@ -278,7 +284,7 @@ SUBROUTINE ViewListCbk(ID)
 
   CALL SETVLT("RAIN")
   CALL COLOR("GREEN")
-  CALL RECTAN (INT(200. + 2200.*intx0/size_x), INT(200. + 2200.*inty0/size_y),  &
+  CALL RECTAN (INT(280. + 2200.*intx0/size_x), INT(200. + 2200.*inty0/size_y),  &
     INT(2200.*(intx1-intx0)/size_x), INT(2200.*(inty1-inty0)/size_y))
 
   CALL DISFIN()
