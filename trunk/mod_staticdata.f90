@@ -15,6 +15,7 @@ MODULE mod_staticdata
        &                PIG=3.14159265,                            &
        &                EPSILON0= 8.854e-12
   
-  INTEGER, PARAMETER :: OSV = 1
+  INTEGER, PARAMETER :: OSV = 0   ! OS Version: 0 = linux, 1 = Windows
+  INTEGER, PARAMETER :: SOLVE_METHOD = 1   ! 0 = Box integration, 1 = Split Step
 
 END MODULE mod_staticdata

@@ -213,4 +213,77 @@ $$ S \ve y^{(n+1)} = S \ve y^{(n)} + \frac{M \Delta t}{2} (\ve y^{(n)} + \ve y^{
 or equivalently
 $$ \left( S - \frac{M \Delta t}{2} \right) \ve y^{(n+1)} = \left( S + \frac{M \Delta t}{2} \right) y^{(n)} + \beta \Delta t \ve d $$
 
+\section{Nonlinear Scr\"{o}dinger equation}
+The time-dependent nonlinear Shroedinger equation can be stated as follow:
+
+$$ i \hbar \frac{\partial}{\partial t} \psi =
+   -\frac{\hbar^2}{2m^*} \bigtriangledown^2 \psi +
+   \left(V(x) + \frac{4 \pi \hbar^2 a_s}{m^*} |\psi|^2 \right) \psi $$
+
+In this case we suppose a periodic boundary condition. We can rewrite the equation by highliting the linear part and the nonlinear part of the operator:
+
+\begin{eqnarray}
+\frac{\partial}{\partial t} \psi & = & L \psi + N \psi \label{eq:splitop} \\
+\psi(x, 0) & = & \psi_0(x)
+\end{eqnarray}
+
+with
+$$ L = \frac{i\hbar}{2m^*} \bigtriangledown^2 \ , \qquad
+   N = -i \left(\frac{1}{\hbar}V(x) + \frac{4 \pi \hbar a_s}{m^*} |\psi|^2 \right) $$
+
+\section{Split-step Fourier Method}
+Split-step method can be effectively used to solve time dependent problems in the form of \ref{eq:splitop}.
+In particular, the solution of Equation \ref{eq:splitop} may be advanced from one time level to the next by means of the following formula:
+
+$$ \psi(x, t+dt) = e^{dt(L+N)} \psi(x, t) \label{eq:split1} $$
+
+where $dt$ denotes the time step. In general, Equation \ref{eq:split1} is first order accurate; however it becomes exact if the operators $L$ and $N$ are time-independent (\ref{bib:SIAM}).
+The analytic expression of $e^{dt(L+N)}$ is usually not known, as in the case of the nonlinear Schroedinger equation. However we can show some expressions for approximating it with different order of accuracy.
+
+First order approximation:
+$$ A_1(dt) = e^{dtL} e^{dtN} \label{eq:split2} $$
+
+Second order approximation:
+$$ A_2(dt) = e^{\frac{1}{2}dtN} e^{dtL} e^{\frac{1}{2}dtN} $$
+
+Fourth order approximation:
+$$ A_4(dt) = A_2(wdt) A_2((1-2w)dt) A_2(wdt) \, \quad
+   w = \frac{2+\sqrt[3]{2} + \frac{1}{\sqrt[3]{2}}}{3} $$
+
+As an esample, we see that the equation $ \psi_t = A_1(dt) \psi $
+is equivalent to first solve the nonlinear equation $ \psi_t = N \psi $
+and then advancing the solution by solving the linear equation $ \psi_t = L \psi $.
+
+In the case of the nonlinear Schroedinger equation, the nonlinear step $ \psi_t = N \psi $ can be computed with:
+$$ \psi_n(x_i, t) = \psi(x_i, t) e^{-i dt \left(\frac{1}{\hbar}V(x_i) + \frac{4 \pi \hbar a_s}{m^*} |\psi(x_i, t)|^2 \right)} $$
+
+For the linear step $ \psi_t = L \psi $, the analytical solution is known and it can be computed in the $k$ space by means of a Fourier transform.
+
+\begin{eqnarray}
+ \bar{\psi}(t) &=& \mbox{FFT}(\psi(t)) \\
+ \bar{\psi}(k_i, t+dt) &=& \bar{\psi}(k_i, t) e^{dt \frac{i\hbar}{2m^*} k_i^2} \label{eq:klinearevolution} \\
+ \psi(t+dt) &=& \mbox{IFFT}(\bar{\psi}(t+dt))
+\end{eqnarray}
+
+In case of a 2D wave function, the linear transformation of Equation \ref{eq:klinearevolution} becomes
+$$ \bar{\psi}(k_i, k_j, t+dt) = \bar{\psi}(k_i, t)
+   e^{dt \frac{i\hbar}{2m^*} (k_i^2 + k_j^2)} \label{eq:klinearevolution} $$
+
+It is important to properly define the frequency components $k_i$.
+In particular, if the wave function is defined on $[0, s]$ it is discrtized on $n$ points, then the $k_i$ are defined as:
+
+\begin{equation} k_i = \left\{ \begin{array}{rll}
+          &\frac{2 \pi (i-1)}{s} & i = 1, \ldots, \frac{n}{2} \\
+          -&\frac{2 \pi (n-i+1)}{s} & i = \frac{n}{2}+1, \ldots, n \\
+         \end{array} \right . \end{equation}
+
+\begin{thebibliography}{2}
+\bibitem{bib:SIAM}
+Weideman, J.A.C., Herbst B.M.: Split-step methods fo the solution of the nonlinear Schroedinger equation, SIAM J. Numer. Anal. \textbf{23}(3), 485-507, (1986)
+
+\bibitem{bib:parsplitstep}
+Xu X., Taha T., Parallel split-step fourier methods for nonlinear schroedinger-type equations, J. Math Model. Algo. \textbf{2}, 185-201, (2003)
+
+\end{thebibliography}
+
 \end{document}

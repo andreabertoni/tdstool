@@ -13,6 +13,7 @@ MODULE mod_indata
   INTEGER :: MAXIT
   REAL*8 :: x0, y0, sigmax, sigmay, xenergy, yenergy
   REAL*8 :: electronmass, mstar
+  REAL*8 :: nonlin_as, magnetic
 
   REAL*8 :: size_x, size_y
   CHARACTER(32) :: psi_mode  ! gauss, file
@@ -53,7 +54,9 @@ MODULE mod_indata
 
 
   NAMELIST /device/ &
-    & electronmass
+    & electronmass, &
+    & nonlin_as,    &
+    & magnetic
 
   NAMELIST /initial_psi/ &
     & psi_mode, &
@@ -126,6 +129,8 @@ END SUBROUTINE INDATA_GET
 
 SUBROUTINE INDATA_FILL_WITH_DEFAULT
   electronmass = 0.067
+  magnetic = 0
+  nonlin_as = 1e-3
   psi_mode = 'gauss'
   x0 = 1e-7
   y0 = 1e-7
@@ -195,51 +200,69 @@ print *, INFO
 !*******************************************************
 !    Grid init
 !*******************************************************
-  if (grid_mode == "file") then
-    lenstr = LEN_TRIM(grid_file_in)
-    OPEN(22, FILE=grid_file_in, FORM="FORMATTED", STATUS="OLD")
-    READ(22) grid_numx, grid_numy
-    if (numx /= grid_numx .or. numy /= grid_numy) then
-      print *, "Warning: grid size in namelist differs from grid size in file "//grid_file_in
-      print *, "Taking sizes in the file."
-      numx = grid_numx;
-      numy = grid_numy;
+  if (SOLVE_METHOD == 0) then
+    if (grid_mode == "file") then
+      lenstr = LEN_TRIM(grid_file_in)
+      OPEN(22, FILE=grid_file_in, FORM="FORMATTED", STATUS="OLD")
+      READ(22) grid_numx, grid_numy
+      if (numx /= grid_numx .or. numy /= grid_numy) then
+        print *, "Warning: grid size in namelist differs from grid size in file "//grid_file_in
+        print *, "Taking sizes in the file."
+        numx = grid_numx;
+        numy = grid_numy;
+      end if
+      ALLOCATE (pot(numy,numx))
+      ALLOCATE (psi(numx*numy))
+      ALLOCATE (xnodes(numx+2))
+      ALLOCATE (ynodes(numy+2))
+      DO nx = 1,numx+2
+        READ(22,*) xnodes(nx)
+      END DO
+      DO ny = 1,numy+2
+        READ(22,*) ynodes(ny)
+      END DO
+      CLOSE(22)
+
+    else if (grid_mode == "pot") then
+      numx = pot_numx_file - 2
+      numy = pot_numy_file - 2
+      ALLOCATE (pot(numy,numx))
+      ALLOCATE (psi(numx*numy))
+      ALLOCATE (xnodes(numx+2))
+      ALLOCATE (ynodes(numy+2))
+      xnodes = pot_x_file
+      ynodes = pot_y_file
+
+    else  ! uniform
+      ALLOCATE (pot(numy,numx))
+      ALLOCATE (psi(numx*numy))
+      ALLOCATE (xnodes(numx+2))
+      ALLOCATE (ynodes(numy+2))
+      DO nx = 1,numx+2
+        xnodes(nx) = size_x * (nx-1) / (numx+1)
+      END DO
+      DO ny = 1,numy+2
+        ynodes(ny) = size_y * (ny-1) / (numy+1)
+      END DO
     end if
-    ALLOCATE (pot(numy,numx))
-    ALLOCATE (psi(numx*numy))
-    ALLOCATE (xnodes(numx+2))
-    ALLOCATE (ynodes(numy+2))
-    DO nx = 1,numx+2
-      READ(22,*) xnodes(nx)
-    END DO
-    DO ny = 1,numy+2
-      READ(22,*) ynodes(ny)
-    END DO
-    CLOSE(22)
 
-  else if (grid_mode == "pot") then
-    numx = pot_numx_file - 2
-    numy = pot_numy_file - 2
+  else if (SOLVE_METHOD == 1) then
+    ! Split Step
     ALLOCATE (pot(numy,numx))
     ALLOCATE (psi(numx*numy))
     ALLOCATE (xnodes(numx+2))
     ALLOCATE (ynodes(numy+2))
-    xnodes = pot_x_file
-    ynodes = pot_y_file
-
-  else  ! uniform
-    ALLOCATE (pot(numy,numx))
-    ALLOCATE (psi(numx*numy))
-    ALLOCATE (xnodes(numx+2))
-    ALLOCATE (ynodes(numy+2))
-    DO nx = 1,numx+2
-      xnodes(nx) = size_x * (nx-1) / (numx+1)
+    DO nx = 1,numx
+      xnodes(nx+1) = size_x * (nx-1) / (numx-1)
     END DO
-    DO ny = 1,numy+2
-      ynodes(ny) = size_y * (ny-1) / (numy+1)
+    xnodes(1) = 2*xnodes(2) - xnodes(3)
+    xnodes(numx+2) = 2*xnodes(numx+1) - xnodes(numx)
+    DO ny = 1,numy
+      ynodes(ny+1) = size_y * (ny-1) / (numy-1)
     END DO
+    ynodes(1) = 2*ynodes(2) - ynodes(3)
+    ynodes(numy+2) = 2*ynodes(numy+1) - ynodes(numy)
   end if
-
 
 !*******************************************************
 !    Potential init

@@ -1,5 +1,7 @@
  &DEVICE
- ELECTRONMASS    =  6.700000166893005E-002
+ ELECTRONMASS    =  6.700000166893005E-002,
+ NONLIN_AS       =  0.000000000000000E+000,
+ MAGNETIC        =  0.000000000000000E+000
  /
  &INITIAL_PSI
  PSI_MODE        = "gauss                           ",
@@ -12,13 +14,13 @@
  PSI_FILE_IN     = "                                                                                "
  /
  &TIME
- DT      =  2.000000000000000E-014,
- MAXIT   =         100
+ DT      =  5.000000000000000E-015,
+ MAXIT   =         300
  /
  &GRID
  GRID_MODE       = "uniform                         ",
- NUMX    =         500,
- NUMY    =         500,
+ NUMX    =         512,
+ NUMY    =         512,
  SIZE_X  =  1.000000000000000E-006,
  SIZE_Y  =  1.000000000000000E-006,
  GRID_FILE_IN    = "                                                                                "
