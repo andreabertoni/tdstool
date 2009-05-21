@@ -87,13 +87,13 @@ SUBROUTINE ViewListCbk(ID)
     ! Check if grid is uniform (if not interpolation will be required)
   is_uniform = 1
   DO NX = 2, NUMX
-    if (abs((xnodes(NX+1)-xnodes(NX)) - (xnodes(NX+2)-xnodes(NX+1))) > 1e-5*xnodes(NX)) then
+    if (abs((xnodes(NX+1)-xnodes(NX)) - (xnodes(NX+2)-xnodes(NX+1))) > 1e-5*xnodes(NX+1)) then
       is_uniform = 0
       EXIT
     end if
   end do
   DO NY = 2, NUMY
-    if (abs((xnodes(NY+1)-xnodes(NY)) - (xnodes(NY+2)-xnodes(NY+1))) > 1e-5*xnodes(NY)) then
+    if (abs((xnodes(NY+1)-xnodes(NY)) - (xnodes(NY+2)-xnodes(NY+1))) > 1e-5*xnodes(NY+1)) then
       is_uniform = 0
       EXIT
     end if

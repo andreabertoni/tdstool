@@ -16,7 +16,7 @@ MODULE mod_inputgui
   INTEGER :: hGrid, hGridMode, hGridNumX, hGridNumY, hGridSizeX, hGridSizeY, hGridFile
   INTEGER :: hPot, hPotMode, hPotInterp, hPotFile, hPotStrX, hPotStrY, hPotStrXY, hPotStrXEdit, hPotStrYEdit, hPotStrXYEdit
   INTEGER :: hOut, hOutDir, hOutWGrid, hOutWPotTxt, hOutWPotBin, hOutWPsiTxt, hOutWPsiBin, hOutTime, hOutDownX, hOutDownY
-  INTEGER :: hData, hElMass
+  INTEGER :: hData, hData2, hElMass, hNonlin
 
   CHARACTER(260) nml_file_name
 
@@ -104,13 +104,17 @@ SUBROUTINE SHOW_IN_GUI
   CALL SWGWIN(10, 355, 250, 150)
   CALL WGBAS(hForm, 'FORM', hGrid)
 
-  CALL SWGWIN(300, 10, 250, 280)
+  CALL SWGWIN(300, 10, 250, 40)
+  CALL WGBAS(hForm, 'FORM', hData2)
+  CALL SWGWIN(300, 50, 250, 240)
   CALL WGBAS(hForm, 'FORM', hPot)
   CALL SWGWIN(300, 300, 250, 220)
   CALL WGBAS(hForm, 'FORM', hOut)
 
     ! Graphics around frames
   CALL SWGWIN(10, 40, 250, 10)
+  CALL WGLAB(hForm, "---------------------------------------", hNull)
+  CALL SWGWIN(300, 40, 250, 10)
   CALL WGLAB(hForm, "---------------------------------------", hNull)
   CALL SWGWIN(10, 250, 250, 10)
   CALL WGLAB(hForm, "---------------------------------------", hNull)
@@ -127,8 +131,17 @@ SUBROUTINE SHOW_IN_GUI
     ! El Mass
   CALL SWGWIN(0, 0, 95, 30)
   CALL WGLAB(hData, 'Electron Mass:', hNull)
-!  CALL SWGWIN(100, 0, 90, 30)
-!  CALL WGTXT(hData, '0.067', hElMass)
+  CALL SWGWIN(100, 0, 90, ctrlh)
+  write (vstr, '(ES11.5)') electronmass
+  CALL WGTXT(hData, vstr, hElMass)
+
+  if (SOLVE_METHOD == 1) then
+    CALL SWGWIN(0, 0, 95, 30)
+    CALL WGLAB(hData2, 'Nonlinear as:', hNull)
+    CALL SWGWIN(100, 0, 90, ctrlh)
+    write (vstr, '(ES11.5)') nonlin_as
+    CALL WGTXT(hData2, vstr, hNonlin)
+  endif
 
     ! Wave Function Frame
   CALL SWGWIN(0, 0, 80, 35)
@@ -314,6 +327,13 @@ SUBROUTINE SHOW_IN_GUI
 
     ! Displays the dialog
   CALL WGFIN
+
+  CALL GWGTXT(hElMass, vstr)
+  read (vstr, *) electronmass
+  if (SOLVE_METHOD == 1) then
+    CALL GWGTXT(hNonlin, vstr)
+    read (vstr, *) nonlin_as
+  end if
 
     ! Get Wave Function data
   CALL GWGLIS(hPsiMode, mode)
