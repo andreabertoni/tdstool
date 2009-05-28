@@ -1,0 +1,43 @@
+&device
+  electronmass = 0.067    /
+
+&initial_psi
+  psi_mode = "gauss",
+  x0 = 1e-7,
+  y0 = 1e-7,
+  sigmax = 3e-8,
+  sigmay = 3e-8,
+  xenergy = 8e-3,
+  yenergy = 8e-3,
+  psi_file_in = ""       /
+
+&time
+  dt = 2e-13,
+  MAXIT = 100            /
+
+&grid
+  grid_mode = "pot",
+  numx = 100,
+  numy = 100,
+  size_x = 1e-6,
+  size_y = 1e-6,
+  grid_file_in = ""      /
+
+&potential
+  pot_mode = "file",
+  allow_pot_interpolation = 1,
+  strpotentialX = "harmonic  0.e-9  200.e-9  20.e-3  0.e-3 ",
+  strpotentialY = "const  -10.e-9   100.e-9   252.8e-3 ;
+                   const    5.e-9    15.e-9      0.e-3 ;
+                   const   16.e-9    35.e-9      0.e-3  ",
+  pot_file_in = "pot.dat" /
+
+&write_out
+  write_folder = "out",
+  write_grid = 1,
+  write_pot = "both",
+  write_psi = "both",
+  write_timestep = 2e-12,
+  write_downsample_x = 4,
+  write_downsample_y = 4 /
+
