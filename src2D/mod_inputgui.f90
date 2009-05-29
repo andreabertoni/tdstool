@@ -136,9 +136,9 @@ SUBROUTINE SHOW_IN_GUI
   CALL WGTXT(hData, vstr, hElMass)
 
   if (SOLVE_METHOD == 1) then
-    CALL SWGWIN(0, 0, 95, 30)
-    CALL WGLAB(hData2, 'Nonlinear as:', hNull)
-    CALL SWGWIN(100, 0, 90, ctrlh)
+    CALL SWGWIN(0, 0, 160, 30)
+    CALL WGLAB(hData2, '3D-equiv scattering length:', hNull)
+    CALL SWGWIN(165, 0, 80, ctrlh)
     write (vstr, '(ES11.5)') nonlin_as
     CALL WGTXT(hData2, vstr, hNonlin)
   endif

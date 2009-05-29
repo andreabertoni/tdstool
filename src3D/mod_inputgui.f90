@@ -135,9 +135,9 @@ SUBROUTINE SHOW_IN_GUI
   write (vstr, '(ES11.5)') electronmass
   CALL WGTXT(hData, vstr, hElMass)
 
-  CALL SWGWIN(0, 0, 95, 30)
-  CALL WGLAB(hData2, 'Nonlinear as:', hNull)
-  CALL SWGWIN(100, 0, 90, ctrlh)
+  CALL SWGWIN(0, 0, 145, 30)
+  CALL WGLAB(hData2, '3D scattering length:', hNull)
+  CALL SWGWIN(150, 0, 90, ctrlh)
   write (vstr, '(ES11.5)') nonlin_as
   CALL WGTXT(hData2, vstr, hNonlin)
 
