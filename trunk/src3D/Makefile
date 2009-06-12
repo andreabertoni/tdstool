@@ -28,14 +28,18 @@ LNK = $(F90)
 ## flags to use at link time
 LFLAGS = $(F90FLAGS)
 
-LLIBS = -L/usr/local/dislin/ -Llib -ldislin -lm -lfftw3
+LLIBS_32 = -L/opt/intel/Compiler/11.0/074/mkl/lib/32 -L/usr/local/dislin/ \
+        -ldislin -lmkl_solver -lmkl_intel -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm
+
+LLIBS_64 = -L /opt/intel/Compiler/11.0/074/mkl/lib/em64t -L/usr/local/dislin/ \
+        -ldislin -lmkl_solver -lmkl -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm
 
 #################################################################
 #      objects files
 #################################################################
 
 OBJS =  dislin.o            \
-        mod_fftw3params.o   \
+        mkl_dfti.o          \
         mod_filewrite.o     \
         mod_bicubic.o       \
 	mod_staticdata.o    \
@@ -50,8 +54,11 @@ OBJS =  dislin.o            \
 #      rules 
 #################################################################
 
-tdstool : $(OBJS)
-	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS)
+tdstool_split64 : $(OBJS)
+	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS_64)
+
+tdstool_split32 : $(OBJS)
+	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS_32)
 
 %.o : %.f90
 	$(F90) $(F90FLAGS) -c $< -o $@
@@ -67,7 +74,7 @@ clean:
 #################################################################
 
 schro.o : dislin.o          \
-        mod_fftw3params.o   \
+        mkl_dfti.o   \
         mod_filewrite.o     \
         mod_bicubic.o       \
 	mod_staticdata.o    \
@@ -77,7 +84,7 @@ schro.o : dislin.o          \
 	mod_viewgraph.o     \
 	mod_inputgui.o      \
 
-mod_fftw3params.o: 
+mkl_dfti.o: 
 
 mod_filewrite.o:
 
@@ -98,7 +105,7 @@ mod_mainalgo.o:	        mod_staticdata.o      \
 mod_splitstep.o:	mod_staticdata.o      \
 			mod_indata.o          \
 			mod_filewrite.o       \
-			mod_fftw3params.o
+			mkl_dfti.o
 
 mod_viewgraph.o:	mod_staticdata.o      \
 			mod_indata.o          \

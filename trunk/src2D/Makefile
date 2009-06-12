@@ -28,20 +28,18 @@ LNK = $(F90)
 ## flags to use at link time
 LFLAGS = $(F90FLAGS)
 
-LLIBS_mkl_32 = -L/opt/intel/Compiler/11.0/074/mkl/lib/32 -L/usr/local/dislin/ \
+LLIBS_32 = -L/opt/intel/Compiler/11.0/074/mkl/lib/32 -L/usr/local/dislin/ \
 	-ldislin -lmkl_solver -lmkl_intel -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm
 
-LLIBS_mkl_64 = -L /opt/intel/Compiler/11.0/074/mkl/lib/em64t -L/usr/local/dislin/ \
+LLIBS_64 = -L /opt/intel/Compiler/11.0/074/mkl/lib/em64t -L/usr/local/dislin/ \
 	-ldislin -lmkl_solver -lmkl -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm
-
-LLIBS = -L/usr/local/dislin/ -Llib -ldislin -lm -lfftw3
 
 #################################################################
 #      objects files
 #################################################################
 
 OBJS =  dislin.o            \
-        mod_fftw3params.o   \
+        mkl_dfti.o   \
         mod_filewrite.o     \
         mod_bicubic.o       \
 	mod_staticdata.o    \
@@ -53,8 +51,8 @@ OBJS =  dislin.o            \
 	mod_inputgui.o      \
 	schro2.o
 
-OBJS_MKL =  dislin.o        \
-        mod_fftw3params.o   \
+OBJS_BOX =  dislin.o        \
+        mkl_dfti.o   \
         mod_filewrite.o     \
         mod_bicubic.o       \
 	mod_staticdata_mkl.o    \
@@ -70,14 +68,17 @@ OBJS_MKL =  dislin.o        \
 #      rules 
 #################################################################
 
-tdstool : $(OBJS)
-	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS)
+tdstool_split64 : $(OBJS)
+	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS_64)
 
-tdstool_mkl32 : $(OBJS_MKL)
-	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS_mkl_32)
+tdstool_split32 : $(OBJS)
+	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS_32)
 
-tdstool_mkl64 : $(OBJS_MKL)
-	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS_mkl_64)
+tdstool_box32 : $(OBJS_BOX)
+	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS_32)
+
+tdstool_box64 : $(OBJS_BOX)
+	$(LNK) -o $(TARGET) $(LFLAGS) $^ $(LLIBS_64)
 
 %.o : %.f90
 	$(F90) $(F90FLAGS) -c $< -o $@
@@ -104,7 +105,7 @@ schro.o : dislin.o          \
 	mod_viewgraph.o     \
 	mod_inputgui.o      \
 
-mod_fftw3params.o: 
+mkl_dfti.o: 
 
 mod_filewrite.o:
 
@@ -129,7 +130,7 @@ mod_splitstep.o:	mod_staticdata.o      \
 			mod_sparse_fun.o      \
 			mod_indata.o          \
 			mod_filewrite.o       \
-			mod_fftw3params.o
+			mkl_dfti.o
 
 mod_viewgraph.o:	mod_staticdata.o      \
 			mod_indata.o          \
