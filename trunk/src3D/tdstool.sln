@@ -5,14 +5,14 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "tdstool", "tdstool.vfproj",
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
+		Splitstep Debug|Win32 = Splitstep Debug|Win32
+		Splitstep Release|Win32 = Splitstep Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6158BB6F-480A-4BD3-900D-850CBF3AD76D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{6158BB6F-480A-4BD3-900D-850CBF3AD76D}.Debug|Win32.Build.0 = Debug|Win32
-		{6158BB6F-480A-4BD3-900D-850CBF3AD76D}.Release|Win32.ActiveCfg = Release|Win32
-		{6158BB6F-480A-4BD3-900D-850CBF3AD76D}.Release|Win32.Build.0 = Release|Win32
+		{6158BB6F-480A-4BD3-900D-850CBF3AD76D}.Splitstep Debug|Win32.ActiveCfg = Splitstep Debug|Win32
+		{6158BB6F-480A-4BD3-900D-850CBF3AD76D}.Splitstep Debug|Win32.Build.0 = Splitstep Debug|Win32
+		{6158BB6F-480A-4BD3-900D-850CBF3AD76D}.Splitstep Release|Win32.ActiveCfg = Splitstep Release|Win32
+		{6158BB6F-480A-4BD3-900D-850CBF3AD76D}.Splitstep Release|Win32.Build.0 = Splitstep Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
