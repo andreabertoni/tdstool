@@ -3,9 +3,9 @@
 	<Platforms>
 		<Platform Name="Win32"/></Platforms>
 	<Configurations>
-		<Configuration Name="Debug|Win32">
+		<Configuration Name="Splitstep Debug|Win32">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Interfaces="true" WarnInterfaces="true" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtStandardGraphicsDebug"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(DISLIN);C:\Programmi\Intel\Compiler\11.0\072\fortran\mkl\ia32\lib" GenerateDebugInformation="true" SubSystem="subSystemWindows" AdditionalDependencies="disifm.lib mkl_solver.lib mkl_intel_thread.lib mkl_core.lib mkl_intel_c.lib libiomp5md.lib"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(DISLIN);C:\Programmi\Intel\Compiler\11.0\074\fortran\mkl\ia32\lib" GenerateDebugInformation="true" SubSystem="subSystemWindows" AdditionalDependencies="disifm.lib mkl_solver.lib mkl_intel_thread.lib mkl_core.lib mkl_intel_c.lib libiomp5md.lib"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
 				<Tool Name="VFCustomBuildTool"/>
@@ -13,9 +13,9 @@
 				<Tool Name="VFPreBuildEventTool"/>
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
-		<Configuration Name="Release|Win32">
+		<Configuration Name="Splitstep Release|Win32">
 				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" RuntimeLibrary="rtStandardGraphics"/>
-				<Tool Name="VFLinkerTool" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(DISLIN);C:\Programmi\Intel\Compiler\11.0\072\fortran\mkl\ia32\lib" SubSystem="subSystemWindows" AdditionalDependencies="disifm.lib "/>
+				<Tool Name="VFLinkerTool" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(DISLIN);C:\Programmi\Intel\Compiler\11.0\074\fortran\mkl\ia32\lib" SubSystem="subSystemWindows" AdditionalDependencies="disifm.lib mkl_solver.lib mkl_intel_thread.lib mkl_core.lib mkl_intel_c.lib libiomp5md.lib"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
 				<Tool Name="VFCustomBuildTool"/>
@@ -28,12 +28,13 @@
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\dislin.f90"/>
+		<File RelativePath=".\mkl_dfti.f90"/>
 		<File RelativePath=".\mod_bicubic.f90"/>
+		<File RelativePath=".\mod_fftw3params.f90"/>
 		<File RelativePath=".\mod_filewrite.f90"/>
 		<File RelativePath=".\mod_indata.f90"/>
 		<File RelativePath=".\mod_inputgui.f90"/>
-		<File RelativePath=".\mod_mainalgo.f90"/>
-		<File RelativePath=".\mod_sparse_fun.f90"/>
+		<File RelativePath=".\mod_splitstep.f90"/>
 		<File RelativePath=".\mod_staticdata.f90"/>
 		<File RelativePath=".\mod_strtopot.f90"/>
 		<File RelativePath=".\mod_viewgraph.f90"/>

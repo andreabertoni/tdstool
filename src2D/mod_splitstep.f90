@@ -3,7 +3,8 @@ MODULE mod_mainalgo
   USE mod_sparse_fun
   USE mod_indata
   USE mod_filewrite
-  USE mod_fftw3params
+!  USE mod_fftw3params
+  Use MKL_DFTI
   IMPLICIT NONE
   SAVE
 
@@ -18,8 +19,11 @@ SUBROUTINE MAIN_ALGO
   REAL*8, ALLOCATABLE :: kx(:), ky(:)
   INTEGER INFO
   REAL*8 next_write_time
-  INTEGER*8 :: planfw, planbk
-
+  
+!  INTEGER*8 :: planfw, planbk
+  type(DFTI_DESCRIPTOR), POINTER :: planfw
+  integer   lengths(2)
+  
   call INDATA_COMPUTE
 
     ! Write Potential
@@ -56,10 +60,15 @@ SUBROUTINE MAIN_ALGO
   ky(numy/2+1:numy) = (/ (-(numy-ny+1)*dky , ny= numy/2+1, numy) /)
   ky = ky**2;
 
-  CALL dfftw_plan_dft_2d( planfw, numx, numy, psi, psik,           &
-     &                                   FFTW_FORWARD,  FFTW_ESTIMATE )
-  CALL dfftw_plan_dft_2d( planbk, numx, numy, psik, psi,           &
-     &                                   FFTW_BACKWARD, FFTW_ESTIMATE )
+!  CALL dfftw_plan_dft_2d( planfw, numx, numy, psi, psik,           &
+!     &                                   FFTW_FORWARD,  FFTW_ESTIMATE )
+!  CALL dfftw_plan_dft_2d( planbk, numx, numy, psik, psi,           &
+!     &                                   FFTW_BACKWARD, FFTW_ESTIMATE )
+
+  lengths(1) = numx
+  lengths(2) = numy
+  INFO = DftiCreateDescriptor( planfw, DFTI_DOUBLE, DFTI_COMPLEX, 2, lengths)
+  INFO = DftiCommitDescriptor( planfw )
 
 ! **** Time steps
   next_write_time = 0.
@@ -75,7 +84,9 @@ SUBROUTINE MAIN_ALGO
     END DO
 
     ! ****** Linear step
-    CALL dfftw_execute( planfw )
+    psik = psi;
+    INFO = DftiComputeForward( planfw, psik)
+!    CALL dfftw_execute( planfw )
     pt = 1;
     DO nx = 1, numx
       DO ny = 1, numy
@@ -83,8 +94,10 @@ SUBROUTINE MAIN_ALGO
         pt = pt + 1
       END DO
     END DO
-    CALL dfftw_execute( planbk )
-    psi = psi * fftnorm;
+    psi = psik * fftnorm;
+    INFO = DftiComputeBackward( planfw, psi)
+!    CALL dfftw_execute( planbk )
+!    psi = psi * fftnorm;
 
     ! ****** Nonlinear half step
     pt = 1;
@@ -107,8 +120,10 @@ SUBROUTINE MAIN_ALGO
     end if
   END DO
 
-  CALL dfftw_destroy_plan( planfw )
-  CALL dfftw_destroy_plan( planbk )
+!  CALL dfftw_destroy_plan( planfw )
+!  CALL dfftw_destroy_plan( planbk )
+  INFO = DftiFreeDescriptor(planfw)
+  
   DEALLOCATE (psik)
   DEALLOCATE (ky)
   DEALLOCATE (kx)
