@@ -51,8 +51,8 @@
 <div class="Post-inner">
 <h2 class="PostHeaderIcon-wrapper"><img src="images/PostHeaderIcon.png" alt="PostHeaderIcon" height="12" width="12" /><span class="PostHeader"> Documentation</span></h2>
 <br />
-- Installation and User Manual: <a href="TDSTool-UserManual.pdf">download</a><br />
-- Notes on discretization method: <a href="TDSTool-Discretization.pdf">download</a><br />
+- Installation and User Manual (draft): <a href="TDSTool-UserManual.pdf">download</a><br />
+- Notes on numerical methods (ver. 0.2): <a href="docs/TDStool_numerics.pdf">download</a><br />
 <br />
 <br />
 <br />

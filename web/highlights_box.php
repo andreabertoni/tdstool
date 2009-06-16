@@ -36,14 +36,14 @@
 <div class="BlockContent-body">
 <div>
 <ul>
- <li><b>May 34, 2009</b>
-  <p>Linux version of TDStool is available for download. Go to the
-  <a href="javascript:void(0)">download page</a> </p>
+ <li><b>June 16, 2009</b>
+  <p>TDStool 0.2 beta version released and available for download. Go to the
+  <a href="download.php">download page</a> for source code and Windows executables.</p>
  </li>
 </ul>
 <ul>
- <li><b>May 33, 2009</b>
-  <p>The first beta version of TDStool has been released.<br />
+ <li><b>May 15, 2009</b>
+  <p>Web site up and running. Newsletter mailing list open.<br />
   </p>
  </li>
 </ul>

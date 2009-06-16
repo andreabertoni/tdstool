@@ -52,7 +52,7 @@
 <h2 class="PostHeaderIcon-wrapper"> <img src="images/PostHeaderIcon.png" alt="PostHeaderIcon" height="12" width="12" />
 <span class="PostHeader"> Home</span>
 </h2>
-          <br />
+<!--          <br />
           - - -<br />
           W A R N I N G !!<br />
           this website is under development: it contains tests with
@@ -63,7 +63,7 @@
           notification about it.<br />
           - - -<br />
           <br />
-
+-->
 <br />
 <span class="PostHeader">TDStool</span> is a software
 tool for the numerical solution of the Time Dependent
