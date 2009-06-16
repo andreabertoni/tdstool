@@ -65,7 +65,14 @@ SUBROUTINE MAIN_GUI
     if (MainMenuCmd == 1) then
       CALL SHOW_IN_GUI
     else if (MainMenuCmd == 2) then
-      CALL MAIN_ALGO
+      if (write_pot == "none" .and. write_psi == "none") then
+        CALL DWGBUT("No output is selected for this simulation.|Do you want to continue?", INFO)
+        if (INFO == 1) then
+          CALL MAIN_ALGO
+        end if
+      else
+        CALL MAIN_ALGO
+      endif
     else if (MainMenuCmd == 3) then
       CALL SHOW_GRAPH
     else if (MainMenuCmd == 4) then
@@ -310,7 +317,7 @@ SUBROUTINE SHOW_IN_GUI
   CALL SWGWIN(160, 115, 55, 20)
   CALL WGBUT(hOut, 'Bin', mode, hOutWPsiBin)
   CALL SWGWIN(0, 140, 100, ctrlh)
-  CALL WGLAB(hOut, 'Time Step:', hNull)
+  CALL WGLAB(hOut, 'Output Time Step:', hNull)
   write (vstr, '(ES11.5)') write_timestep
   CALL SWGWIN(100, 140, 90, 33)
   CALL WGTXT(hOut, TRIM(vstr), hOutTime)

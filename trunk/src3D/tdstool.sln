@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "tdstool", "tdstool.vfproj", "{6158BB6F-480A-4BD3-900D-850CBF3AD76D}"
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "tdstool3D", "tdstool3D.vfproj", "{6158BB6F-480A-4BD3-900D-850CBF3AD76D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

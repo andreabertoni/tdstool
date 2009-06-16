@@ -82,6 +82,8 @@ SUBROUTINE ViewListCbk(ID)
     ynodes(1) = 2.*ynodes(2) - ynodes(3)
     ynodes(NUMY+2) = 2.*ynodes(NUMY+1) - ynodes(NUMY)
     CLOSE(33)
+  else
+    return;
   end if
 
     ! Check if grid is uniform (if not interpolation will be required)
@@ -123,11 +125,17 @@ SUBROUTINE ViewListCbk(ID)
     return
   end if
 
-  CALL GWGBUT(hShowModulus, show_mod)
-  if (show_mod == 0) then
+  CALL GWGBOX(hShowModulus, show_mod)
+  if (show_mod == 2) then
     DO NX = 1, NUMX
       DO NY = 1, NUMY
         psi_in(NY, NX) = REAL(psic(NY, NX))
+      END DO
+    END DO
+  else if (show_mod == 3) then
+    DO NX = 1, NUMX
+      DO NY = 1, NUMY
+        psi_in(NY, NX) = IMAG(psic(NY, NX))
       END DO
     END DO
   else
@@ -402,41 +410,53 @@ SUBROUTINE SHOW_GRAPH
   CALL WGTXT(hViewForm, '10', hCutoff)
   CALL SWGWIN(190, 5, 30, 35)
   CALL WGLAB(hViewForm, '%', hNull)
-  CALL SWGWIN(230, 8, 50, 28)
+
+  CALL SWGWIN(5, 45, 50, 28)
   CALL WGOK(hViewForm, hOk)
-  CALL SWGWIN(290, 5, 100, 28)
-  CALL WGBUT(hViewForm, "Show Modulus", 1, hShowModulus)
+
+
+
+  if (OSV == 0) then
+    CALL SWGWIN(660, 2, 100, 125)
+  else
+    CALL SWGWIN(660, 2, 100, 25)
+  end if
+  CALL WGBOX(hViewForm, 'Modulus|Real|Imag', 1, hShowModulus)
   CALL SWGCBK(hShowModulus, ViewListCbk)
 
     ! Integral bar
-  CALL SWGWIN(5, 45, 25, 30)
+  CALL SWGWIN(230, 8, 25, 30)
   CALL WGLAB(hViewForm, 'X0:', hNull)
-  CALL SWGWIN(30, 45, 70, ctrlh)
+  CALL SWGWIN(255, 8, 70, ctrlh)
   CALL WGTXT(hViewForm, '0', hIntegX0)
-  CALL SWGWIN(80, 45, 25, 30)
+  CALL SWGWIN(330, 8, 25, 30)
   CALL WGLAB(hViewForm, 'Y0:', hNull)
-  CALL SWGWIN(105, 45, 70, ctrlh)
+  CALL SWGWIN(355, 8, 70, ctrlh)
   CALL WGTXT(hViewForm, '0', hIntegY0)
-  CALL SWGWIN(180, 45, 25, 30)
+  CALL SWGWIN(430, 8, 25, 30)
   CALL WGLAB(hViewForm, 'X1:', hNull)
-  CALL SWGWIN(205, 45, 70, ctrlh)
+  CALL SWGWIN(455, 8, 70, ctrlh)
   write (vstr, '(ES10.4)') size_x
   CALL WGTXT(hViewForm, TRIM(vstr), hIntegX1)
-  CALL SWGWIN(280, 45, 25, 30)
+  CALL SWGWIN(530, 8, 25, 30)
   CALL WGLAB(hViewForm, 'X1:', hNull)
-  CALL SWGWIN(305, 45, 70, ctrlh)
+  CALL SWGWIN(555, 8, 70, ctrlh)
   write (vstr, '(ES10.4)') size_y
   CALL WGTXT(hViewForm, TRIM(vstr), hIntegY1)
 
-  CALL SWGWIN(380, 46, 70, 28)
-  CALL WGPBUT(hViewForm, "Integrate", hIntegrate)
+  CALL SWGWIN(230, 46, 115, 28)
+  CALL WGPBUT(hViewForm, "Subdomain integrate", hIntegrate)
   CALL SWGCBK(hIntegrate, ViewListCbk)
-  CALL SWGWIN(460, 45, 100, 30)
+  CALL SWGWIN(355, 45, 55, 30)
+  CALL WGLAB(hViewForm, '|psi|^2 sub:', hNull)
+  CALL SWGWIN(410, 45, 95, 30)
   CALL WGLAB(hViewForm, '', hIntegral1)
-  CALL SWGWIN(570, 45, 100, 30)
+  CALL SWGWIN(505, 45, 55, 30)
+  CALL WGLAB(hViewForm, '|psi|^2 tot:', hNull)
+  CALL SWGWIN(560, 45, 95, 30)
   CALL WGLAB(hViewForm, '', hIntegral2)
 
-  CALL SWGWIN(5, 80, 800, 600)
+  CALL SWGWIN(5, 95, 800, 600)
   CALL WGDRAW(hViewForm, hWaveGraph)
   CALL WGFIN
 

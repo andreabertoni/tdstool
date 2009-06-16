@@ -130,35 +130,36 @@ END SUBROUTINE INDATA_GET
 SUBROUTINE INDATA_FILL_WITH_DEFAULT
   electronmass = 0.067
   magnetic = 0
-  nonlin_as = 1e-3
+  nonlin_as = 1e-6
   psi_mode = 'gauss'
-  x0 = 1e-7
-  y0 = 1e-7
-  sigmax = 3e-8
-  sigmay = 3e-8
-  xenergy = 8e-3
-  yenergy = 8e-3
+  x0 = 2e-7
+  y0 = 5e-7
+  sigmax = 5e-8
+  sigmay = 5e-8
+  xenergy = 3.7e-2
+  yenergy = 0.0
   psi_file_in = ""
-  dt = 2e-13
-  MAXIT = 100
-  grid_mode = 'pot'
-  numx = 100
-  numy = 100
+  dt = 5.0e-15
+  MAXIT = 300
+  grid_mode = 'uniform'
+  numx = 512
+  numy = 512
   size_x = 1e-6
   size_y = 1e-6
   grid_file_in = ""
-  pot_mode = "file"
+  pot_mode = "string"
   allow_pot_interpolation = 1
-  strpotentialX = "const  -10.e-9   100.e-9   252.8e-3"
-  strpotentialY = "const  -10.e-9   100.e-9   252.8e-3"
+  strpotentialX = ""
+  strpotentialY = ""
+  strpotentialxy = "box 5.0e-7 5.5e-7 5.2e-7 1.0e-6 30.0e-3;box 5.0e-7 0.0e-7 5.2e-7 4.5e-7 30.0e-3;"
   pot_file_in = "pot.dat"
-  write_folder = "out"
+  write_folder = "split"
   write_grid = 1
-  write_pot = "both"
-  write_psi = "both"
-  write_timestep = 2e-12
-  write_downsample_x = 1
-  write_downsample_y = 1
+  write_pot = "bin"
+  write_psi = "bin"
+  write_timestep = 1e-13
+  write_downsample_x = 2
+  write_downsample_y = 2
 END SUBROUTINE
 
 SUBROUTINE INDATA_SAVE(nmlfile)
@@ -184,7 +185,6 @@ SUBROUTINE INDATA_COMPUTE
   INTEGER :: lenstr, INFO, pt
 
   CALL PXFMKDIR(TRIM(write_folder), LEN_TRIM(write_folder), 8*8*8-1, INFO)
-print *, INFO
 
 !*******************************************************
 !    Preload potential file
@@ -373,8 +373,13 @@ SUBROUTINE READ_POT_FILE(fname, INFO)
   INTEGER nx, ny
   REAL*8 x, y, val
   CHARACTER(512) :: line, str1
+  LOGICAL :: file_exists
 
   INFO = 0
+  INQUIRE(FILE=TRIM(fname), EXIST=file_exists)
+  if (.not. file_exists) then
+    return
+  end if
   OPEN(22, FILE=TRIM(fname), FORM="FORMATTED", STATUS="OLD")
   do
     read (22, '(A)', end=999) line
@@ -430,8 +435,13 @@ SUBROUTINE READ_PSI_FILE(fname, INFO)
   INTEGER nx, ny
   REAL*8 x, y, val
   CHARACTER(512) :: line, str1
+  LOGICAL :: file_exists
 
   INFO = 0
+  INQUIRE(FILE=TRIM(fname), EXIST=file_exists)
+  if (.not. file_exists) then
+    return
+  end if
   OPEN(22, FILE=TRIM(fname), FORM="FORMATTED", STATUS="OLD")
   do
     read (22, '(A)', end=999) line

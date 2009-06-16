@@ -80,6 +80,8 @@ SUBROUTINE ViewListCbk(ID)
     read (33, *) read_ynodes(1:read_NUMY)
     read (33, *) read_znodes(1:read_NUMZ)
     CLOSE(33)
+  else
+    return;
   end if
 
   ALLOCATE(vstr_in(read_NUMZ, read_NUMY, read_NUMX))
@@ -105,7 +107,7 @@ SUBROUTINE ViewListCbk(ID)
     return
   end if
 
-  CALL GWGBUT(hShowModulus, show_mod)
+  CALL GWGBOX(hShowModulus, show_mod)
   CALL GWGLIS(hSlice, slice)
   CALL GWGTXT(hSliceCoord, valstr)
   read (valstr, *) slice_coord
@@ -128,8 +130,10 @@ SUBROUTINE ViewListCbk(ID)
     ALLOCATE(vstr_t(NUMX, NUMY))
     DO NX = 1, NUMX
       DO NY = 1, NUMY
-        if (show_mod == 0) then
+        if (show_mod == 2) then
           psi_t(NX, NY) = REAL(psic(NY, NX, idx))
+        else if (show_mod == 3) then
+          psi_t(NX, NY) = IMAG(psic(NY, NX, idx))
         else
           psi_t(NX, NY) = REAL(abs(psic(NY, NX, idx))**2)
         end if
@@ -155,8 +159,10 @@ SUBROUTINE ViewListCbk(ID)
     ALLOCATE(vstr_t(NUMX, NUMY))
     DO NX = 1, NUMX
       DO NY = 1, NUMY
-        if (show_mod == 0) then
+        if (show_mod == 2) then
           psi_t(NX, NY) = REAL(psic(NY, idx, NX))
+        else if (show_mod == 3) then
+          psi_t(NX, NY) = IMAG(psic(NY, idx, NX))
         else
           psi_t(NX, NY) = REAL(abs(psic(NY, idx, NX))**2)
         end if
@@ -182,8 +188,10 @@ SUBROUTINE ViewListCbk(ID)
     ALLOCATE(vstr_t(NUMX, NUMY))
     DO NX = 1, NUMX
       DO NY = 1, NUMY
-        if (show_mod == 0) then
+        if (show_mod == 2) then
           psi_t(NX, NY) = REAL(psic(idx, NY, NX))
+        else if (show_mod == 3) then
+          psi_t(NX, NY) = IMAG(psic(idx, NY, NX))
         else
           psi_t(NX, NY) = REAL(abs(psic(idx, NY, NX))**2)
         end if
@@ -192,8 +200,6 @@ SUBROUTINE ViewListCbk(ID)
     END DO
 
   endif
-
-print *, idx
 
   DEALLOCATE(vstr_in)
   DEALLOCATE(psic)
@@ -409,8 +415,13 @@ SUBROUTINE SHOW_GRAPH
   CALL WGLAB(hViewForm, '%', hNull)
   CALL SWGWIN(230, 8, 50, 28)
   CALL WGOK(hViewForm, hOk)
-  CALL SWGWIN(290, 5, 100, 28)
-  CALL WGBUT(hViewForm, "Show Modulus", 1, hShowModulus)
+
+  if (OSV == 0) then
+    CALL SWGWIN(310, 2, 100, 125)
+  else
+    CALL SWGWIN(310, 2, 100, 25)
+  end if
+  CALL WGBOX(hViewForm, 'Modulus|Real|Imag', 1, hShowModulus)
   CALL SWGCBK(hShowModulus, ViewListCbk)
 
     ! Integral bar
@@ -450,7 +461,7 @@ SUBROUTINE SHOW_GRAPH
   CALL SWGWIN(120, 45, 100, 30)
   CALL WGTXT(hViewForm, TRIM(vstr), hSliceCoord)
 
-  CALL SWGWIN(5, 80, 800, 600)
+  CALL SWGWIN(5, 100, 800, 600)
   CALL WGDRAW(hViewForm, hWaveGraph)
   CALL WGFIN
 

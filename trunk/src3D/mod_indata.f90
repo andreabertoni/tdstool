@@ -131,37 +131,38 @@ END SUBROUTINE INDATA_GET
 SUBROUTINE INDATA_FILL_WITH_DEFAULT
   electronmass = 0.067
   magnetic = 0
-  nonlin_as = 1e-3
+  nonlin_as = 1e-6
   psi_mode = 'gauss'
-  x0 = 1e-7
-  y0 = 1e-7
-  z0 = 1e-7
-  sigmax = 3e-8
-  sigmay = 3e-8
-  sigmaz = 3e-8
-  xenergy = 8e-3
-  yenergy = 8e-3
-  zenergy = 8e-3
+  x0 = 2e-7
+  y0 = 5e-7
+  z0 = 5e-7
+  sigmax = 5e-8
+  sigmay = 5e-8
+  sigmaz = 5e-8
+  xenergy = 3.5e-2
+  yenergy = 0.
+  zenergy = 0.
   psi_file_in = ""
-  dt = 2e-13
-  MAXIT = 100
+  dt = 5e-15
+  MAXIT = 300
   numx = 128
   numy = 128
-  numz = 32
+  numz = 128
   size_x = 1e-6
   size_y = 1e-6
-  size_z = 0.5e-6
+  size_z = 1e-6
   allow_pot_interpolation = 1
-  strpotentialX = "const  -10.e-9   100.e-9   252.8e-3"
-  strpotentialY = "const  -10.e-9   100.e-9   252.8e-3"
-  strpotentialZ = "const  -10.e-9   100.e-9   252.8e-3"
-  strpotentialXYZ = ""
+  pot_mode = "string"
+  strpotentialX = ""
+  strpotentialY = ""
+  strpotentialZ = ""
+  strpotentialXYZ = "box 5.0e-7 0.0 0.0 5.2e-7 1.0e-6 4.5e-7 30e-3;box 5.0e-7 0.0 5.5e-7 5.2e-7 1.0e-6 1.0e-6 30e-3;"
   pot_file_in = "pot.dat"
-  write_folder = "out"
+  write_folder = "split"
   write_grid = 1
-  write_pot = "both"
-  write_psi = "both"
-  write_timestep = 2e-12
+  write_pot = "bin"
+  write_psi = "bin"
+  write_timestep = 1e-13
   write_downsample_x = 1
   write_downsample_y = 1
 END SUBROUTINE
@@ -340,8 +341,13 @@ SUBROUTINE READ_POT_FILE_3D(fname, INFO)
   INTEGER nx, ny, nz
   REAL*8 x, y, z, val
   CHARACTER(512) :: line, str1
+  LOGICAL :: file_exists
 
   INFO = 0
+  INQUIRE(FILE=TRIM(fname), EXIST=file_exists)
+  if (.not. file_exists) then
+    return
+  end if
   OPEN(22, FILE=TRIM(fname), FORM="FORMATTED", STATUS="OLD")
   do
     read (22, '(A)', end=999) line
@@ -409,8 +415,13 @@ SUBROUTINE READ_PSI_FILE_3D(fname, INFO)
   INTEGER nx, ny, nz
   REAL*8 x, y, z, val
   CHARACTER(512) :: line, str1
+  LOGICAL :: file_exists
 
   INFO = 0
+  INQUIRE(FILE=TRIM(fname), EXIST=file_exists)
+  if (.not. file_exists) then
+    return
+  end if
   OPEN(22, FILE=TRIM(fname), FORM="FORMATTED", STATUS="OLD")
   do
     read (22, '(A)', end=999) line
