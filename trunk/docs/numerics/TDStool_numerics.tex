@@ -99,28 +99,28 @@ used in the code. However, we urge newcomers to read the references
 suggested in the text.
 
 \section*{Disclaimer}
-We make no warranty to users of TDStool and accept no responsability for
-its use and for any conclusion drawn from its results.  Although we endeavor
+We make no warranty to users of TDStool and accept no responsibility for
+its use and for any conclusion drawn from its results.  Although we endeavour
 to provide an easy-to-use software with an intuitive interface, TDStool is
-primarily intended for use by those competent in the field of quantum mechnaics
+primarily intended for use by those competent in the field of quantum mechanics
 and numerical analysis.
 
 \section*{Copyright}
 At this early stage, the software TDStool and the related documentation
 (including the present note) is copyrighted by the authors and their
 employer.  The TDStool code is released as open-source and is free for
-personal use.  We plan to release a later version of the siftware with a public
-license.
+personal use.  We plan to release a later version of the software under
+a public license.
 
 
 \section*{About the Authors}
 %(up-to-date as of \today)
 
-{\bf Andrea Bertoni} is
+{\bf Andrea Bertoni} %is
+\\
+{\bf Thomas Serafini} %is
 
-{\bf Thomas Serafini} is
-
-\section*{Acknowledgments}
+\section*{Acknowledgements}
 TDStool has been developed within the \emph{TDStool} INFM Seed project 2008.
 We are pleased to thank Guido Goldoni (Universit\`a di Modena e Reggio Emilia)
 and Massimo Rudan (Universit\`a di Bologna) for most helpful discussions and
@@ -140,7 +140,7 @@ suggestions.
 \section{Introduction}
 The single-particle dynamics of a nonrelativistic quantum system follows
 the so-called time-dependent Schr\"odinger equation (TDSE) that relates the time derivative
-of the system state with the system Hamiltonian ${\cal H}$ and the state itself.
+of the system state with the system Hamiltonian ${\cal H}$ and the state itself~\cite{messiahBOOK}.
 In the real-space representation, for a spinless particle the TDSE is the partial differential equation 
 \begin{equation} \label{tdse1}
 i\hbar\frac{\partial}{\partial t}\psi({\bf r},t)= {\cal H} \psi({\bf r},t),
@@ -151,7 +151,7 @@ ${\bf r}$ and $t$.  The Hamiltonian ${\cal H}$ in the above
 equation is a differential operator written in the real-space representation.
 
 The aim of TDStool is to solve numerically Eq.~(\ref{tdse1}) once the initial condition
-$\psi({\bf r},t=0)$ and a proper bondary condition on the computational domain are given.
+$\psi({\bf r},t=0)$ and a proper boundary condition on the computational domain are given.
 
 We will first deal with a single particle moving in a static scalar (e.g. electric) potential,
 then we will generalize the discussion to include time-dependent fields. 
@@ -159,9 +159,9 @@ The effect of a time-dependent
 uniform magnetic field will be added in a future version of these notes.
 
 For the sake of brevity, we will only consider 2D systems and domains, i.e. with ${\bf r}=(x,y)$.
-Formulas for different dimensionality will be explicitely reported only if the generalization
-is not straightforward. Where manifest, the spatial or time coordinates of the wave function will
-be implied.
+Formulas for different dimensionality will be explicitly reported only if the generalization
+is not straightforward. Where manifest, the spatial or time coordinates of the wave function and
+operators will be implied.
 
 
 \section{Schr\"{o}dinger equation with a scalar potential}
@@ -173,7 +173,7 @@ We want to solve the TDSE Eq.~(\ref{tdse1}) on a rectangular domain
 D = (x,y) \mid x\in[0,X], y\in[0,Y]
 \end{equation}
 with given $X$ and $Y$.
-We assume Dirichlet conditons on the domain boundaries
+We assume Dirichlet conditions on the domain boundaries
 \begin{equation}
 \partial(D) = (0,y) \cup (X,y) \cup (x,0) \cup (x,Y) \mid x\in[0,X], y\in[0,Y]
 \end{equation}
@@ -192,7 +192,7 @@ i\hbar \frac{\partial \psi}{\partial t} = - \frac{\hbar^2}{2m}\nabla^2 \psi(x,y,
 \section{Box Integration Method}
 
 In order to discretize the spatial coordinates of the TDSE we employ
-the Box Integration Method, also known as Finite Volume Method.
+the Box Integration Method, also known as Finite Volume Method~\cite{eymardBOOK}.
 We start by semidiscretizing the Schr\"{o}dinger equation in the space.
 We work on the above special case where the domain $D$ is a box and we take
 an orthogonal and separable discretization grid.
@@ -226,9 +226,9 @@ $s_{ij}=\frac{a_i+a_{i+1}}{2} \frac{b_i+b_{i+1}}{2}$ is shaded.}
 
 We will have $N \times M$ internal nodes in which the function $\psi$ is unknown.
 The function $\psi(x, y, t)$ in the points where $x = x_0$ or $x = x_{N+1}$ or $y = y_0$ or $y = y_{M+1}$
-is known thanks to the Dirichlet boundary contitions.
+is known thanks to the Dirichlet boundary conditions.
 
-In order to solve the TDSE we use here a vertex-centered Box Integration Method.
+In order to solve the TDSE we use here a vertex-centred Box Integration Method.
 First, we consider the internal grid points and partially cover the domain $D$
 with $N \times M$ boxes 
 \begin{equation}
@@ -258,7 +258,7 @@ The three integrals can be approximated as follow:
 \end{eqnarray}
 where the Green's theorem has been used in the latter expression.
 $\bar{\ve n}_e$, $\bar{\ve n}_n$, $\bar{\ve n}_w$ and $\bar{\ve n}_s$ are the vectors normal to the four
-edges of the box ${C_{ij}}$, and whose modulus is equal to the lenght of the edge (area of the surface in the 3D case);
+edges of the box ${C_{ij}}$, and whose modulus is equal to the length of the edge (area of the surface in the 3D case);
 $G_e$, $G_n$, $G_w$ and $G_s$ are the values of $G$, namely the gradient of $\psi$, in the mid point of each edge, as shown in Fig~\ref{fig:single_box}.
 
 \begin{figure}
@@ -270,7 +270,7 @@ $G_e$, $G_n$, $G_w$ and $G_s$ are the values of $G$, namely the gradient of $\ps
 Let define the space-discretized wave function $\psi_{i,j}(t) = \psi(x_i, y_i, t)$.
 For ease of notation, here we use a two-index representation for $\psi_{ij}$ although this quantity is
 represented in the code as a 1D array.  Specifically, $\psi_{i,j}$ means that we are referring to the element ${iM+j}$.
-Using a centered difference formula, the gradient values $G$ can be aproximated from the $\psi_{i,j}$ values on the nodes: 
+Using a centred difference formula, the gradient values $G$ can be approximated from the $\psi_{i,j}$ values on the nodes: 
 \begin{eqnarray}
 G_e \bar{\ve n}_e & \approx & \frac{\psi_{i,j}-\psi_{i-1,j}}{a_i} \frac{b_j+b_{j+1}}{2} \, ,      \\ \nonumber
 G_n \bar{\ve n}_n & \approx & \frac{\psi_{i,j}-\psi_{i+1,j}}{a_{i+1}} \frac{b_j+b_{j+1}}{2} \, ,  \\ \nonumber
@@ -298,7 +298,7 @@ For example, if $(i, j) = (1, 1)$, then $\psi_{i-1,j}$ and $\psi_{i,j-1}$ are on
 & \approx &   (k_1+k_2+k_3+k_4) \, \psi_{1,1} + 
 k_2 \, \psi_{2,1} + k_4 \, \psi_{1,2} + d_{11} \, .
 \end{eqnarray}
-where $d_{11} = k_1 \, \psi_{0,1} + k_3 \, \psi_{1,0}$ is the contant term that includes the known
+where $d_{11} = k_1 \, \psi_{0,1} + k_3 \, \psi_{1,0}$ is the constant term that includes the known
 values of $\psi$ at the boundaries.
 
 In vector form, for each given box $C_{ij}$ these summations can be represented as a scalar product:
@@ -340,7 +340,7 @@ or equivalently
 \end{equation}
 
 Note that in case the potential $v$ is dependent on the time, the two matrices $V$ on
-the left and right sides of Eq.~(\ref{CNmatrix}) must be computed at the later and earlyer
+the left and right sides of Eq.~(\ref{CNmatrix}) must be computed at the later and earlier
 time step, respectively.
 By making explicit the above equation for $\psi(t+\Delta_t)$ one gets
 \begin{equation}
@@ -349,69 +349,130 @@ By making explicit the above equation for $\psi(t+\Delta_t)$ one gets
 {2S - \left( M+S\,V(t+\Delta_t)\right)\Delta_t}
 \end{equation}
 
-\section{Nonlinear Scr\"{o}dinger equation}
-The time-dependent nonlinear Shroedinger equation can be stated as follow:
 
-$$ i \hbar \frac{\partial}{\partial t} \psi =
-   -\frac{\hbar^2}{2m^*} \bigtriangledown^2 \psi +
-   \left(V(x) + \frac{4 \pi \hbar^2 a_s}{m^*} |\psi|^2 \right) \psi $$
+\section{Gross-Pitaevskii equation}
 
-In this case we suppose a periodic boundary condition. We can rewrite the equation by highliting the linear part and the nonlinear part of the operator:
+The time-dependent Gross-Pitaevskii equation describes the collective coherent dynamics of
+an ensemble of quantum particles, interacting through a Hartree pseudopotential.
+This approximation results in an additional potential-like term in the time-dependent
+Scr\"{o}dinger equation, proportional to the local particle density $|\psi({\bf r})|^2$.
+In fact, the Gross-Pitaevskii model leads to the following nonlinear form of the
+Schr\"odinger equation~\cite{leggettRMP01}
+\begin{equation} \label{gpeq}
+i \hbar \frac{\partial}{\partial t} \psi =
+   -\frac{\hbar^2}{2m} \nabla^2 \psi(x,y,t) +
+   \left(U(x,y,t) + \frac{4 \pi \hbar^2 a_s}{m} |\psi(x,y,t)|^2 \right) \psi(x,y,t) \, ,
+\end{equation}
+where $U$ is an external potential, as in the linear case, and $a_s$ is the
+particle-particle scattering length. 
 
-\begin{eqnarray}
-\frac{\partial}{\partial t} \psi & = & L \psi + N \psi \label{eq:splitop} \\
-\psi(x, 0) & = & \psi_0(x)
-\end{eqnarray}
-
+In this case, we suppose periodic boundary conditions on the domain $D$.
+We rewrite Eq.~(\ref{gpeq}) highlighting the linear part and the nonlinear part of the operator,
+$\cal L$ and $\cal N$, respectively:
+\begin{equation}
+\frac{\partial}{\partial t} \psi = {\cal L} \psi + {\cal N} \psi \label{eq:splitop}
+%\psi(x, 0) & = & \psi_0(x) \, ,
+\end{equation}
 with
-$$ L = \frac{i\hbar}{2m^*} \bigtriangledown^2 \ , \qquad
-   N = -i \left(\frac{1}{\hbar}V(x) + \frac{4 \pi \hbar a_s}{m^*} |\psi|^2 \right) $$
+\begin{equation} \label{LandN}
+{\cal L} = \frac{i\hbar}{2m} \nabla^2 \ \qquad \mbox{and} \qquad
+{\cal N} = -i \left(\frac{1}{\hbar}U + \frac{4 \pi \hbar a_s}{m} |\psi|^2 \right) \, .
+\end{equation}
+
+The evolution of the wave function can be obtained through the evolution
+operator ${\cal U}$
+\begin{equation} \label{ssUoperator}
+\psi(t+dt) = {\cal U}(t,t+dt) \, \psi(t) = {\cal T}\exp\left( \int_t^{t+dt}
+({\cal L} + {\cal N}(t')) \, dt' \right) \, \psi(t) \, ,
+\end{equation}
+where ${\cal T}$ is the time-ordering operator and the time dependence of ${\cal N}$
+has been explicitated.
+
+Note that, if the operator ${\cal N}$ did not depend on the time, the
+evolution operator would be ${\cal U}(t,t+dt) = e^{\left({\cal L} + {\cal N} \right) dt}$.
+However, in the following we do not impose such a condition.
+
 
 \section{Split-step Fourier Method}
-Split-step method can be effectively used to solve time dependent problems in the form of \ref{eq:splitop}.
-In particular, the solution of Equation \ref{eq:splitop} may be advanced from one time level to the next by means of the following formula:
 
-$$ \psi(x, t+dt) = e^{dt(L+N)} \psi(x, t) \label{eq:split1} $$
+In order to compute numerically the evolution of the wave function, we use a second-order
+approximation formula to decompose the evolution operator ${\cal U}$.
 
-where $dt$ denotes the time step. In general, Equation \ref{eq:split1} is first order accurate; however it becomes exact if the operators $L$ and $N$ are time-independent (\ref{bib:SIAM}).
-The analytic expression of $e^{dt(L+N)}$ is usually not known, as in the case of the nonlinear Schroedinger equation. However we can show some expressions for approximating it with different order of accuracy.
+In fact, we suppose that the operator ${\cal N}$, containing the
+time-dependent potential and the particle density, varies slowly with the time.
+Thus, a suitable $n$-th order decomposition formula for the time-ordered exponential
+can be used\cite{suzukiPJA93,weidemanSIAM86}, with a negligible error of the order $O(dt^{n+1})$
 
-First order approximation:
-$$ A_1(dt) = e^{dtL} e^{dtN} \label{eq:split2} $$
+The first-order approximate decomposition of ${\cal U}$ reads:
+\begin{equation}
+{\cal U}(t,t+dt) \approx e^{{\cal L}dt} e^{{\cal N}(t+\frac{dt}{2})dt} + O(dt^2) \, ,
+\end{equation}
+while the second-order decomposition reads:
+\begin{equation}
+{\cal U}(t,t+dt) \approx e^{\frac{1}{2}{\cal N}(t+\frac{dt}{2})dt}
+e^{{\cal L}dt} e^{\frac{1}{2}{\cal N}(t+\frac{dt}{2})dt} + O(dt^3) \, ,
+\end{equation}
 
-Second order approximation:
-$$ A_2(dt) = e^{\frac{1}{2}dtN} e^{dtL} e^{\frac{1}{2}dtN} $$
+%Fourth order approximation:
+%$$ A_4(dt) = A_2(wdt) A_2((1-2w)dt) A_2(wdt) \, \quad
+%   w = \frac{2+\sqrt[3]{2} + \frac{1}{\sqrt[3]{2}}}{3} $$
 
-Fourth order approximation:
-$$ A_4(dt) = A_2(wdt) A_2((1-2w)dt) A_2(wdt) \, \quad
-   w = \frac{2+\sqrt[3]{2} + \frac{1}{\sqrt[3]{2}}}{3} $$
+It is easy to see that the wave function evolution obtained
+with the above first-order approximation,
+$\psi(t+dt) = e^{{\cal L}dt}e^{{\cal N}(t+\frac{dt}{2})dt}\psi(t)$
+is equivalent to perform two subsequent $dt$ steps through the equations
+\begin{equation} \label{NLpde}
+\frac{\partial}{\partial t} \psi = {\cal N}\left(t+\frac{dt}{2}\right) \psi
+\qquad \mbox{and} \qquad
+\frac{\partial}{\partial t} \psi = {\cal L} \psi \, .
+\end{equation}
 
-As an esample, we see that the equation $ \psi_t = A_1(dt) \psi $
-is equivalent to first solve the nonlinear equation $ \psi_t = N \psi $
-and then advancing the solution by solving the linear equation $ \psi_t = L \psi $.
+Similarly, the second-order evolution is equivalent to first perform
+a step of $\frac{dt}{2}$ with the nonlinear operator ${\cal N}$ at time $t+\frac{dt}{2}$,
+then a $dt$ step with
+$\cal L$, finally another $\frac{dt}{2}$ step with ${\cal N}(t+\frac{dt}{2})$.
+Now, the problem comes down to compute the separate evolutions generated by ${\cal N}$ and ${\cal L}$.
 
-In the case of the nonlinear Schroedinger equation, the nonlinear step $ \psi_t = N \psi $ can be computed with:
-$$ \psi_n(x_i, t) = \psi(x_i, t) e^{-i dt \left(\frac{1}{\hbar}V(x_i) + \frac{4 \pi \hbar a_s}{m^*} |\psi(x_i, t)|^2 \right)} $$
+From Eq.~(\ref{LandN}), it is clear that the operator ${\cal N}$ is diagonal
+in the real-space representation. Thus, its effect is local on each point
+of the wave function:
+\begin{equation}
+{\cal N}\left(t+\frac{dt}{2}\right) \, \psi(x, y, t) =
+e^{-i \left(\frac{1}{\hbar}V(x,y) + \frac{4 \pi \hbar a_s}{m} |\psi(x,y,t)|^2 \right) dt} \,
+\psi(x, y, t) 
+\end{equation}
 
-For the linear step $ \psi_t = L \psi $, the analytical solution is known and it can be computed in the $k$ space by means of a Fourier transform.
+On the other hand, the eigenvectors of the operator $i\hbar{\cal L}$ are known
+analytically since they are the set of plane waves $e^{i {\bf k}\cdot{\bf r}}$.
+The linear evolution of $\psi$
+%(apart from the constant $i\hbar$)
+can be obtained easily on the reciprocal $k$ space.
+In order to do so, the wave function must be Fourier transformed. Then, the
+linear evolution can be applied directly since its effect is local in $k$ space.
 
+Starting from $\psi(x,y,t)$, the steps are the following:
 \begin{eqnarray}
- \bar{\psi}(t) &=& \mbox{FFT}(\psi(t)) \\
- \bar{\psi}(k_i, t+dt) &=& \bar{\psi}(k_i, t) e^{dt \frac{i\hbar}{2m^*} k_i^2} \label{eq:klinearevolution} \\
- \psi(t+dt) &=& \mbox{IFFT}(\bar{\psi}(t+dt))
+ \bar{\psi}(k_x,k_y,t) &=& \mathsf{FFT}[\psi(x,y,t)] \\
+ \bar{\psi}(k_x,k_y,t+dt) &=& \bar{\psi}(k_x,k_y,t)
+ e^{\frac{i\hbar}{2m} (k_x^2+k_y^2)dt} \label{klinearevolution} \\
+ \psi(x,y,t+dt) &=& \mathsf{IFFT}[\bar{\psi}(k_x,k_y,t+dt)] \, ,
 \end{eqnarray}
+where $\mathsf{FFT}$ and $\mathsf{IFFT}$ indicate the Fourier transform and inverse Fourier transform,
+respectively. A Fast Fourier Transform algorithm is used to compute the above transformations.
 
-In case of a 2D wave function, the linear transformation of Equation \ref{eq:klinearevolution} becomes
-$$ \bar{\psi}(k_i, k_j, t+dt) = \bar{\psi}(k_i, t)
-   e^{dt \frac{i\hbar}{2m^*} (k_i^2 + k_j^2)} \label{eq:klinearevolution} $$
-
-It is important to properly define the frequency components $k_i$.
-In particular, if the wave function is defined on $[0, s]$ it is discrtized on $n$ points, then the $k_i$ are defined as:
-
-\begin{equation} k_i = \left\{ \begin{array}{rll}
-          &\frac{2 \pi (i-1)}{s} & i = 1, \ldots, \frac{n}{2} \\
-          -&\frac{2 \pi (n-i+1)}{s} & i = \frac{n}{2}+1, \ldots, n \\
-         \end{array} \right . \end{equation}
+Let $ x_0 < x_1 < \cdots < x_{N+1} $ and $ y_0 < y_1 < \cdots < y_{M+1} $ be the coordinates of a
+\emph{uniform} orthogonal grid, with $x_0=0$, $x_{N+1}=X$, $y_0=0$, $y_{M+1}=Y$.
+It is important to properly define the frequency components on the corresponding $k$ grid.
+In fact, if a wave function is defined on $[0, X]\times[0,Y]$ and
+the $x$ axis is discrtized on $N+2$ points,
+the $(k_x)_i$ are defined as:
+\begin{equation}
+(k_x)_i = \left\{ 
+         \begin{array}{rll}
+         &\frac{2 \pi (i-1)}{X} & i = 1, \ldots, \frac{N + 2}{2} \\
+         -&\frac{2 \pi (N+3-i)}{X} & i = \frac{N+2}{2}+1, \ldots, (N + 2) \\
+         \end{array} \right. \; .
+\end{equation}
 
 \newpage
 
@@ -430,13 +491,57 @@ $f:(x_1,\cdots, x_n)\mapsto C$:
 
 \end{appendices}
 
-\begin{thebibliography}{2}
-\bibitem{bib:SIAM}
-Weideman, J.A.C., Herbst B.M.: Split-step methods fo the solution of the nonlinear Schroedinger equation, SIAM J. Numer. Anal. \textbf{23}(3), 485-507, (1986)
+\begin{thebibliography}{5}
 
-\bibitem{bib:parsplitstep}
-Xu X., Taha T., Parallel split-step fourier methods for nonlinear schroedinger-type equations, J. Math Model. Algo. \textbf{2}, 185-201, (2003)
+\bibitem{messiahBOOK}
+A. Messiah, \emph{Quantum Mechanics} (vol. 1), North Holland, J. Wiley \& Sons, 1966.
+
+\bibitem{eymardBOOK}
+R. Eymard, T. Gallou\"et, R. Herbin, The Finite Volume Method, in \emph{Handbook for Numerical Analysis},
+Ph. Ciarlet, J. L. Lions eds., North Holland, 2000.
+
+\bibitem{leggettRMP01}
+A. J. Leggett, Bose-Einstein condensation in the alkali gases: Some fundamental concepts,
+Rev. Mod. Phys.~\textbf{73}, 307 (2001).
+
+\bibitem{suzukiPJAB93}
+M. Suzuki, General decomposition theory of ordered exponentials,
+Proc. Japan Acad. ser. B~\textbf{69} 161, (1993).
+
+
+\bibitem{weidemanSIAM86}
+J.A.C. Weideman, B. M. Herbst, Split-step methods for the solution of the nonlinear
+Schr\"odinger equation, SIAM J. Numer. Anal. \textbf{23}, 485 (1986).
+
+%\bibitem{xuJMMA03}
+%X. Xu, T. Taha, Parallel split-step fourier methods for nonlinear schroedinger-type equations,
+%J. Math Model. Algo. \textbf{2}, 185 (2003).
 
 \end{thebibliography}
+
+\section*{See also}
+
+\begin{trivlist}
+\item
+X. Xu, T. Taha, Parallel split-step fourier methods for nonlinear Schr\"odinger-type equations,
+J. Math Model. Algo. \textbf{2}, 185 (2003).
+\item
+B. I. Schneider, L. A. Collins and S. X. Hu,
+Parallel solver for the time-dependent linear and nonlinear Schr\"odinger equation,
+Phys. Rev. E \textbf{73}, 036708 (2006).
+\item
+N. Watanabe and M. Tsukada,
+Fast and stable method for simulating quantum electron dynamics,
+Phys. Rev. E \textbf{62}, 2914 (2000).
+\item
+S. Blanes and P. C. Moan,
+Splittings methods for the time-dependent Schr\"odinger equation,
+Phys. Lett. A \textbf{265}, 35 (2000).
+\item
+R. Sch\"afer and R. Blendowske,
+On the numerical solution of the time-dependent
+Schr\"odinger equation,
+J. Comp. Phys. \textbf{119}, 206 (1995).
+\end{trivlist}
 
 \end{document}
