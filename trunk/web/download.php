@@ -51,9 +51,22 @@
 <div class="Post-inner">
 <h2 class="PostHeaderIcon-wrapper"><img src="images/PostHeaderIcon.png" alt="PostHeaderIcon" height="12" width="12" /><span class="PostHeader"> Download</span></h2>
 <br />
-Available soon...
+***
+<br />
+WORK IN PROGRESS: public downloads available on Wed 17 June
+<br />
+***
+<br />
+VERSION 0.2 beta
+<br />
+(please note that this is work-in-progress version: we plan to release soon a single executable
+with both the two solution methods) 
 <br />
 <br />
+Windows executable file.
+v. 0.2 Box Integration method (allows for a nonuniform grid)
+2D domain
+<a href="executables/v0.2 12-6-2009/tdstool2D_box.exe">DOWNLOAD</a></p>
 <br />
 
 </div>
