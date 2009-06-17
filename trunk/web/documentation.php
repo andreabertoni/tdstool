@@ -51,8 +51,14 @@
 <div class="Post-inner">
 <h2 class="PostHeaderIcon-wrapper"><img src="images/PostHeaderIcon.png" alt="PostHeaderIcon" height="12" width="12" /><span class="PostHeader"> Documentation</span></h2>
 <br />
-- Installation and User Manual (draft): <a href="TDSTool-UserManual.pdf">download</a><br />
-- Notes on numerical methods (ver. 0.2): <a href="docs/TDStool_numerics.pdf">download</a><br />
+- Installation Guide (not yet available)
+<br /> <br /> 
+- User Manual (draft): <a href="docs/TDStool_userman.pdf"> 
+<img src="images/ico_pdf2.gif" alt="pdf file"/> </a>
+<br /> <br /> 
+- Notes on numerical methods (ver. 0.2): <a href="docs/TDStool_numerics.pdf">
+<img src="images/ico_pdf2.gif" alt="pdf file"/> </a>
+<br />
 <br />
 <br />
 <br />
