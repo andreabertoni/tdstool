@@ -51,24 +51,46 @@
 <div class="Post-inner">
 <h2 class="PostHeaderIcon-wrapper"><img src="images/PostHeaderIcon.png" alt="PostHeaderIcon" height="12" width="12" /><span class="PostHeader"> Download</span></h2>
 <br />
-***
+<!-- ***
 <br />
-WORK IN PROGRESS: public downloads available on Wed 17 June
+WORK IN PROGRESS: public downloads available on ...
 <br />
 ***
+-->
 <br />
 VERSION 0.2 beta
 <br />
-(please note that this is work-in-progress version: we plan to release soon a single executable
+(please note that this is a work-in-progress version: we plan to release soon a single executable
 with both the two solution methods) 
 <br />
 <br />
-Windows executable file.
+Windows executable for 2D domains<br />
 v. 0.2 Box Integration method (allows for a nonuniform grid)
-2D domain
-<a href="executables/v0.2 12-6-2009/tdstool2D_box.exe">DOWNLOAD</a></p>
+<a href="executables/v0.2 16-6-2009/tdstool2D_box.exe"> DOWNLOAD</a></p>
 <br />
-
+<br />
+Windows executable for 2D domains<br />
+v. 0.2 Split Step method (faster execution, at present needs a square grid)
+<a href="executables/v0.2 16-6-2009/tdstool2D_split.exe"> DOWNLOAD</a></p>
+<br />
+<br />
+Windows executable for 3D domains<br />
+v. 0.2 Split Step method
+<a href="executables/v0.2 16-6-2009/tdstool3D.exe"> DOWNLOAD</a></p>
+<br />
+<br />
+Source FORTRAN90 files and Makefile for 2D domains<br />
+(you'll need a Fortran compiler and several libraries: only reccommended for expert beta testers)<br />
+v. 0.2 Box Integration method and Split Step method
+<a href="executables/v0.2 16-6-2009/src2D.tar.gz"> DOWNLOAD</a></p>
+<br />
+<br />
+Source FORTRAN90 files and Makefile for 3D domains<br />
+(you'll need a Fortran compiler and several libraries: only reccommended for expert beta testers)<br />
+v. 0.2 Split Step method
+<a href="executables/v0.2 16-6-2009/src3D.tar.gz"> DOWNLOAD</a></p>
+<br />
+<br />
 </div>
 </div>
 </div>
