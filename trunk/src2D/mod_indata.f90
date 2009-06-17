@@ -129,6 +129,7 @@ END SUBROUTINE INDATA_GET
 
 SUBROUTINE INDATA_FILL_WITH_DEFAULT
   electronmass = 0.067
+  mstar = electronmass * ELMASS0
   magnetic = 0
   nonlin_as = 1e-6
   psi_mode = 'gauss'
