@@ -1,0 +1,371 @@
+\documentclass[a4paper,11pt]{article}
+%\usepackage{array}
+%\usepackage{theorem}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage[toc,page]{appendix}
+%\usepackage{times,mathptm}
+%\usepackage[pdftex]{graphicx}
+%\usepackage{color}
+%\usepackage{caption}
+%\usepackage{graphpap}
+%\usepackage{rotating}
+%\usepackage{epsfig}
+%\usepackage{epsfig,psfrag}
+
+%\setlength{\textwidth}{6.0in}
+%\setlength{\textheight}{8.0in}
+%\setlength{\topmargin}{0.in}
+%\setlength{\headheight}{0.8in}
+%\setlength{\headsep}{0.in}
+%\setlength{\parindent}{0.25in}
+%\setlength{\oddsidemargin}{0.2in}
+%\setlength{\evensidemargin}{0.2in}
+
+\newcommand{\ve}[1]{\mbox{\boldmath $ #1$}}
+%opening
+\title{TDStool: Notes on Numerical Methods}
+\author{Andrea Bertoni, Thomas Serafini}
+
+
+
+\begin{document}
+
+
+%\setlength{\leftmargini}{\parindent} % Controls the indenting of the "bullets" in a list
+%\pagestyle{empty}
+%\pagenumbering{alph}
+%\begin{minipage}[t][7.5in][s]{6.25in}
+\begin{titlepage}
+
+\flushright{
+\Huge
+TDS{\hspace{1mm}}tool}
+
+\flushright{
+\LARGE
+\mbox{Time Dependent Schr{\"o}dinger equation simulation tool}}
+
+\vspace{40mm}
+\flushright{
+\huge
+\bf User Manual}
+
+\vspace{20mm}
+\flushright{
+\Large
+Andrea Bertoni \\
+\vspace{2mm}
+Thomas Serafini}
+
+\vspace{60mm}
+\flushright{
+\large
+\today \\
+Version 0.2 \\
+TDStool Version 0.2}
+
+\vspace{10mm}
+\flushright{
+\Large
+S3 National Research Center, CNR-INFM \\ Modena, Italy}
+
+\normalsize
+%\vfill
+% \flushright{\includegraphics[width=2.in]{FIGURES/nistident_flright_vec}}
+
+\newpage
+
+\pagestyle{empty}
+\mbox{}
+\end{titlepage}
+%\end{minipage}
+%\maketitle
+%\begin{abstract}
+%\end{abstract}
+
+\section*{Preface}
+The software TDStool is a numerical solver for the Time Dependent (linear)
+Schr\"odinger equation and (nonlinear) Gross-Pitaevskii equation.
+This document is the user guide for the software.
+It describes the user interface and provides a guide in setting
+up a solver run with user-defined inputs.
+The numerical methods implemented within TDStool are illustrated
+in a different document (see TDStool: Notes on numerical methods).
+
+\section*{Disclaimer}
+We make no warranty to users of TDStool and accept no responsibility for
+its use and for any conclusion drawn from its results.  Although we endeavour
+to provide an easy-to-use software with an intuitive interface, TDStool is
+primarily intended for use by those competent in the field of quantum mechanics
+and numerical analysis.
+
+\section*{Copyright}
+At this early stage, the software TDStool and the related documentation
+(including the present note) is copyrighted by the authors and their
+employer.  The TDStool code is released as open-source and is free for
+personal use.  We plan to release a later version of the software under
+a public license.
+
+
+\section*{About the Authors}
+%(up-to-date as of \today)
+
+{\bf Andrea Bertoni} %is
+\\
+{\bf Thomas Serafini} %is
+
+\section*{Acknowledgements}
+TDStool has been developed within the \emph{TDStool} INFM Seed project 2008.
+We are pleased to thank Guido Goldoni (Universit\`a di Modena e Reggio Emilia)
+and Massimo Rudan (Universit\`a di Bologna) for most helpful discussions and
+suggestions.
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\pagestyle{fancy}
+\fancyhead[RO,RE]{TDStool: User Manual}
+\fancyhead[LO,LE]{ver. 0.2}
+
+
+\section{Installation}
+Currently only the binary version is available.
+In the next releases of the software also the source code will be distributed.
+
+As a prerequisite for the Linux version, you need to install on your system the OpenMotif library. It can be downloaded from ftp://ftp.ics.com/openmotif/
+For the Fedora distribution, we suggest to install the 2.3.2 version for Fedora 9 even if you are on a Fedora 10 system.
+After all the prerequisites are installed, just unpack the TDS Tools archive in a folder of your choice. The archive contains the executable file and some example namelists with simulation tests.
+
+\section{Software Description}
+The purpose of TDS Tool is to compute a numerical approximation of the solution of the
+time dependent Schroedinger equation:
+
+\begin{eqnarray}
+i \hbar \frac{\partial}{\partial t} \psi(t) & = & H \psi(t) \\
+\psi & \in & D \\
+\psi & = & 0 \quad \mbox{on} \quad \partial D \\
+\psi(0) & = & \psi_0 \\
+t & \in & [0, T_f]
+\end{eqnarray}
+where the operator $H$ is
+$$ H = - \frac{\hbar ^2}{2m^*} \partial_x^2 + V(x) $$
+
+In current TDS Tool version, 2D domains are supported, so
+$ D = C([0, S_x] \times [0, S_y]) $.
+
+The space discretization is based on the box integration method, while for the time discretization
+the second order implicit Crank-Nicholson method has been employed. The solution of the inner
+linear system is entrusted to the Pardiso solver in the Intel MKL library.
+
+TDS Tool is equipped with a very basic user interface which lets the user to input
+all the problem description data and the simulation parameters.
+In particular, input parameters can describe the following sections:
+\begin{itemize}
+ \item \textbf{Grid}: describe the space discretization: it is carthesian and it can be both uniformly or non-uniformly spaced. The grid spacing can also be determined by an adaptive algorithm, which computes the grid based on the potential function or on the wave function.
+
+ \item \textbf{Initial wave function}: the complex wave function at the initial time-step can be specified by the user
+
+ \item \textbf{Potential}: describe the potential function on the discretization domain. It can be read from a user file or described with a scripting language.
+
+ \item \textbf{Time simulation}: describe the time discretization parameters
+
+ \item \textbf{Output}: different output formats can be specified. The output can also be downsampled in space and time for an easier visualization.
+
+\end{itemize}
+
+
+\subsection{Grid}
+TDS Tool works on a wave function which is space-discretized on a grid. The grid is carthesian and can be non-uniform. It is defined as follows:
+let $N_x, N_y \in N$ be the number of discretization points along the x and y axis.
+Let $x_0 < x_1 < \cdots < x_{N_x} < x_{N_x+1}$ and $y_0 < y_1 < \cdots < y_{N_y} < y_{N_y+1}$ be the grid points along the two axis. The Grid is
+$$G = \left\{ (x_i, y_j) : 0\leq i \leq N_y+1, \quad 0\leq y \leq N_y+1  \right\}$$
+Note that there are $N_x$ internal points on the x axis and $N_y$ internal points on the y axis.
+The grid can be of four types:
+\begin{itemize}
+\item \textbf{Uniform}: TDS Tools generates a uniform carthesian grid with the size and the number of internal points specified by the user. More in details, it is assumed that $x_0 = 0$ and $y_0 = 0$; the user can input the size of the grid, i.e. $x_{N_x+1}$ and $y_{N_y+1}$, and the number of internal points $N_x$ and $N_y$.
+
+\item \textbf{File}: The grid points are read from a user file. The file format is the following:
+\begin{verbatim}
+<Nx> <Ny>
+<x 0>
+<x 1>
+...
+<x Nx+1>
+<y 0>
+<y 1>
+...
+<y Ny+1>
+\end{verbatim}
+
+\item \textbf{Pot}: It uses the grid read from the potential file. This way it is not necessary to interpolate the potential for fitting it into the discretization grid. This option is only valid if a Potential file is specified.
+
+\item \textbf{Estimate}: Not yet implemented. The user can input the number of internal points $x_{N_x+1}$ and $y_{N_y+1}$ and TDS Tools will create a non-uniform grid according to the structure of the potential.
+\end{itemize}
+
+
+\subsection{Initial wave function}
+Initial wave function can be read by a user file or can be a gaussian packet generated by the TDS Tool.\
+If you specify a gaussian initial wave function, the TDS Tool will initialize the wave function  with a Gaussian packet defined as $$ \psi(x, y) = \psi_x(x) \psi_y(y) $$
+where $$ \psi_x(x) = \frac{1}{\sqrt{\sigma_x \sqrt{2\pi}}}
+e ^{-\left(\frac{x-x_0}{2 \sigma_x}\right)^2 + i2m^*E_x(x-x_0)} $$
+and the same definition holds for $\psi_y$.
+The parameters $x_0$, $y_0$, $\sigma_x$, $\sigma_y$, $E_x$, $E_y$ can be specified by the user with the respective names \begin{verbatim} X0, y0, SigX, SigY, Xnrg, Ynrg \end{verbatim}.
+
+If file mode is selected, you can set the filename from which the initial wave function state is read. The file must have the following format:
+\begin{verbatim}
+#TDS <Nx> <Ny>
+# ... put any comment in a line beginning with '#'
+
+<X coord 1> <Y coord 1> (<real f val 1>, <imag f val 1>)
+<X coord 2> <Y coord 2> (<real f val 2>, <imag f val 2>)
+<X coord 3> <Y coord 3> (<real f val 3>, <imag f val 3>)
+...
+\end{verbatim}
+
+Nx and Ny are the number of discretization points along the x and y axis. They must be equal to the Nx and Ny values specified in the Grid section. Any following line represent the function value on one point of the grid: you must put exactly Nx*Ny points, which represent the internal grid points. The function on the border is considered to be 0. The points must be on a carthesian grid: if not the software will detect it and terminate with an error.
+
+Example:
+\begin{verbatim}
+#TDS 100 100
+0         0         (1.0e-4, -0.87e-5)
+0.1e-6    0         (0.41e-4, 0.26e-4)
+0.2e-6    0         (0.89e-5, 0.87e-5)
+...
+0         0.15e-6    (0.11e-4, 0.77e-5)
+0.1e-6    0.15e-6    (0.34e-4, -0.68e-5)
+0.2e-6    0.15e-6    (0.47e-4, 0.23e-5)
+...
+0         0.3e-6    (-0.18e-4, -0.10e-5)
+0.1e-6    0.3e-6    (-0.66e-4, 0.42e-5)
+0.2e-6    0.3e-6    (-0.94e-4, 0.88e-5)
+...
+\end{verbatim}
+
+\subsection{Potential}
+The potential function has the same domain of the wave function and is discretized with the same grid previously described. It can be input with three different methods
+\begin{itemize}
+  \item \textbf{Zero}: the potential function is zero in all the domain. In the borders it is supposed to be infinite.
+  \item \textbf{File}: The potential is read from a file. The file format is the following:
+
+\begin{verbatim}
+#TDS <Nx> <Ny>
+# ... put any comment in a line beginning with '#'
+
+<X coord 1> <Y coord 1> <pot val 1>
+<X coord 2> <Y coord 2> <pot val 2>
+<X coord 3> <Y coord 3> <pot val 3>
+...
+\end{verbatim}
+
+Nx and Ny are the number of discretization points along the x and y axis. Any following line represent the function value on one point of the grid: you must put exactly Nx*Ny points, which represent the internal grid points. The potential on the border is considered to be infinite. The points must be on a carthesian grid: if not the software will detect it and terminate with an error.
+The potential grid can be different from the problem grid described above. In this case the software automatically resamples the potential using a bicubic interpolation scheme to represent the potential on the same grid of the wave function.
+To avoid a not wanted interpolation, TDS Tools has the parameter \textbf{allow\_interpolation} which can be 0 or 1. If it is set to 0 and an interpolation is required, TDS Tools exits with an error message.
+
+Example:
+\begin{verbatim}
+#TDS 50 50
+0         0         1.0e-4
+0.2e-6    0         0.26e-4
+0.4e-6    0         0.89e-5
+...
+0         0.15e-6    0.77e-5
+0.2e-6    0.15e-6    0.34e-4
+0.4e-6    0.15e-6    0.47e-4
+...
+0         0.3e-6    -0.18e-4
+0.2e-6    0.3e-6    0.42e-5
+0.4e-6    0.3e-6    -0.94e-4
+...
+\end{verbatim}
+
+\item \textbf{Description}: TDS Tools also provides a basic scripting language for describing a class of both separable and non separable potentials.
+The ponential is defined by two 1-D functions $V_x : [x_1, x_{N_x}] \rightarrow R$ and
+$V_y : [y_1, y_{N_y}] \rightarrow R$ and a 2-D function
+$V_{xy} : [x_1, x_{N_x}] \times [y_1, y_{N_y}] \rightarrow R$. The potential function is
+$$V(x, y) : [x_1, x_{N_x}]\times[y_1, x_{N_y}] \rightarrow R, \quad V(x, y) = V_x(x)+V_y(y)+V_{xy}(x, y)$$
+Each 1-D function $V_x$ and $V_y$ is defined by a string, which is a sequence of one or more of the following commands, separated by a semicolon:
+
+\begin{itemize}
+  \item \begin{verbatim} CONSTANT <a> <b> <val> \end{verbatim}
+    Sets the value <val> in all the interval $[a, b]$.
+  \item \begin{verbatim} LINEAR <a> <b> <v1> <v2> \end{verbatim}
+    The interval $[a, b]$ is filled with a linear function from $(a, v_1)$ to $(b, v_2)$.
+  \item \begin{verbatim} POLY3 <a> <b> <v1> <v2> \end{verbatim}
+    The interval $[a, b]$ is filled with a third order polynomial connecting
+    the points $(a, v_1)$ and $(b, v_2)$. It is defined as:
+    $ V_x(x) = v_1 + (v_2-v_1)( 3t^2 - 2t^3 ) $ with $t = \frac{x-a}{b-a} $
+  \item \begin{verbatim} POLY5 <a> <b> <v1> <v2> \end{verbatim}
+    The interval $[a, b]$ is filled with a fifth order polynomial connecting
+    the points $(a, v_1)$ and $(b, v_2)$. It is defined as:
+    $ V_x(x) = v_1 + (v_2-v_1)( 10t^3 - 15t^4 + 6t^5) $ with $t = \frac{x-a}{b-a} $
+  \item \begin{verbatim} HARMONIC <a> <b> <Pmax> <P0> \end{verbatim}
+    Fills the interval $[a, b]$ with a parabolic potential having the minimum point in the centre of the interval. $P_0$ is the value in the minimum point and $P_0 + P_{max}$ is the value in $a$ and $b$.
+    $P_0$ and $P_{max}$ are expressed in eV. It is defined as
+    $ V_x(x) = P_0 + m^* \left(\frac{P_{max}}{\hbar} t \right)^2 $ with $t = \frac{x-a}{b-a} $
+\end{itemize}
+
+The 2-D function $V_{xy}$ can only be expressed by means of constant valued boxes. There is a unique command:
+\begin{verbatim} BOX <Xul> <Yul> <Xlr> <Ylr> <val> \end{verbatim}
+  It fills a box with upper-left vertex $(x_{ul}, y_{ul})$ and lower-right vertex $(x_{lr}, y_{lr})$
+  with value <val>.
+\end{itemize}
+
+\subsection{Output}
+A set of user parameters can be used for describing how the result of the simulation is output.
+
+\begin{itemize}
+  \item \textbf{write\_folder} Specify the name of the folder in which the output files are written. If the folder does not exists, TDS Toold automatically creates it.
+  \item \textbf{write\_grid} can be 0 or 1, and it is a flag which specify if the application have to write into the output folder the \textbf{grid.dat} file the size and the $x$ and $y$ nodes of the grid. In case the downsampling is enabled (see below), the downsampled grid is written. The file format is the following:
+\begin{verbatim}
+<Nx> <Ny>
+<X node 1>
+<X node 2>
+...
+<X node Nx>
+<Y node 1>
+<Y node 2>
+...
+<Y node Ny>
+\end{verbatim}
+  where Nx and Ny are the number of internal nodes.
+
+  \item \textbf{write\_pot} indicates if the potential (eventually interpolated) has to be written in an output file. It can assume the following values: \textbf{none} if no potential file has to be written, \textbf{txt} if the text version is written in the pot0000.dat file, \textbf{bin} if the binary version is written in the pot0000.bin file and \textbf{both} if the potential is written in both the text and binary formats. Enabling the binary format is mandatory for using the visualization window in TDS Tools. \\
+  The text file has one row for each internal point of the grid and the format is the following:
+\begin{verbatim}
+<X coord 1> <Y coord 1> <pot val 1>
+<X coord 2> <Y coord 2> <pot val 2>
+<X coord 3> <Y coord 3> <pot val 3>
+\end{verbatim}
+The binary file has a little-endian format and has the following data:
+\begin{verbatim}
+Bytes 0-3: 32 bit integer containing 8*Nx*Ny
+Bytes from 4: the column-wise representation of the potential matrix
+              whose elements are double precision reals.
+\end{verbatim}
+
+  \item \textbf{write\_psi} indicates if the wave function has to be written in an output file. It can assume the following values: \textbf{none} if no wave function file has to be written, \textbf{txt} if the text version is written in the psinnnn.dat file, \textbf{bin} if the binary version is written in the psinnnn.bin file and \textbf{both} if the potential is written in both the text and binary formats, where nnnn is the timestep number. Enabling the binary format is mandatory for using the visualization window in TDS Tools. \\
+  The text file has one row for each internal point of the grid and the format is the following:
+\begin{verbatim}
+<X coord 1> <Y coord 1> (<real val 1>, <imag val 1>)
+<X coord 2> <Y coord 2> (<real val 2>, <imag val 2>)
+<X coord 3> <Y coord 3> (<real val 3>, <imag val 3>)
+\end{verbatim}
+The binary file has a little-endian format and has the following data:
+\begin{verbatim}
+Bytes 0-3: 32 bit integer containing 16*Nx*Ny
+Bytes from 4: the column-wise representation of the wave function matrix
+              whose elements are pairs of double precision reals with
+              the real and imaginary part on each node.
+\end{verbatim}
+
+  \item \textbf{write\_timestep}. TDS Tools can downsample in time the output.
+        \textbf{write\_timestep} is the time interval between two successive psi files.
+  \item \textbf{write\_downsample\_x} is an integer downscaling factor along the x axis.
+  \item \textbf{write\_downsample\_y} is an integer downscaling factor along the y axis. Together with the previous parameter, it allows to use a finer grid for a more precise simulation and a coarser file output not to excessively waste disk space or visualization time.
+\end{itemize}
+
+\end{document}
