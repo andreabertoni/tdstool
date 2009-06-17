@@ -83,8 +83,8 @@ SUBROUTINE MAIN_ALGO
       END DO
     END DO
 
+psik = psi;
     ! ****** Linear step
-    psik = psi;
     INFO = DftiComputeForward( planfw, psik)
 !    CALL dfftw_execute( planfw )
     pt = 1;
@@ -108,7 +108,6 @@ SUBROUTINE MAIN_ALGO
       END DO
     END DO
 
-    psik = psi;
     write (*,*) iter
     if (((iter-1)*dt) >= next_write_time) then
       if (write_psi == "txt" .or. write_psi == "both") then
