@@ -66,7 +66,7 @@
  POT_FILE_IN     = "pot.dat                                                                         "
  /
  &WRITE_OUT
- WRITE_FOLDER    = "out_barrier2                                                                                                     
+ run_name    = "out_barrier2                                                                                                     
                                                                                                                                      
           ",
  WRITE_GRID      =           1,

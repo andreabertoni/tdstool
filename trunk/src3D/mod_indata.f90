@@ -42,7 +42,7 @@ MODULE mod_indata
   INTEGER psi_numx_file, psi_numy_file, psi_numz_file
 
     ! Output Parameters
-  CHARACTER(256) :: write_folder
+  CHARACTER(512) :: write_folder, run_name, nmlfile_name
   INTEGER :: write_grid   ! 0 = do not write grid, 1 = write grid
   CHARACTER(30) :: write_pot, write_psi   ! none, txt, bin, both
   REAL*8 :: write_timestep
@@ -89,7 +89,7 @@ MODULE mod_indata
     & pot_file_in
 
   NAMELIST /write_out/ &
-    & write_folder, &
+    & run_name, &
     & write_grid, &
     & write_pot, &
     & write_psi, &
@@ -121,6 +121,7 @@ SUBROUTINE INDATA_GET(nmlfile, INFO)
     READ(33,NML=write_out)
     CLOSE(33)
     mstar = electronmass * ELMASS0
+    nmlfile_name = nmlfile
     INFO = 0
   else
     INFO = 1
@@ -159,7 +160,7 @@ SUBROUTINE INDATA_FILL_WITH_DEFAULT
   strpotentialZ = ""
   strpotentialXYZ = "box 5.0e-7 0.0 0.0 5.2e-7 1.0e-6 4.5e-7 30e-3;box 5.0e-7 0.0 5.5e-7 5.2e-7 1.0e-6 1.0e-6 30e-3;"
   pot_file_in = "pot.dat"
-  write_folder = "split"
+  run_name = "default"
   write_grid = 1
   write_pot = "bin"
   write_psi = "bin"
@@ -185,12 +186,66 @@ END SUBROUTINE INDATA_SAVE
 
 
 !===================================================================
-SUBROUTINE INDATA_COMPUTE
+SUBROUTINE INDATA_COMPUTE(OKCANCEL)
+  INTEGER, INTENT(OUT) :: OKCANCEL
   INTEGER :: nx, ny, nz, grid_numx, grid_numy, grid_numz
   REAL*8, ALLOCATABLE :: potx(:), poty(:), potz(:)
-  INTEGER :: lenstr, INFO, pt
-
+  INTEGER :: lenstr, INFO, pt, pt2, sl_count, nested
+  CHARACTER(256) :: nml_folder
+  LOGICAL :: file_exists
+  
+  OKCANCEL = 0
+  nested = 0
+  write_folder = TRIM(run_name)//"_out"
+! Now check if the namelist folder is equal to the write folder. In this case,
+! do not create the write folder
+  sl_count = 0
+  DO pt = LEN_TRIM(nmlfile_name), 1, -1
+    if (nmlfile_name(pt:pt) == '/' .or. nmlfile_name(pt:pt) == '\') then
+      sl_count = sl_count + 1
+    end if
+    if (sl_count == 2) then
+      exit
+    end if
+  end do
+  if (pt > 1) then
+    pt = pt + 1
+    do pt2 = pt, LEN_TRIM(nmlfile_name)
+      if (nmlfile_name(pt2:pt2) == '/' .or. nmlfile_name(pt2:pt2) == '\') then
+        exit
+      end if
+    end do
+    pt2 = pt2 - 1
+    nml_folder = nmlfile_name(pt:pt2)
+    if (TRIM(nml_folder) == TRIM(write_folder)) then
+      nested = 1
+    end if
+  end if
+  
+! concat the write folder name to the namelist name
+  DO pt = LEN_TRIM(nmlfile_name), 1, -1
+    if (nmlfile_name(pt:pt) == '/' .or. nmlfile_name(pt:pt) == '\') then
+      exit
+    end if
+  end do
+  if (pt > 1) then
+    if (nested == 0) then
+      write_folder = TRIM(nmlfile_name(1:pt))//TRIM(run_name)//"_out"
+    else
+      write_folder = TRIM(nmlfile_name(1:pt-1))
+    end if
+  end if
   CALL PXFMKDIR(TRIM(write_folder), LEN_TRIM(write_folder), 8*8*8-1, INFO)
+
+  INQUIRE(FILE=TRIM(write_folder)//'/grid.dat', EXIST=file_exists)
+  if (file_exists) then
+    call dwgbut("Output folder contains the output of a previous run. Do you want to overwrite it?", INFO)
+    if (INFO == 1) then
+    else
+      OKCANCEL = 1;
+      return;
+    end if
+  end if
 
 !*******************************************************
 !    Preload potential file

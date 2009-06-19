@@ -95,7 +95,7 @@ SUBROUTINE ViewListCbk(ID)
     end if
   end do
   DO NY = 2, NUMY
-    if (abs((xnodes(NY+1)-xnodes(NY)) - (xnodes(NY+2)-xnodes(NY+1))) > 1e-5*xnodes(NY+1)) then
+    if (abs((ynodes(NY+1)-ynodes(NY)) - (ynodes(NY+2)-ynodes(NY+1))) > 1e-5*ynodes(NY+1)) then
       is_uniform = 0
       EXIT
     end if
