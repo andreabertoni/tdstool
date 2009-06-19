@@ -55,7 +55,7 @@
  POT_FILE_IN     = "pot.dat                                                                         "
  /
  &WRITE_OUT
- WRITE_FOLDER    = "out_doppiafenditura                                                                                              
+ run_name    = "out_doppiafenditura                                                                                              
                                                                                                                                      
           ",
  WRITE_GRID      =           1,

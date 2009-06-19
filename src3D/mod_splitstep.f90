@@ -23,7 +23,10 @@ SUBROUTINE MAIN_ALGO
   type(DFTI_DESCRIPTOR), POINTER :: planfw
   integer   lengths(3)
 
-  call INDATA_COMPUTE
+  call INDATA_COMPUTE(INFO)
+  if (INFO == 1) then
+    return
+  end if
 
     ! Write Potential
   if (write_pot == "txt" .or. write_pot == "both") then
@@ -69,9 +72,9 @@ SUBROUTINE MAIN_ALGO
 !  CALL dfftw_plan_dft_3d( planbk, numx, numy, numz, psik, psi,           &
 !     &                                   FFTW_BACKWARD, FFTW_ESTIMATE )
 
-  lengths(1) = numx
+  lengths(1) = numz
   lengths(2) = numy
-  lengths(3) = numz
+  lengths(3) = numx
   INFO = DftiCreateDescriptor( planfw, DFTI_DOUBLE, DFTI_COMPLEX, 3, lengths)
   INFO = DftiCommitDescriptor( planfw )
 

@@ -21,7 +21,10 @@ SUBROUTINE MAIN_ALGO
   INTEGER :: iparm_prd(64), msglvl_prd
   INTEGER, ALLOCATABLE :: perm_prd(:)
 
-  call INDATA_COMPUTE
+  call INDATA_COMPUTE(INFO)
+  if (INFO == 1) then
+    return
+  end if
 
 print *, "Kx = ", sqrt(2*mstar*xenergy*ELCH)/HBAR
 print *, "Ky = ", sqrt(2*mstar*yenergy*ELCH)/HBAR
