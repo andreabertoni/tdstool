@@ -70,7 +70,7 @@ v. 0.2 Box Integration method (allows for a nonuniform grid)
 <br />
 <br />
 Windows executable for 2D domains<br />
-v. 0.2 Split Step method (faster execution, at present needs a square grid)
+v. 0.2 Split Step method (faster execution)
 <a href="executables/v0.2 16-6-2009/tdstool2D_split.exe"> DOWNLOAD</a></p>
 <br />
 <br />
