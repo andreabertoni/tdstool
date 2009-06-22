@@ -1,4 +1,5 @@
 MODULE mod_filewrite
+  USE mod_staticdata
   IMPLICIT NONE
   CONTAINS
 
@@ -164,6 +165,73 @@ SUBROUTINE write_2D_grid(path, fname, xnodes, ynodes, numx, numy, downsample_x, 
   end do
   close(10)
 
+END SUBROUTINE
+
+SUBROUTINE write_2D_grid_bin(path, fname, xnodes, ynodes, numx, numy, downsample_x, downsample_y)
+  CHARACTER(*), INTENT(IN) :: path, fname
+  INTEGER, INTENT(IN) :: numx, numy, downsample_x, downsample_y
+  REAL*8, INTENT(IN) :: xnodes(:), ynodes(:)
+  REAL*8, ALLOCATABLE :: nodes_down(:)
+
+  INTEGER nx, ny, pt
+
+!  filenum = STRING(iter)
+  open(10, FILE=TRIM(path)//"/"//fname//".bin", FORM="UNFORMATTED", STATUS='REPLACE')
+  nx = numx/downsample_x
+  ny = numy/downsample_y
+  write (10) nx, ny
+  ALLOCATE(nodes_down(max(nx, ny)))
+  
+  pt = 1
+  do nx = 2,numx+1,downsample_x
+    nodes_down(pt) = xnodes(nx)
+    pt = pt + 1
+  end do
+  write(10) nodes_down
+  
+  pt = 1
+  do ny = 2,numy+1,downsample_y
+    nodes_down(pt) = ynodes(ny)
+    pt = pt + 1
+  end do
+  write(10) nodes_down
+
+  DEALLOCATE(nodes_down)
+  close(10)
+
+END SUBROUTINE
+
+
+SUBROUTINE th_copy_file(src, dest)
+  CHARACTER(*), INTENT(IN) :: src, dest
+  CHARACTER(512) :: src_c, dest_c, full
+  INTEGER i;
+  
+  if (OSV == 1) then
+    src_c = REPEAT(' ', 512)
+    dest_c = REPEAT(' ', 512)
+    DO i = 1, LEN_TRIM(src)
+      if (src(i:i) == '/') then
+        src_c(i:i) = '\'
+      else
+        src_c(i:i) = src(i:i)
+      endif
+    end do
+    DO i = 1, LEN_TRIM(dest)
+      if (dest(i:i) == '/') then
+        dest_c(i:i) = '\'
+      else
+        dest_c(i:i) = dest(i:i)
+      endif
+    end do
+    
+    full = TRIM("copy " // src_c) // TRIM(" " // dest_c)
+    call systemqq(full)
+  else
+    full = TRIM("cp " // src) // TRIM(" " // dest)
+    call systemqq(full)
+  end if
+  
 END SUBROUTINE
 
 END MODULE

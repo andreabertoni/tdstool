@@ -2,6 +2,7 @@ MODULE mod_indata
   USE mod_staticdata
   USE mod_strtopot
   USE mod_bicubic
+  USE mod_filewrite
   USE IFPOSIX
   IMPLICIT NONE
   SAVE
@@ -47,8 +48,7 @@ MODULE mod_indata
 
     ! Output Parameters
   CHARACTER(512) :: write_folder, run_name, nmlfile_name
-  INTEGER :: write_grid   ! 0 = do not write grid, 1 = write grid
-  CHARACTER(30) :: write_pot, write_psi   ! none, txt, bin, both
+  CHARACTER(30) :: write_grid, write_pot, write_psi   ! none, txt, bin, both
   REAL*8 :: write_timestep
   INTEGER :: write_downsample_x, write_downsample_y
 
@@ -156,7 +156,7 @@ SUBROUTINE INDATA_FILL_WITH_DEFAULT
   strpotentialxy = "box 5.0e-7 5.5e-7 5.2e-7 1.0e-6 30.0e-3;box 5.0e-7 0.0e-7 5.2e-7 4.5e-7 30.0e-3;"
   pot_file_in = "pot.dat"
   run_name = "default"
-  write_grid = 1
+  write_grid = "bin"
   write_pot = "bin"
   write_psi = "bin"
   write_timestep = 1e-13
@@ -243,6 +243,41 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
     end if
   end if
 
+  if (.not. nested) then
+    call th_copy_file(TRIM(nmlfile_name), TRIM(write_folder)//TRIM(nmlfile_name(pt:LEN_TRIM(nmlfile_name))))
+
+    if (TRIM(pot_file_in) /= "") then
+      DO pt2 = LEN_TRIM(pot_file_in), 1, -1
+        if (pot_file_in(pt2:pt2) == '/' .or. pot_file_in(pt2:pt2) == '\') then
+          exit
+        end if
+      end do
+      pt2 = pt2 + 1
+      call th_copy_file(pot_file_in, TRIM(write_folder)//TRIM('/'//pot_file_in(pt2:LEN_TRIM(pot_file_in))))
+    end if
+
+    if (TRIM(psi_file_in) /= "") then
+      DO pt2 = LEN_TRIM(psi_file_in), 1, -1
+        if (psi_file_in(pt2:pt2) == '/' .or. psi_file_in(pt2:pt2) == '\') then
+          exit
+        end if
+      end do
+      pt2 = pt2 + 1
+      call th_copy_file(psi_file_in, TRIM(write_folder)//TRIM('/'//psi_file_in(pt2:LEN_TRIM(psi_file_in))))
+    end if
+
+    if (TRIM(grid_file_in) /= "") then
+      DO pt2 = LEN_TRIM(grid_file_in), 1, -1
+        if (grid_file_in(pt2:pt2) == '/' .or. grid_file_in(pt2:pt2) == '\') then
+          exit
+        end if
+      end do
+      pt2 = pt2 + 1
+      call th_copy_file(grid_file_in, TRIM(write_folder)//TRIM('/'//grid_file_in(pt2:LEN_TRIM(grid_file_in))))
+    end if
+
+  endif
+  
 !*******************************************************
 !    Preload potential file
 !*******************************************************
