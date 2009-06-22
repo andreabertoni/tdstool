@@ -1,4 +1,5 @@
 MODULE mod_filewrite
+  USE mod_staticdata
   IMPLICIT NONE
   CONTAINS
 
@@ -295,6 +296,84 @@ SUBROUTINE write_3D_grid(path, fname, xnodes, ynodes, znodes, numx, numy, numz, 
   end do
   close(10)
 
+END SUBROUTINE
+
+
+SUBROUTINE write_3D_grid_bin(path, fname, xnodes, ynodes, znodes, numx, numy, numz, downsample_x, downsample_y, downsample_z)
+  CHARACTER(*), INTENT(IN) :: path, fname
+  INTEGER, INTENT(IN) :: numx, numy, numz, downsample_x, downsample_y, downsample_z
+  REAL*8, INTENT(IN) :: xnodes(:), ynodes(:), znodes(:)
+  REAL*8, ALLOCATABLE :: nodes_down(:)
+  
+!  CHARACTER(4) :: filenum
+  INTEGER nx, ny, nz, pt
+
+!  filenum = STRING(iter)
+  open(10, FILE=TRIM(path)//"/"//fname//".dat", FORM="UNFORMATTED", STATUS='REPLACE')
+  nx = numx/downsample_x
+  ny = numy/downsample_y
+  nz = numz/downsample_z
+  write (10) nx, ny, nz
+
+  ALLOCATE(nodes_down(max(nx, max(ny, nz))))
+
+  pt = 1
+  do nx = 2,numx+1,downsample_x
+    nodes_down(pt) = xnodes(nx)
+    pt = pt + 1
+  end do
+  write (10) nodes_down
+  
+  pt = 1
+  do ny = 2,numy+1,downsample_y
+    nodes_down(pt) = ynodes(ny)
+    pt = pt + 1
+  end do
+  write (10) nodes_down
+
+  pt = 1
+  do nz = 2,numz+1,downsample_z
+    nodes_down(pt) = znodes(nz)
+    pt = pt + 1
+  end do
+  write (10) nodes_down
+
+  DEALLOCATE(nodes_down)
+  close(10)
+
+END SUBROUTINE
+
+
+SUBROUTINE th_copy_file(src, dest)
+  CHARACTER(*), INTENT(IN) :: src, dest
+  CHARACTER(512) :: src_c, dest_c, full
+  INTEGER i;
+  
+  if (OSV == 1) then
+    src_c = REPEAT(' ', 512)
+    dest_c = REPEAT(' ', 512)
+    DO i = 1, LEN_TRIM(src)
+      if (src(i:i) == '/') then
+        src_c(i:i) = '\'
+      else
+        src_c(i:i) = src(i:i)
+      endif
+    end do
+    DO i = 1, LEN_TRIM(dest)
+      if (dest(i:i) == '/') then
+        dest_c(i:i) = '\'
+      else
+        dest_c(i:i) = dest(i:i)
+      endif
+    end do
+    
+    full = TRIM("copy " // src_c) // TRIM(" " // dest_c)
+    call systemqq(full)
+  else
+    full = TRIM("cp " // src) // TRIM(" " // dest)
+    call systemqq(full)
+  end if
+  
 END SUBROUTINE
 
 END MODULE

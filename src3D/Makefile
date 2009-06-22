@@ -18,7 +18,7 @@ F77 =
 CC =
 
 ## flags to use for fortran 90, fortran 77, C compilation
-F90FLAGS = -ipo -O2
+F90FLAGS = -ipo -O2 -fpp -DLINUX
 F77FLAGS =
 CFLAGS =
 
@@ -86,7 +86,7 @@ schro.o : dislin.o          \
 
 mkl_dfti.o: 
 
-mod_filewrite.o:
+mod_filewrite.o:	mod_staticdata.o
 
 mod_bicubic.o:
 
@@ -118,4 +118,5 @@ mod_inputgui.o:		mod_staticdata.o      \
 			mod_indata.o          \
 			mod_strtopot.o        \
 			mod_mainalgo.o        \
-			mod_viewgraph.o
+			mod_viewgraph.o       \
+			mod_filewrite.o

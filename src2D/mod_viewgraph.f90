@@ -104,6 +104,10 @@ SUBROUTINE ViewListCbk(ID)
   ALLOCATE(vstr_in(NUMY, NUMX))
   ALLOCATE(psi_in(NUMY, NUMX))
   ALLOCATE(psic(NUMY, NUMX))
+  
+  vstr_in = 0.
+  psi_in = 0.
+  psic = 0.
 
   INQUIRE(FILE=TRIM(write_folder)//'/potential0000.bin', EXIST=file_exists)
   if (file_exists) then

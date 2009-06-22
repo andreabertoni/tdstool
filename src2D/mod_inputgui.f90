@@ -15,7 +15,7 @@ MODULE mod_inputgui
   INTEGER :: hTime, hTimeDelta, hTimeSteps
   INTEGER :: hGrid, hGridMode, hGridNumX, hGridNumY, hGridSizeX, hGridSizeY, hGridFile
   INTEGER :: hPot, hPotMode, hPotInterp, hPotFile, hPotStrX, hPotStrY, hPotStrXY, hPotStrXEdit, hPotStrYEdit, hPotStrXYEdit
-  INTEGER :: hOut, hOutDir, hOutWGrid, hOutWPotTxt, hOutWPotBin, hOutWPsiTxt, hOutWPsiBin, hOutTime, hOutDownX, hOutDownY
+  INTEGER :: hOut, hOutDir, hOutWGridTxt, hOutWGridBin, hOutWPotTxt, hOutWPotBin, hOutWPsiTxt, hOutWPsiBin, hOutTime, hOutDownX, hOutDownY
   INTEGER :: hData, hData2, hElMass, hNonlin
 
   CHARACTER(260) nml_file_name
@@ -280,10 +280,24 @@ SUBROUTINE SHOW_IN_GUI
   CALL WGLAB(hOut, "Run name:", hNull)
   CALL SWGWIN(60, 30, 180, ctrlh)
   CALL WGTXT(hOut, TRIM(ADJUSTL(run_name)), hOutDir)
+
   CALL SWGWIN(0, 65, 100, 20)
   CALL WGLAB(hOut, "Write Grid:", hNull)
+  if (write_grid == 'txt' .or. write_grid == 'both') then
+    mode = 1
+  else
+    mode = 0
+  endif
   CALL SWGWIN(100, 65, 55, 20)
-  CALL WGBUT(hOut, 'Txt', write_grid, hOutWGrid)
+  CALL WGBUT(hOut, 'Txt', mode, hOutWGridTxt)
+  if (write_grid == 'bin' .or. write_grid == 'both') then
+    mode = 1
+  else
+    mode = 0
+  endif
+  CALL SWGWIN(160, 65, 55, 20)
+  CALL WGBUT(hOut, 'Bin', mode, hOutWGridBin)
+
   CALL SWGWIN(0, 90, 90, 20)
   CALL WGLAB(hOut, "Write Pot", hNull)
   if (write_pot == 'txt' .or. write_pot == 'both') then
@@ -300,6 +314,7 @@ SUBROUTINE SHOW_IN_GUI
   endif
   CALL SWGWIN(160, 90, 55, 20)
   CALL WGBUT(hOut, 'Bin', mode, hOutWPotBin)
+
   CALL SWGWIN(0, 115, 90, 20)
   CALL WGLAB(hOut, "Write Psi", hNull)
   if (write_psi == 'txt' .or. write_psi == 'both') then
@@ -406,7 +421,20 @@ SUBROUTINE SHOW_IN_GUI
 
     ! Output Data
   CALL GWGFIL(hOutDir, write_folder)
-  CALL GWGBUT(hOutWGrid, write_grid)
+
+  CALL GWGBUT(hOutWGridTxt, mode)
+  CALL GWGBUT(hOutWGridBin, mode2)
+  SELECT CASE (mode*2 + mode2)
+  CASE (0)
+    write_grid = 'none'
+  CASE (1)
+    write_grid = 'bin'
+  CASE (2)
+    write_grid = 'txt'
+  CASE (3)
+    write_grid = 'both'
+  END SELECT
+
   CALL GWGBUT(hOutWPotTxt, mode)
   CALL GWGBUT(hOutWPotBin, mode2)
   SELECT CASE (mode*2 + mode2)
@@ -419,6 +447,7 @@ SUBROUTINE SHOW_IN_GUI
   CASE (3)
     write_pot = 'both'
   END SELECT
+  
   CALL GWGBUT(hOutWPsiTxt, mode)
   CALL GWGBUT(hOutWPsiBin, mode2)
   SELECT CASE (mode*2 + mode2)
@@ -431,6 +460,7 @@ SUBROUTINE SHOW_IN_GUI
   CASE (3)
     write_psi = 'both'
   END SELECT
+  
   CALL GWGTXT(hOutTime, vstr)
   read (vstr, *) write_timestep
   CALL GWGINT(hOutDownX, write_downsample_x)
