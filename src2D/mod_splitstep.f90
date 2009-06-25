@@ -38,11 +38,11 @@ SUBROUTINE MAIN_ALGO
   end if
 
     ! Write Grid
-  if (write_grid) then
+  if (write_grid == "txt" .or. write_grid == "both") then
     call write_2D_grid(write_folder, "grid", xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
   end if
-
-  if (write_grid == 1) then
+  if (write_grid == "bin" .or. write_grid == "both") then
+    call write_2D_grid_bin(write_folder, "grid", xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
   end if
 
   alpha = -HBAR*HBAR/(2*mstar)
