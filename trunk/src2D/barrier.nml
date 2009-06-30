@@ -1,6 +1,6 @@
  &DEVICE
- ELECTRONMASS    =  6.700000166893005E-002,
- NONLIN_AS       =  1.000000000000000E-002,
+ ELECTRONMASS    =  6.700000000000000E-002,
+ NONLIN_AS       =  0.000000000000000E+000,
  MAGNETIC        =  0.000000000000000E+000
  /
  &INITIAL_PSI
@@ -26,9 +26,8 @@
  GRID_FILE_IN    = "                                                                                "
  /
  &POTENTIAL
- POT_MODE        = "string                          ",
  ALLOW_POT_INTERPOLATION =           1,
- STRPOTENTIALX   = "const 5.0e-7 5.2e-7 30.0e-3;                                                                                     
+ STRPOTENTIALX   = "const 5.0e-7 5.2e-7 0.0e-3;sinewave_move 0 0 200e-3 0.2e-6 10e6                                                  
                                                                                                                                      
                                                                                                                                      
                                                                                                                                      
@@ -52,13 +51,15 @@
                                                                                                                                      
                                                                                                                                      
                                                                                         ",
- POT_FILE_IN     = "pot.dat                                                                         "
+ POT_FILE_IN     = "                                                                                "
  /
  &WRITE_OUT
- run_name    = "out_barrier2                                                                                                     
+ RUN_NAME        = "out_barrier2                                                                                                     
                                                                                                                                      
-          ",
- WRITE_GRID      =           1,
+                                                                                                                                     
+                                                                                                                                     
+",
+ WRITE_GRID      = "txt                           ",
  WRITE_POT       = "bin                           ",
  WRITE_PSI       = "bin                           ",
  WRITE_TIMESTEP  =  1.000000000000000E-013,

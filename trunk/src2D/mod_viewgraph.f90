@@ -109,9 +109,9 @@ SUBROUTINE ViewListCbk(ID)
   psi_in = 0.
   psic = 0.
 
-  INQUIRE(FILE=TRIM(write_folder)//'/potential0000.bin', EXIST=file_exists)
+  INQUIRE(FILE=TRIM(write_folder)//'/potential'//str_num//'.bin', EXIST=file_exists)
   if (file_exists) then
-    OPEN(33, FILE=TRIM(write_folder)//'/potential0000.bin', FORM="UNFORMATTED", ACTION="READ",  &
+    OPEN(33, FILE=TRIM(write_folder)//'/potential'//str_num//'.bin', FORM="UNFORMATTED", ACTION="READ",  &
          &   STATUS="OLD")
     read (33) vstr_in
     CLOSE(33)

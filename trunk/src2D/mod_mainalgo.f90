@@ -15,6 +15,7 @@ SUBROUTINE MAIN_ALGO
   COMPLEX*16, ALLOCATABLE :: b(:)
   INTEGER INFO
   REAL*8 next_write_time
+  REAL*8, ALLOCATABLE :: potx(:), poty(:)
 
 ! PARDISO data
   INTEGER*8  pt_prd(64)
@@ -26,14 +27,9 @@ SUBROUTINE MAIN_ALGO
     return
   end if
 
-print *, "Kx = ", sqrt(2*mstar*xenergy*ELCH)/HBAR
-print *, "Ky = ", sqrt(2*mstar*yenergy*ELCH)/HBAR
-print *, "x_period = ", 2*PIG/(sqrt(2*mstar*xenergy*ELCH)/HBAR)
-print *, "y_period = ", 2*PIG/(sqrt(2*mstar*yenergy*ELCH)/HBAR)
-print *, "dx = ", xnodes(10)-xnodes(9)
-print *, "dy = ", ynodes(10)-ynodes(9)
-
   ALLOCATE (b(numx*numy))
+  ALLOCATE (potx(1:numx))
+  ALLOCATE (poty(1:numy))
 
     ! Write Potential
   if (write_pot == "txt" .or. write_pot == "both") then
@@ -86,6 +82,18 @@ print *, "dy = ", ynodes(10)-ynodes(9)
   next_write_time = 0.
 ! **** Time steps
   DO iter = 1, MAXIT
+
+    ! Build time dependent potential
+    call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialX, numx, xnodes, potx)
+    call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialY, numy, ynodes, poty)
+    call strtopot2D(1, mstar, strpotentialXY, numx, numy, xnodes, ynodes, pot)
+    DO nx = 1, numx
+      DO ny = 1, numy
+        pot(ny, nx) = (pot(ny, nx) + pot_file_static(ny, nx) + potx(nx) + poty(ny))*ELCH
+      END DO
+    END DO
+
+
 !    psi = (S-A) \ ((S+A)*psi);
     call z_sparse_matvet(numx*numy, A, ia, ja, psi, b)
     DO nx = 1, numx*numy
@@ -126,6 +134,8 @@ print *, "dy = ", ynodes(10)-ynodes(9)
   call pardiso(pt_prd, 1, 1, 6, -1, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, b, INFO)
 
   DEALLOCATE(perm_prd)
+  DEALLOCATE (poty)
+  DEALLOCATE (potx)
   DEALLOCATE (b)
   DEALLOCATE (ia)
   DEALLOCATE (ja)
@@ -133,6 +143,8 @@ print *, "dy = ", ynodes(10)-ynodes(9)
   DEALLOCATE (S)
   DEALLOCATE (psi)
   DEALLOCATE (pot)
+  DEALLOCATE (pot_file_static)
+  DEALLOCATE (pot_filelist)
   DEALLOCATE (xnodes)
   DEALLOCATE (ynodes)
 
