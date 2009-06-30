@@ -7,6 +7,11 @@ MODULE mod_indata
   IMPLICIT NONE
   SAVE
 
+  TYPE filelist_struct
+    REAL*8 :: time
+    CHARACTER(256) :: file
+  END TYPE filelist_struct
+  
 ! Simulation parameters
   REAL*8 :: dt
   REAL*8, ALLOCATABLE :: xnodes(:), ynodes(:)
@@ -19,7 +24,6 @@ MODULE mod_indata
   REAL*8 :: size_x, size_y
   CHARACTER(32) :: psi_mode  ! gauss, file
   CHARACTER(32) :: grid_mode ! uniform, file, estimate, pot, adaptive
-  CHARACTER(32) :: pot_mode  ! zero, string, file
 
   REAL*8, ALLOCATABLE :: pot(:,:)
   COMPLEX*16, ALLOCATABLE :: psi(:)
@@ -28,6 +32,7 @@ MODULE mod_indata
 
   CHARACTER(80) :: psi_file_in   ! name of the psi (x,y) file
   CHARACTER(80) :: grid_file_in  ! name of the xnodes and ynodes file
+  CHARACTER(80) :: pot_filelist_name  ! name of the file containing the potential file list
   CHARACTER(80) :: pot_file_in   ! name of the potential file
   CHARACTER(999) :: strpotentialX = ""
   CHARACTER(999) :: strpotentialY = ""
@@ -35,10 +40,15 @@ MODULE mod_indata
 
     ! ATTENTION: in the potential from file, the sizes pot_numx_file and pot_numy_file
     ! are the total number of nodes and not only the number of internal nodes, like in the numx and numy case
-  REAL*8, ALLOCATABLE :: pot_file(:,:)
+  REAL*8, ALLOCATABLE :: pot_file_raw(:,:)
   REAL*8, ALLOCATABLE :: pot_x_file(:), pot_y_file(:)
   INTEGER pot_numx_file, pot_numy_file
   INTEGER :: allow_pot_interpolation
+
+  REAL*8, ALLOCATABLE :: pot_file_static(:,:), pot_filelist(:,:)
+  
+  TYPE(filelist_struct), ALLOCATABLE :: filelist_data(:)
+  INTEGER :: filelist_count;
 
     ! ATTENTION: in the psi from file, the sizes psi_numx_file and psi_numy_file
     ! are the total number of nodes and not only the number of internal nodes, like in the numx and numy case
@@ -52,6 +62,7 @@ MODULE mod_indata
   REAL*8 :: write_timestep
   INTEGER :: write_downsample_x, write_downsample_y
 
+  LOGICAL :: output_nested
 
   NAMELIST /device/ &
     & electronmass, &
@@ -81,12 +92,12 @@ MODULE mod_indata
     & grid_file_in
 
   NAMELIST /potential/ &
-    & pot_mode, &
     & allow_pot_interpolation, &
     & strpotentialX, &
     & strpotentialY, &
     & strpotentialXY, &
-    & pot_file_in
+    & pot_file_in, &
+    & pot_filelist_name
 
   NAMELIST /write_out/ &
     & run_name, &
@@ -106,6 +117,8 @@ SUBROUTINE INDATA_GET(nmlfile, INFO)
   CHARACTER(*), INTENT(IN) :: nmlfile
   INTEGER, INTENT(OUT) :: INFO
 
+  CHARACTER(256) :: nml_folder
+  INTEGER :: pt, pt2, sl_count
   LOGICAL :: file_exists
   INQUIRE(FILE=nmlfile, EXIST=file_exists)
 
@@ -122,6 +135,48 @@ SUBROUTINE INDATA_GET(nmlfile, INFO)
     mstar = electronmass * ELMASS0
     nmlfile_name = nmlfile
     INFO = 0
+
+    output_nested = 0
+    write_folder = TRIM(run_name)//"_out"
+  ! Now check if the namelist folder is equal to the write folder. In this case,
+  ! do not create the write folder
+    sl_count = 0
+    DO pt = LEN_TRIM(nmlfile_name), 1, -1
+      if (nmlfile_name(pt:pt) == '/' .or. nmlfile_name(pt:pt) == '\') then
+        sl_count = sl_count + 1
+      end if
+      if (sl_count == 2) then
+        exit
+      end if
+    end do
+    if (pt > 1) then
+      pt = pt + 1
+      do pt2 = pt, LEN_TRIM(nmlfile_name)
+        if (nmlfile_name(pt2:pt2) == '/' .or. nmlfile_name(pt2:pt2) == '\') then
+          exit
+        end if
+      end do
+      pt2 = pt2 - 1
+      nml_folder = nmlfile_name(pt:pt2)
+      if (TRIM(nml_folder) == TRIM(write_folder)) then
+        output_nested = 1
+      end if
+    end if
+  
+  ! concat the write folder name to the namelist name
+    DO pt = LEN_TRIM(nmlfile_name), 1, -1
+      if (nmlfile_name(pt:pt) == '/' .or. nmlfile_name(pt:pt) == '\') then
+        exit
+      end if
+    end do
+    if (pt > 1) then
+      if (output_nested == 0) then
+        write_folder = TRIM(nmlfile_name(1:pt))//TRIM(run_name)//"_out"
+      else
+        write_folder = TRIM(nmlfile_name(1:pt-1))
+      end if
+    end if
+
   else
     INFO = 1
   end if
@@ -149,13 +204,15 @@ SUBROUTINE INDATA_FILL_WITH_DEFAULT
   size_x = 1e-6
   size_y = 1e-6
   grid_file_in = ""
-  pot_mode = "string"
   allow_pot_interpolation = 1
   strpotentialX = ""
   strpotentialY = ""
   strpotentialxy = "box 5.0e-7 5.5e-7 5.2e-7 1.0e-6 30.0e-3;box 5.0e-7 0.0e-7 5.2e-7 4.5e-7 30.0e-3;"
-  pot_file_in = "pot.dat"
+  pot_file_in = ""
+  pot_filelist_name = ""
   run_name = "default"
+  write_folder = "default_out"
+  output_nested = 0
   write_grid = "bin"
   write_pot = "bin"
   write_psi = "bin"
@@ -185,52 +242,10 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
   INTEGER, INTENT(OUT) :: OKCANCEL
   
   INTEGER :: nx, ny, grid_numx, grid_numy
-  REAL*8, ALLOCATABLE :: potx(:), poty(:)
-  INTEGER :: lenstr, INFO, pt, pt2, sl_count, nested
-  CHARACTER(256) :: nml_folder
+  INTEGER :: lenstr, INFO, pt, pt2
   LOGICAL :: file_exists
   
   OKCANCEL = 0
-  nested = 0
-  write_folder = TRIM(run_name)//"_out"
-! Now check if the namelist folder is equal to the write folder. In this case,
-! do not create the write folder
-  sl_count = 0
-  DO pt = LEN_TRIM(nmlfile_name), 1, -1
-    if (nmlfile_name(pt:pt) == '/' .or. nmlfile_name(pt:pt) == '\') then
-      sl_count = sl_count + 1
-    end if
-    if (sl_count == 2) then
-      exit
-    end if
-  end do
-  if (pt > 1) then
-    pt = pt + 1
-    do pt2 = pt, LEN_TRIM(nmlfile_name)
-      if (nmlfile_name(pt2:pt2) == '/' .or. nmlfile_name(pt2:pt2) == '\') then
-        exit
-      end if
-    end do
-    pt2 = pt2 - 1
-    nml_folder = nmlfile_name(pt:pt2)
-    if (TRIM(nml_folder) == TRIM(write_folder)) then
-      nested = 1
-    end if
-  end if
-  
-! concat the write folder name to the namelist name
-  DO pt = LEN_TRIM(nmlfile_name), 1, -1
-    if (nmlfile_name(pt:pt) == '/' .or. nmlfile_name(pt:pt) == '\') then
-      exit
-    end if
-  end do
-  if (pt > 1) then
-    if (nested == 0) then
-      write_folder = TRIM(nmlfile_name(1:pt))//TRIM(run_name)//"_out"
-    else
-      write_folder = TRIM(nmlfile_name(1:pt-1))
-    end if
-  end if
   CALL PXFMKDIR(TRIM(write_folder), LEN_TRIM(write_folder), 8*8*8-1, INFO)
 
   INQUIRE(FILE=TRIM(write_folder)//'/grid.dat', EXIST=file_exists)
@@ -243,7 +258,13 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
     end if
   end if
 
-  if (.not. nested) then
+  if (.not. output_nested) then
+    DO pt = LEN_TRIM(nmlfile_name), 1, -1
+      if (nmlfile_name(pt:pt) == '/' .or. nmlfile_name(pt:pt) == '\') then
+        exit
+      end if
+    end do
+
     call th_copy_file(TRIM(nmlfile_name), TRIM(write_folder)//TRIM(nmlfile_name(pt:LEN_TRIM(nmlfile_name))))
 
     if (TRIM(pot_file_in) /= "") then
@@ -281,10 +302,18 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
 !*******************************************************
 !    Preload potential file
 !*******************************************************
-  if (pot_mode == "file") then
-    call READ_POT_FILE(pot_file_in, INFO);
+  if (TRIM(pot_file_in) /= "") then
+    call READ_POT_FILE(pot_file_in, INFO)
     if (INFO == 0) then
       print *, "Error reading potential file."
+      STOP
+    end if
+  end if
+  
+  if (pot_filelist_name /= "") then
+    call READ_POT_FILELIST(INFO)
+    if (INFO == 1) then
+      print *, "Error reading potential file-list."
       STOP
     end if
   end if
@@ -304,6 +333,8 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
         numy = grid_numy;
       end if
       ALLOCATE (pot(numy,numx))
+      ALLOCATE (pot_file_static(numy,numx))
+      ALLOCATE (pot_filelist(numy,numx))
       ALLOCATE (psi(numx*numy))
       ALLOCATE (xnodes(numx+2))
       ALLOCATE (ynodes(numy+2))
@@ -319,6 +350,8 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
       numx = pot_numx_file - 2
       numy = pot_numy_file - 2
       ALLOCATE (pot(numy,numx))
+      ALLOCATE (pot_file_static(numy,numx))
+      ALLOCATE (pot_filelist(numy,numx))
       ALLOCATE (psi(numx*numy))
       ALLOCATE (xnodes(numx+2))
       ALLOCATE (ynodes(numy+2))
@@ -327,6 +360,8 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
 
     else  ! uniform
       ALLOCATE (pot(numy,numx))
+      ALLOCATE (pot_file_static(numy,numx))
+      ALLOCATE (pot_filelist(numy,numx))
       ALLOCATE (psi(numx*numy))
       ALLOCATE (xnodes(numx+2))
       ALLOCATE (ynodes(numy+2))
@@ -341,6 +376,8 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
   else if (SOLVE_METHOD == 1) then
     ! Split Step
     ALLOCATE (pot(numy,numx))
+    ALLOCATE (pot_file_static(numy,numx))
+    ALLOCATE (pot_filelist(numy,numx))
     ALLOCATE (psi(numx*numy))
     ALLOCATE (xnodes(numx+2))
     ALLOCATE (ynodes(numy+2))
@@ -359,46 +396,36 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL)
 !*******************************************************
 !    Potential init
 !*******************************************************
-  pot(:,:) = 0;
-  if (pot_mode == "string") then
-    ALLOCATE (potx(1:numx))
-    ALLOCATE (poty(1:numy))
-    call strtopot1D(1, mstar, strpotentialX, numx, xnodes, potx)
-    call strtopot1D(1, mstar, strpotentialY, numy, ynodes, poty)
-    call strtopot2D(1, mstar, strpotentialXY, numx, numy, xnodes, ynodes, pot)
-    DO nx = 1, numx
-      DO ny = 1, numy
-        pot(ny, nx) = (pot(ny, nx) + potx(nx) + poty(ny))*ELCH
-      END DO
-    END DO
-    DEALLOCATE (poty)
-    DEALLOCATE (potx)
-  else if (pot_mode == "file") then
+
+  pot_filelist = 0
+  if (TRIM(pot_file_in) /= "") then
     if (grid_mode == "pot") then
       DO nx = 1, numx
         DO ny = 1, numy
-          pot(ny, nx)= pot_file(ny+1, nx+1)
+          pot_file_static(ny, nx)= pot_file_raw(ny+1, nx+1)
         END DO
       END DO
     else
-      ! check if resampling i really needed
+      ! check if resampling is really needed
       if ((pot_numx_file-2) == numx .and. (pot_numy_file-2) == numy) then
         DO nx = 1, numx
           DO ny = 1, numy
-            pot(ny, nx)= pot_file(ny+1, nx+1)
+            pot_file_static(ny, nx)= pot_file_raw(ny+1, nx+1)
           END DO
         END DO
       else if (allow_pot_interpolation > 0) then
-        CALL resample_matrix_2D(pot_file, pot_x_file, pot_y_file, pot_numx_file, pot_numy_file, pot, xnodes(2:numx), ynodes(2:numy), numx, numy)
+        CALL resample_matrix_2D(pot_file_raw, pot_x_file, pot_y_file, pot_numx_file, pot_numy_file, pot_file_static, xnodes(2:numx), ynodes(2:numy), numx, numy)
       else
         print *, "Potential interpolation needed, but not allowed by user"
         STOP
       end if
     end if
 
-    DEALLOCATE (pot_file)
+    DEALLOCATE (pot_file_raw)
     DEALLOCATE (pot_x_file)
     DEALLOCATE (pot_y_file)
+  else
+    pot_file_static = 0.
   end if
 
 
@@ -481,7 +508,7 @@ SUBROUTINE READ_POT_FILE(fname, INFO)
     end if
   end do
 
-  ALLOCATE (pot_file(pot_numy_file, pot_numx_file))
+  ALLOCATE (pot_file_raw(pot_numy_file, pot_numx_file))
   ALLOCATE (pot_x_file(pot_numx_file))
   ALLOCATE (pot_y_file(pot_numy_file))
 
@@ -512,7 +539,7 @@ SUBROUTINE READ_POT_FILE(fname, INFO)
       end if
     end if
 
-    pot_file(ny, nx) = val
+    pot_file_raw(ny, nx) = val
   END DO
   END DO
   INFO = 1
@@ -582,5 +609,81 @@ SUBROUTINE READ_PSI_FILE(fname, INFO)
 999 CLOSE(22)
 END SUBROUTINE
 
-END MODULE mod_indata
+SUBROUTINE READ_POT_FILELIST(INFO)
+  INTEGER, INTENT(OUT) :: INFO
+  CHARACTER(512) :: line, str1
+  LOGICAL :: file_exists
+  INTEGER :: i
 
+  INFO = 0
+  INQUIRE(FILE=TRIM(pot_filelist_name), EXIST=file_exists)
+  if (.not. file_exists) then
+    return
+  end if
+
+  OPEN(22, FILE=TRIM(pot_filelist_name), FORM="FORMATTED", STATUS="OLD")
+  filelist_count = 0
+  do
+    read (22, '(A)', end=998) line
+    filelist_count = filelist_count + 1
+  end do
+
+998 CLOSE(22)
+  ALLOCATE(filelist_data(filelist_count))
+
+  OPEN(22, FILE=TRIM(pot_filelist_name), FORM="FORMATTED", STATUS="OLD")
+  do i = 1, filelist_count
+    read(22, *) filelist_data(i)%time, filelist_data(i)%file
+  end do
+  CLOSE(22)
+
+END SUBROUTINE
+
+
+SUBROUTINE manage_pot_filelist(time, index)
+  INTEGER, INTENT(INOUT) :: index
+  REAL*8, INTENT(IN) :: time
+  INTEGER :: INFO, nx, ny
+  
+  if (filelist_count == 0 .or. index == filelist_count) then
+    return
+  end if
+  
+  if (time < filelist_data(index+1)%time) then
+    return
+  end if
+
+  index = index + 1
+  call READ_POT_FILE(filelist_data(index)%file, INFO)
+  if (INFO == 0) then
+    return
+  end if
+
+  if (grid_mode == "pot") then
+    DO nx = 1, numx
+      DO ny = 1, numy
+        pot_filelist(ny, nx)= pot_file_raw(ny+1, nx+1)
+      END DO
+    END DO
+  else
+    ! check if resampling is really needed
+    if ((pot_numx_file-2) == numx .and. (pot_numy_file-2) == numy) then
+      DO nx = 1, numx
+        DO ny = 1, numy
+          pot_filelist(ny, nx)= pot_file_raw(ny+1, nx+1)
+        END DO
+      END DO
+    else if (allow_pot_interpolation > 0) then
+      CALL resample_matrix_2D(pot_file_raw, pot_x_file, pot_y_file, pot_numx_file, pot_numy_file, pot_filelist, xnodes(2:numx), ynodes(2:numy), numx, numy)
+    else
+      print *, "Potential interpolation needed, but not allowed by user"
+      STOP
+    end if
+  end if
+
+  DEALLOCATE (pot_file_raw)
+  DEALLOCATE (pot_x_file)
+  DEALLOCATE (pot_y_file)
+END SUBROUTINE
+
+END MODULE mod_indata

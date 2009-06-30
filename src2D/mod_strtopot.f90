@@ -123,6 +123,182 @@ END DO
 
 END SUBROUTINE strtopot1d
 
+
+
+SUBROUTINE strtopot1d_time( time, npotloop, mstar, strpotential, nump, p, pot )
+  IMPLICIT NONE
+! Creates the 1d structure potential pot (in eV), reading values in
+! eV from the definition string strpotential
+!
+!keywords:
+! const    from  to  val
+! linear   from  to  val_from  val_to
+! poly3    from  to  val_from  val_to
+! poly5    from  to  val_from  val_to
+! harmonic from  to  hbaromega potoffset (eV)
+!
+!time dependent keywords:
+! sine           from  to      phase   val_min    val_max wavelength
+! sinewave       phase val_min val_max wavelength
+! sinewave_move  phase val_min val_max wavelength speed
+! const_move     from  to      val     speed
+! const_oscill   from  to      val_min val_max    period
+!
+! each argument "loop" is substituted with 
+!       potloopvar_from + (potloopvar_step * npotloop)
+!
+
+
+INTEGER, INTENT(IN) :: npotloop     ! n. of cycle loop on potential
+CHARACTER(999), INTENT(INOUT) :: strpotential
+INTEGER, INTENT(IN) :: nump
+REAL*8, INTENT(IN) :: time, mstar
+REAL*8, INTENT(in) :: p(1:nump)
+REAL*8, INTENT(OUT) :: pot(1:nump) ! the potential
+
+CHARACTER(200) :: strcommand, strkeyword, strvalues
+INTEGER :: lenstr
+REAL*8 :: potdefvals(10)
+REAL*8 :: paux, shift, amp
+INTEGER :: np, nn, nnp
+
+
+pot(:)= 0.
+lenstr= LEN_TRIM(strpotential)
+IF ( lenstr > 0 ) THEN
+  IF ( strpotential(lenstr:lenstr) /= ";" ) THEN
+    lenstr= lenstr+1
+    strpotential(lenstr:lenstr)= ";"
+  END IF
+END IF
+!PRINT*, '---------------------------'
+
+nnp=1
+DO nn= 1, lenstr
+  IF ( strpotential(nn:nn)==";" ) THEN
+!    PRINT*, " --- ", nn
+    strcommand= REPEAT(" ",LEN(strcommand))
+    strcommand= ADJUSTL( strpotential(nnp:nn-1) )
+!    PRINT*, strcommand
+    strkeyword= strcommand( : SCAN(strcommand," ") )
+!    PRINT*, strcommand
+    strvalues= strcommand( SCAN(strcommand," ")+1 : )
+    nnp=nn+1
+    SELECT CASE (strkeyword)
+    CASE ("const", "CONST", "constant", "CONSTANT")
+      CALL strtopot_valsread( npotloop, strvalues, 3, potdefvals(:) )
+      ! PRINT*, "ccc", potdefvals(:3)
+      DO np= 1, nump
+        IF (p(np)>=potdefvals(1) .AND. p(np)<=potdefvals(2)) THEN
+          pot(np)= potdefvals(3)
+        END IF
+      END DO
+    CASE ("linear", "LINEAR")
+      CALL strtopot_valsread( npotloop, strvalues, 4, potdefvals(:) )
+      ! PRINT*, "lll", potdefvals(:4)
+      DO np= 1, nump
+        IF (p(np)>=potdefvals(1) .AND. p(np)<=potdefvals(2)) THEN
+          pot(np)= potdefvals(3) + (potdefvals(4)-potdefvals(3))*     &
+               &  (p(np)-potdefvals(1))/(potdefvals(2)-potdefvals(1))
+        END IF
+      END DO
+    CASE ("poly3", "POLY3")
+      CALL strtopot_valsread( npotloop, strvalues, 4, potdefvals(:) )
+      ! PRINT*, "ppp", potdefvals(:4)
+      IF (potdefvals(1) >= potdefvals(2)) STOP "mk1dpot: values error"
+      DO np= 1, nump
+        IF (p(np)>=potdefvals(1) .AND. p(np)<=potdefvals(2)) THEN
+          paux= (p(np)-potdefvals(1)) / (potdefvals(2)-potdefvals(1))
+          pot(np)= potdefvals(3) + (potdefvals(4)-potdefvals(3))*     &
+               &  ( 3.*(paux**2) - 2.*(paux**3) )
+        END IF
+      END DO
+    CASE ("poly5", "POLY5")
+      CALL strtopot_valsread( npotloop, strvalues, 4, potdefvals(:) )
+      ! PRINT*, "ppp", potdefvals(:4)
+      IF (potdefvals(1) >= potdefvals(2)) STOP "mk1dpot: values error"
+      DO np= 1, nump
+        IF (p(np)>=potdefvals(1) .AND. p(np)<=potdefvals(2)) THEN
+          paux= (p(np)-potdefvals(1)) / (potdefvals(2)-potdefvals(1))
+          pot(np)= potdefvals(3) + (potdefvals(4)-potdefvals(3))*     &
+               &  ( 10.*(paux**3) - 15.*(paux**4) + 6.*(paux**5) )
+        END IF
+      END DO
+
+    CASE ("harmonic", "HARMONIC")
+      CALL strtopot_valsread( npotloop, strvalues, 4, potdefvals(:) )
+      ! PRINT*, "ppp", potdefvals(:4)
+      IF (potdefvals(1) >= potdefvals(2)) STOP "mk1dpot: values error"
+      DO np= 1, nump
+        IF (p(np)>=potdefvals(1) .AND. p(np)<=potdefvals(2)) THEN
+          paux= p(np) - potdefvals(1) - (potdefvals(2)-potdefvals(1))/2.
+          pot(np)= (mstar/2.)*((potdefvals(3)/HBAR_eV)**2) / ELCH
+          pot(np)= pot(np)*(paux**2) + potdefvals(4)
+        END IF
+      END DO
+
+! const_move    from  to      val     speed
+    CASE ("const_move", "CONST_MOVE")
+      CALL strtopot_valsread( npotloop, strvalues, 4, potdefvals(:) )
+      shift = time * potdefvals(4)
+      potdefvals(1) = potdefvals(1) + shift
+      potdefvals(2) = potdefvals(2) + shift
+      DO np= 1, nump
+        IF (p(np)>=potdefvals(1) .AND. p(np)<=potdefvals(2)) THEN
+          pot(np)= potdefvals(3)
+        END IF
+      END DO
+
+! const_oscill  from  to      val_min val_max    period
+    CASE ("const_oscill", "CONST_OSCILL")
+      CALL strtopot_valsread( npotloop, strvalues, 5, potdefvals(:) )
+      amp = 0.5 * (1. + sin(2*PIG*time / potdefvals(5)))
+      amp = potdefvals(3) + (potdefvals(4)-potdefvals(3)) * amp;
+      DO np= 1, nump
+        IF (p(np)>=potdefvals(1) .AND. p(np)<=potdefvals(2)) THEN
+          pot(np)= amp
+        END IF
+      END DO
+
+! sine           from  to      phase   val_min    val_max  wavelength
+    CASE ("sine", "SINE")
+      CALL strtopot_valsread( npotloop, strvalues, 6, potdefvals(:) )
+      DO np= 1, nump
+        IF (p(np)>=potdefvals(1) .AND. p(np)<=potdefvals(2)) THEN
+          amp = sin(2*PIG * (p(np) - potdefvals(3)) / potdefvals(6))
+          pot(np)= 0.5 * (potdefvals(5) + potdefvals(4) + (potdefvals(5) - potdefvals(4)) * amp)
+        END IF
+      END DO
+
+! sinewave       phase val_min val_max wavelength
+    CASE ("sinewave", "SINEWAVE")
+      CALL strtopot_valsread( npotloop, strvalues, 4, potdefvals(:) )
+      DO np= 1, nump
+        amp = sin(2*PIG * (p(np) - potdefvals(1)) / potdefvals(4))
+        pot(np)= 0.5 * (potdefvals(3) + potdefvals(2) + (potdefvals(3) - potdefvals(2)) * amp)
+      END DO
+
+! sinewave_move  phase val_min val_max wavelength speed
+    CASE ("sinewave_move", "SINEWAVE_MOVE")
+      CALL strtopot_valsread( npotloop, strvalues, 5, potdefvals(:) )
+      DO np= 1, nump
+        amp = sin(2*PIG * (p(np) - potdefvals(1) - potdefvals(5)*time) / potdefvals(4))
+        pot(np)= 0.5 * (potdefvals(3) + potdefvals(2) + (potdefvals(3) - potdefvals(2)) * amp)
+      END DO
+
+    CASE DEFAULT 
+      IF ( strkeyword(1:1)/="#" ) THEN
+        print *, strpotential
+        STOP "mk1dpot: unrecognised keyword"
+      END IF
+    END SELECT
+  END IF
+END DO
+
+END SUBROUTINE strtopot1d_time
+
+
+
 !************************************************************************
 SUBROUTINE strtopot2d( npotloop, mstar, strpotential, numpx, numpy, px, py, pot )
   IMPLICIT NONE

@@ -26,7 +26,6 @@
  GRID_FILE_IN    = "                                                                                "
  /
  &POTENTIAL
- POT_MODE        = "string                          ",
  ALLOW_POT_INTERPOLATION =           1,
  STRPOTENTIALX   = "                                                                                                                 
                                                                                                                                      
@@ -52,7 +51,7 @@
                                                                                                                                      
                                                                                                                                      
                                                                                         ",
- POT_FILE_IN     = "pot.dat                                                                         "
+ POT_FILE_IN     = ""
  /
  &WRITE_OUT
  run_name    = "out_fenditura                                                                                                    

@@ -17,8 +17,9 @@ SUBROUTINE MAIN_ALGO
   COMPLEX*16, ALLOCATABLE :: psik(:)
   REAL*8 dkx, dky, fftnorm
   REAL*8, ALLOCATABLE :: kx(:), ky(:)
-  INTEGER INFO
+  INTEGER INFO, file_list_index
   REAL*8 next_write_time
+  REAL*8, ALLOCATABLE :: potx(:), poty(:)
   
 !  INTEGER*8 :: planfw, planbk
   type(DFTI_DESCRIPTOR), POINTER :: planfw
@@ -27,14 +28,6 @@ SUBROUTINE MAIN_ALGO
   call INDATA_COMPUTE(INFO)
   if (INFO == 1) then
     return
-  end if
-
-    ! Write Potential
-  if (write_pot == "txt" .or. write_pot == "both") then
-    call write_2D_real_in_file_gnuplot(write_folder, "potential", 0, pot, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
-  end if
-  if (write_pot == "bin" .or. write_pot == "both") then
-    call write_2D_real_in_file_bin(write_folder, "potential", 0, pot, numx, numy, write_downsample_x, write_downsample_y)
   end if
 
     ! Write Grid
@@ -53,6 +46,8 @@ SUBROUTINE MAIN_ALGO
   dky = 2*PIG/size_y
   fftnorm = 1.0 / REAL(numx*numy)
 
+  ALLOCATE (potx(1:numx))
+  ALLOCATE (poty(1:numy))
   ALLOCATE (kx(numx))
   ALLOCATE (ky(numy))
   ALLOCATE (psik(numx*numy))
@@ -75,7 +70,19 @@ SUBROUTINE MAIN_ALGO
 
 ! **** Time steps
   next_write_time = 0.
+  file_list_index = 0
   DO iter = 1, MAXIT
+
+    ! Build time dependent potential
+    call manage_pot_filelist((iter-1)*dt, file_list_index)
+    call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialX, numx, xnodes, potx)
+    call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialY, numy, ynodes, poty)
+    call strtopot2D(1, mstar, strpotentialXY, numx, numy, xnodes, ynodes, pot)
+    DO nx = 1, numx
+      DO ny = 1, numy
+        pot(ny, nx) = (pot(ny, nx) + pot_file_static(ny, nx) + pot_filelist(ny, nx) + potx(nx) + poty(ny))*ELCH
+      END DO
+    END DO
 
     ! ****** Nonlinear half step
     pt = 1;
@@ -119,6 +126,14 @@ psik = psi;
       if (write_psi == "bin" .or. write_psi == "both") then
         call write_2D_cplx_in_file_bin(write_folder, "psi", iter-1, psi, numx, numy, write_downsample_x, write_downsample_y)
       end if
+
+      if (write_pot == "txt" .or. write_pot == "both") then
+        call write_2D_real_in_file_gnuplot(write_folder, "potential", iter-1, pot, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
+      end if
+      if (write_pot == "bin" .or. write_pot == "both") then
+        call write_2D_real_in_file_bin(write_folder, "potential", iter-1, pot, numx, numy, write_downsample_x, write_downsample_y)
+      end if
+
       next_write_time = next_write_time + write_timestep
     end if
   END DO
@@ -127,11 +142,15 @@ psik = psi;
 !  CALL dfftw_destroy_plan( planbk )
   INFO = DftiFreeDescriptor(planfw)
   
+  DEALLOCATE (poty)
+  DEALLOCATE (potx)
   DEALLOCATE (psik)
   DEALLOCATE (ky)
   DEALLOCATE (kx)
   DEALLOCATE (psi)
   DEALLOCATE (pot)
+  DEALLOCATE (pot_file_static)
+  DEALLOCATE (pot_filelist)
   DEALLOCATE (xnodes)
   DEALLOCATE (ynodes)
 
