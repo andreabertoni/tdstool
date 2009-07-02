@@ -87,9 +87,9 @@ SUBROUTINE ViewListCbk(ID)
   ALLOCATE(vstr_in(read_NUMZ, read_NUMY, read_NUMX))
   ALLOCATE(psic(read_NUMZ, read_NUMY, read_NUMX))
 
-  INQUIRE(FILE=TRIM(write_folder)//'/potential0000.bin', EXIST=file_exists)
+  INQUIRE(FILE=TRIM(write_folder)//'/potential'//str_num//'.bin', EXIST=file_exists)
   if (file_exists) then
-    OPEN(33, FILE=TRIM(write_folder)//'/potential0000.bin', FORM="UNFORMATTED", ACTION="READ",  &
+    OPEN(33, FILE=TRIM(write_folder)//'/potential'//str_num//'.bin', FORM="UNFORMATTED", ACTION="READ",  &
          &   STATUS="OLD")
     read (33) vstr_in
     CLOSE(33)

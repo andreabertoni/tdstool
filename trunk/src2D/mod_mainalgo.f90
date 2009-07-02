@@ -1,4 +1,4 @@
-MODULE mod_mainalgo
+MODULE mod_boxintegration
   USE mod_staticdata
   USE mod_sparse_fun
   USE mod_indata
@@ -8,12 +8,12 @@ MODULE mod_mainalgo
 
 CONTAINS
 
-SUBROUTINE MAIN_ALGO
+SUBROUTINE BOXINTEGRATION_ALGO
 
   INTEGER nx, ny, irow, pt, iter
   COMPLEX*16 k0, k1;
   COMPLEX*16, ALLOCATABLE :: b(:)
-  INTEGER INFO
+  INTEGER INFO, file_list_index
   REAL*8 next_write_time
   REAL*8, ALLOCATABLE :: potx(:), poty(:)
 
@@ -30,14 +30,6 @@ SUBROUTINE MAIN_ALGO
   ALLOCATE (b(numx*numy))
   ALLOCATE (potx(1:numx))
   ALLOCATE (poty(1:numy))
-
-    ! Write Potential
-  if (write_pot == "txt" .or. write_pot == "both") then
-    call write_2D_real_in_file_gnuplot(write_folder, "potential", 0, pot, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
-  end if
-  if (write_pot == "bin" .or. write_pot == "both") then
-    call write_2D_real_in_file_bin(write_folder, "potential", 0, pot, numx, numy, write_downsample_x, write_downsample_y)
-  end if
 
     ! Write Grid
   if (write_grid == "txt" .or. write_grid == "both") then
@@ -80,10 +72,12 @@ SUBROUTINE MAIN_ALGO
   call pardiso(pt_prd, 1, 1, 6, 12, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 1, b, b, INFO)
 
   next_write_time = 0.
+  file_list_index = 0
 ! **** Time steps
   DO iter = 1, MAXIT
 
     ! Build time dependent potential
+    call manage_pot_filelist((iter-1)*dt, file_list_index)
     call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialX, numx, xnodes, potx)
     call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialY, numy, ynodes, poty)
     call strtopot2D(1, mstar, strpotentialXY, numx, numy, xnodes, ynodes, pot)
@@ -121,6 +115,14 @@ SUBROUTINE MAIN_ALGO
       if (write_psi == "bin" .or. write_psi == "both") then
         call write_2D_cplx_in_file_bin(write_folder, "psi", iter-1, psi, numx, numy, write_downsample_x, write_downsample_y)
       end if
+
+      if (write_pot == "txt" .or. write_pot == "both") then
+        call write_2D_real_in_file_gnuplot(write_folder, "potential", iter-1, pot, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
+      end if
+      if (write_pot == "bin" .or. write_pot == "both") then
+        call write_2D_real_in_file_bin(write_folder, "potential", iter-1, pot, numx, numy, write_downsample_x, write_downsample_y)
+      end if
+
       next_write_time = next_write_time + write_timestep
     end if
   END DO

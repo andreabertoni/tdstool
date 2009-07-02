@@ -14,7 +14,7 @@ MODULE mod_inputgui
   INTEGER :: hPsi, hPsiLabel, hPsiMode, hPsiX0, hPsiY0, hPsiZ0, hPsiSigX, hPsiSigY, hPsiSigZ, hPsiXenergy, hPsiYenergy, hPsiZenergy, hPsiFile
   INTEGER :: hTime, hTimeDelta, hTimeSteps
   INTEGER :: hGrid, hGridNumX, hGridNumY, hGridNumZ, hGridSizeX, hGridSizeY, hGridSizeZ
-  INTEGER :: hPot, hPotMode, hPotFile, hPotStrX, hPotStrY, hPotStrZ, hPotStrXYZ, hPotStrXEdit, hPotStrYEdit, hPotStrZEdit, hPotStrXYZEdit
+  INTEGER :: hPot, hPotMode, hPotFile, hPotFileList, hPotStrX, hPotStrY, hPotStrZ, hPotStrXYZ, hPotStrXEdit, hPotStrYEdit, hPotStrZEdit, hPotStrXYZEdit
   INTEGER :: hOut, hOutDir, hOutWGridTxt, hOutWGridBin, hOutWPotTxt, hOutWPotBin, hOutWPsiTxt, hOutWPsiBin, hOutTime, hOutDownX, hOutDownY, hOutDownZ
   INTEGER :: hData, hData2, hElMass, hNonlin
 
@@ -225,51 +225,44 @@ SUBROUTINE SHOW_IN_GUI
     ! Potential Frame
   CALL SWGWIN(0, 0, 80, 33)
   CALL WGLAB(hPot, "POTENTIAL", hNull)
-  CALL SWGWIN(108, 0, 40, 33)
-  CALL WGLAB(hPot, "Mode:", hNull)
-  CALL SWGWIN(148, 0, 100, 33)
-  if (pot_mode == 'string') then
-    mode = 2
-  else if (pot_mode == 'file') then
-    mode = 3
-  else
-    mode = 1
-  end if
-  CALL WGDLIS(hPot, "Zero|Command|File", mode, hPotMode)
-  CALL SWGWIN(0, 30, 40, 33)
+  CALL SWGWIN(0, 10, 40, 33)
   CALL WGLAB(hPot, "File:", hNull)
-  CALL SWGWIN(40, 30, 200, ctrlh)
+  CALL SWGWIN(40, 10, 200, ctrlh)
   CALL WGFIL(hPot, 'Select Potential File', pot_file_in, '*.dat', hPotFile)
+  CALL SWGWIN(0, 45, 40, 33)
+  CALL WGLAB(hPot, "Filelist:", hNull)
+  CALL SWGWIN(40, 45, 200, ctrlh)
+  CALL WGFIL(hPot, 'Select Pot Filelist', pot_filelist_name, '*.dat', hPotFilelist)
 
   CALL strtopot_countcmds(strpotentialX, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 70, 150, ctrlh)
+  CALL SWGWIN(0, 80, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd X num of lines:', vstr, 23, hPotStrX)
-  CALL SWGWIN(155, 70, 40, ctrlh)
+  CALL SWGWIN(155, 80, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrXEdit)
   CALL SWGCBK(hPotStrXEdit, PotStrCbk)
 
   CALL strtopot_countcmds(strpotentialy, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 105, 150, ctrlh)
+  CALL SWGWIN(0, 115, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd Y num of lines:', vstr, 23, hPotStrY)
-  CALL SWGWIN(155, 105, 40, ctrlh)
+  CALL SWGWIN(155, 115, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrYEdit)
   CALL SWGCBK(hPotStrYEdit, PotStrCbk)
 
   CALL strtopot_countcmds(strpotentialz, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 140, 150, ctrlh)
+  CALL SWGWIN(0, 150, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd Z num of lines:', vstr, 23, hPotStrZ)
-  CALL SWGWIN(155, 140, 40, ctrlh)
+  CALL SWGWIN(155, 150, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrZEdit)
   CALL SWGCBK(hPotStrZEdit, PotStrCbk)
 
   CALL strtopot_countcmds(strpotentialXYZ, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 175, 150, ctrlh)
+  CALL SWGWIN(0, 185, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd XYZ num of lines:', vstr, 23, hPotStrXYZ)
-  CALL SWGWIN(155, 175, 40, ctrlh)
+  CALL SWGWIN(155, 185, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrXYZEdit)
   CALL SWGCBK(hPotStrXYZEdit, PotStrCbk)
 
@@ -404,20 +397,11 @@ SUBROUTINE SHOW_IN_GUI
   read (vstr, *) size_z
 
     ! Potential Frame
-  CALL GWGLIS(hPotMode, mode)
-  if (mode == 2) then
-    pot_mode = 'string'
-  else if (mode == 3) then
-    pot_mode = 'file'
-  else
-    pot_mode = 'zero'
-  endif
   CALL GWGFIL(hPotFile, pot_file_in)
-!  CALL GWGTXT(hPotSTrX, strpotentialX)
-!  CALL GWGTXT(hPotSTrY, strpotentialY)
-
+  CALL GWGFIL(hPotFileList, pot_filelist_name)
+  
     ! Output Data
-  CALL GWGFIL(hOutDir, write_folder)
+  CALL GWGTXT(hOutDir, write_folder)
 
   CALL GWGBUT(hOutWGridTxt, mode)
   CALL GWGBUT(hOutWGridBin, mode2)

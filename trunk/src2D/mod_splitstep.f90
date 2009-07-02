@@ -1,4 +1,4 @@
-MODULE mod_mainalgo
+MODULE mod_splitstep
   USE mod_staticdata
   USE mod_sparse_fun
   USE mod_indata
@@ -10,7 +10,7 @@ MODULE mod_mainalgo
 
 CONTAINS
 
-SUBROUTINE MAIN_ALGO
+SUBROUTINE SPLITSTEP_ALGO
 
   INTEGER nx, ny, irow, pt, iter
   COMPLEX*16 :: alpha, beta, k0, k1
