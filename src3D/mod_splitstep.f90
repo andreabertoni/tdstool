@@ -16,9 +16,10 @@ SUBROUTINE MAIN_ALGO
   COMPLEX*16, ALLOCATABLE :: psik(:)
   REAL*8 dkx, dky, dkz, fftnorm
   REAL*8, ALLOCATABLE :: kx(:), ky(:), kz(:)
-  INTEGER INFO
+  INTEGER INFO, file_list_index
   REAL*8 next_write_time
-
+  REAL*8, ALLOCATABLE :: potx(:), poty(:), potz(:)
+ 
 !  INTEGER*8 :: planfw, planbk
   type(DFTI_DESCRIPTOR), POINTER :: planfw
   integer   lengths(3)
@@ -26,14 +27,6 @@ SUBROUTINE MAIN_ALGO
   call INDATA_COMPUTE(INFO)
   if (INFO == 1) then
     return
-  end if
-
-    ! Write Potential
-  if (write_pot == "txt" .or. write_pot == "both") then
-    call write_3D_real_in_file_gnuplot(write_folder, "potential", 0, pot, xnodes, ynodes, znodes, numx, numy, numz, write_downsample_x, write_downsample_y, write_downsample_z)
-  end if
-  if (write_pot == "bin" .or. write_pot == "both") then
-    call write_3D_real_in_file_bin(write_folder, "potential", 0, pot, numx, numy, numz, write_downsample_x, write_downsample_y, write_downsample_z)
   end if
 
     ! Write Grid
@@ -53,6 +46,9 @@ SUBROUTINE MAIN_ALGO
   dkz = 2*PIG/size_z
   fftnorm = 1.0 / REAL(numx*numy*numz)
 
+  ALLOCATE(potx(numx))
+  ALLOCATE(poty(numy))
+  ALLOCATE(potz(numz))
   ALLOCATE (kx(numx))
   ALLOCATE (ky(numy))
   ALLOCATE (kz(numz))
@@ -80,7 +76,22 @@ SUBROUTINE MAIN_ALGO
 
 ! **** Time steps
   next_write_time = 0.
+  file_list_index = 0
   DO iter = 1, MAXIT
+
+    ! Build time dependent potential
+    call manage_pot_filelist((iter-1)*dt, file_list_index)
+    call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialX, numx, xnodes, potx)
+    call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialY, numy, ynodes, poty)
+    call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialZ, numz, znodes, potz)
+    call strtopot3D(1, mstar, strpotentialXYZ, numx, numy, numz, xnodes, ynodes, znodes, pot)
+    DO nx = 1, numx
+      DO ny = 1, numy
+        DO nz = 1, numz
+          pot(nz, ny, nx) = (pot(nz, ny, nx) + pot_file_static(nz, ny, nx) + pot_filelist(nz, ny, nx) + potx(nx) + poty(ny) + poty(nz))*ELCH
+        END DO
+      END DO
+    END DO
 
     ! ****** Nonlinear half step
     pt = 1;
@@ -130,6 +141,14 @@ SUBROUTINE MAIN_ALGO
       if (write_psi == "bin" .or. write_psi == "both") then
         call write_3D_cplx_in_file_bin(write_folder, "psi", iter-1, psi, numx, numy, numz, write_downsample_x, write_downsample_y, write_downsample_z)
       end if
+
+      if (write_pot == "txt" .or. write_pot == "both") then
+        call write_3D_real_in_file_gnuplot(write_folder, "potential", iter-1, pot, xnodes, ynodes, znodes, numx, numy, numz, write_downsample_x, write_downsample_y, write_downsample_z)
+      end if
+      if (write_pot == "bin" .or. write_pot == "both") then
+        call write_3D_real_in_file_bin(write_folder, "potential", iter-1, pot, numx, numy, numz, write_downsample_x, write_downsample_y, write_downsample_z)
+      end if
+
       next_write_time = next_write_time + write_timestep
     end if
   END DO
@@ -138,12 +157,17 @@ SUBROUTINE MAIN_ALGO
 !  CALL dfftw_destroy_plan( planbk )
   INFO = DftiFreeDescriptor(planfw)
 
+  DEALLOCATE (potz)
+  DEALLOCATE (poty)
+  DEALLOCATE (potx)
   DEALLOCATE (psik)
   DEALLOCATE (kz)
   DEALLOCATE (ky)
   DEALLOCATE (kx)
   DEALLOCATE (psi)
   DEALLOCATE (pot)
+  DEALLOCATE (pot_file_static)
+  DEALLOCATE (pot_filelist)
   DEALLOCATE (znodes)
   DEALLOCATE (ynodes)
   DEALLOCATE (xnodes)

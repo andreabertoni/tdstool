@@ -3,7 +3,8 @@ MODULE mod_inputgui
   USE dislin
   USE mod_indata
   USE mod_strtopot
-  USE mod_mainalgo
+  USE mod_boxintegration
+  USE mod_splitstep
   USE mod_viewgraph
   IMPLICIT NONE
   SAVE
@@ -54,7 +55,7 @@ SUBROUTINE MAIN_GUI
     else
       CALL SWGWIN(5, 35, 70, 25)
     end if
-    CALL WGBOX(hMainForm, 'Edit|Run|View|Quit', MainMenuCmd, hMainCmd)
+    CALL WGBOX(hMainForm, 'Edit|Run Box Integration|Run Split Step|View|Quit', MainMenuCmd, hMainCmd)
     CALL SWGWIN(100, 70, 50, 28)
     CALL WGOK(hMainForm, hMainOk)
 
@@ -68,17 +69,28 @@ SUBROUTINE MAIN_GUI
       if (write_pot == "none" .and. write_psi == "none") then
         CALL DWGBUT("No output is selected for this simulation.|Do you want to continue?", INFO)
         if (INFO == 1) then
-          CALL MAIN_ALGO
+          CALL BOXINTEGRATION_ALGO
+          MainMenuCmd = MainMenuCmd + 1
         end if
       else
-        CALL MAIN_ALGO
+        CALL BOXINTEGRATION_ALGO
+        MainMenuCmd = MainMenuCmd + 1
       endif
     else if (MainMenuCmd == 3) then
-      CALL SHOW_GRAPH
+      if (write_pot == "none" .and. write_psi == "none") then
+        CALL DWGBUT("No output is selected for this simulation.|Do you want to continue?", INFO)
+        if (INFO == 1) then
+          CALL SPLITSTEP_ALGO
+        end if
+      else
+        CALL SPLITSTEP_ALGO
+      endif
     else if (MainMenuCmd == 4) then
+      CALL SHOW_GRAPH
+    else if (MainMenuCmd == 5) then
       EXIT
     end if
-    if (MainMenuCmd < 4) then
+    if (MainMenuCmd < 5) then
       MainMenuCmd = MainMenuCmd + 1
     end if
   END DO
