@@ -238,9 +238,9 @@ END SUBROUTINE INDATA_SAVE
 
 
 !===================================================================
-SUBROUTINE INDATA_COMPUTE(OKCANCEL)
+SUBROUTINE INDATA_COMPUTE(OKCANCEL, SOLVE_METHOD)
   INTEGER, INTENT(OUT) :: OKCANCEL
-  
+  INTEGER, INTENT(IN) :: SOLVE_METHOD
   INTEGER :: nx, ny, grid_numx, grid_numy
   INTEGER :: lenstr, INFO, pt, pt2
   LOGICAL :: file_exists
