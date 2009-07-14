@@ -25,7 +25,7 @@ SUBROUTINE SPLITSTEP_ALGO
   type(DFTI_DESCRIPTOR), POINTER :: planfw
   integer   lengths(2)
   
-  call INDATA_COMPUTE(INFO)
+  call INDATA_COMPUTE(INFO, 1)
   if (INFO == 1) then
     return
   end if

@@ -5,29 +5,29 @@
  /
  &INITIAL_PSI
  PSI_MODE        = "gauss                           ",
- X0      =  2.000000000000000E-008,
- Y0      =  5.000000000000000E-008,
- SIGMAX  =  2.000000000000000E-009,
- SIGMAY  =  2.000000000000000E-009,
- XENERGY =  5.000000000000000E-002,
+ X0      =  2.000000000000000E-007,
+ Y0      =  5.000000000000000E-007,
+ SIGMAX  =  7.000000000000000E-008,
+ SIGMAY  =  7.000000000000000E-008,
+ XENERGY =  4.000000000000000E-002,
  YENERGY =  0.000000000000000E+000,
  PSI_FILE_IN     = "                                                                                "
  /
  &TIME
- DT      =  1.000000000000000E-016,
+ DT      =  5.000000000000000E-015,
  MAXIT   =         300
  /
  &GRID
  GRID_MODE       = "uniform                         ",
- NUMX    =         400,
- NUMY    =         200,
- SIZE_X  =  1.000000000000000E-007,
- SIZE_Y  =  1.000000000000000E-007,
+ NUMX    =         800,
+ NUMY    =         800,
+ SIZE_X  =  1.000000000000000E-006,
+ SIZE_Y  =  1.000000000000000E-006,
  GRID_FILE_IN    = "                                                                                "
  /
  &POTENTIAL
  ALLOW_POT_INTERPOLATION =           1,
- STRPOTENTIALX   = "                                                                                                                 
+ STRPOTENTIALX   = "const 5.0e-7 5.2e-7 0.0e-3;                                                                                      
                                                                                                                                      
                                                                                                                                      
                                                                                                                                      
@@ -63,7 +63,7 @@
  WRITE_GRID      = "txt                           ",
  WRITE_POT       = "bin                           ",
  WRITE_PSI       = "bin                           ",
- WRITE_TIMESTEP  =  2.000000000000000E-015,
- WRITE_DOWNSAMPLE_X      =           2,
- WRITE_DOWNSAMPLE_Y      =           2
+ WRITE_TIMESTEP  =  4.000000000000000E-014,
+ WRITE_DOWNSAMPLE_X      =           4,
+ WRITE_DOWNSAMPLE_Y      =           4
  /

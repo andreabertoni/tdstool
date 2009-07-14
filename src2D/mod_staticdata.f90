@@ -21,10 +21,4 @@ MODULE mod_staticdata
   INTEGER, PARAMETER :: OSV = 0   ! OS Version: 0 = linux, 1 = Windows
 #endif
 
-#ifdef SPLIT_STEP
-  INTEGER, PARAMETER :: SOLVE_METHOD = 1   ! 0 = Box integration, 1 = Split Step
-#else
-  INTEGER, PARAMETER :: SOLVE_METHOD = 1   ! 0 = Box integration, 1 = Split Step
-#endif
-
 END MODULE mod_staticdata

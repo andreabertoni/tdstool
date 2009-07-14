@@ -51,12 +51,12 @@ SUBROUTINE MAIN_GUI
     CALL WGLAB(hMainForm, nml_file_name, hNull)
 
     if (OSV == 0) then
-      CALL SWGWIN(5, 35, 70, 125)
+      CALL SWGWIN(5, 35, 130, 125)
     else
-      CALL SWGWIN(5, 35, 70, 25)
+      CALL SWGWIN(5, 35, 130, 25)
     end if
     CALL WGBOX(hMainForm, 'Edit|Run Box Integration|Run Split Step|View|Quit', MainMenuCmd, hMainCmd)
-    CALL SWGWIN(100, 70, 50, 28)
+    CALL SWGWIN(130, 80, 50, 28)
     CALL WGOK(hMainForm, hMainOk)
 
     CALL WGFIN
@@ -125,15 +125,15 @@ SUBROUTINE SHOW_IN_GUI
 
   CALL SWGWIN(300, 10, 250, 40)
   CALL WGBAS(hForm, 'FORM', hData2)
-  CALL SWGWIN(300, 50, 250, 240)
+  CALL SWGWIN(300, 80, 250, 240)
   CALL WGBAS(hForm, 'FORM', hPot)
-  CALL SWGWIN(300, 300, 250, 220)
+  CALL SWGWIN(300, 330, 250, 220)
   CALL WGBAS(hForm, 'FORM', hOut)
 
     ! Graphics around frames
   CALL SWGWIN(10, 40, 250, 10)
   CALL WGLAB(hForm, "---------------------------------------", hNull)
-  CALL SWGWIN(300, 40, 250, 10)
+  CALL SWGWIN(300, 70, 250, 10)
   CALL WGLAB(hForm, "---------------------------------------", hNull)
   CALL SWGWIN(10, 250, 250, 10)
   CALL WGLAB(hForm, "---------------------------------------", hNull)
@@ -154,13 +154,11 @@ SUBROUTINE SHOW_IN_GUI
   write (vstr, '(ES11.5)') electronmass
   CALL WGTXT(hData, vstr, hElMass)
 
-  if (SOLVE_METHOD == 1) then
-    CALL SWGWIN(0, 0, 160, 30)
-    CALL WGLAB(hData2, '3D-equiv scattering length:', hNull)
-    CALL SWGWIN(165, 0, 80, ctrlh)
-    write (vstr, '(ES11.5)') nonlin_as
-    CALL WGTXT(hData2, vstr, hNonlin)
-  endif
+  CALL SWGWIN(0, 0, 160, 30)
+  CALL WGLAB(hData2, '3D-equiv scattering length:', hNull)
+  CALL SWGWIN(165, 0, 80, ctrlh)
+  write (vstr, '(ES11.5)') nonlin_as
+  CALL WGTXT(hData2, vstr, hNonlin)
 
     ! Wave Function Frame
   CALL SWGWIN(0, 0, 80, 35)
@@ -244,38 +242,38 @@ SUBROUTINE SHOW_IN_GUI
   CALL SWGWIN(0, 0, 80, 33)
   CALL WGLAB(hPot, "POTENTIAL", hNull)
 
-  CALL SWGWIN(0, 10, 150, 28)
+  CALL SWGWIN(0, 20, 150, 28)
   CALL WGBUT(hPot, 'Allow interpolation', allow_pot_interpolation, hPotInterp)
-  CALL SWGWIN(0, 40, 40, 33)
+  CALL SWGWIN(0, 50, 40, 33)
   CALL WGLAB(hPot, "File:", hNull)
-  CALL SWGWIN(40, 40, 200, ctrlh)
+  CALL SWGWIN(40, 50, 200, ctrlh)
   CALL WGFIL(hPot, 'Select Potential File', pot_file_in, '*.dat', hPotFile)
-  CALL SWGWIN(0, 75, 40, 33)
+  CALL SWGWIN(0, 85, 40, 33)
   CALL WGLAB(hPot, "Filelist:", hNull)
-  CALL SWGWIN(40, 75, 200, ctrlh)
+  CALL SWGWIN(40, 85, 200, ctrlh)
   CALL WGFIL(hPot, 'Select Pot Filelist', pot_filelist_name, '*.dat', hPotFilelist)
 
   CALL strtopot_countcmds(strpotentialX, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 110, 150, ctrlh)
+  CALL SWGWIN(0, 120, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd X num of lines:', vstr, 23, hPotStrX)
-  CALL SWGWIN(155, 110, 40, ctrlh)
+  CALL SWGWIN(155, 120, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrXEdit)
   CALL SWGCBK(hPotStrXEdit, PotStrCbk)
 
   CALL strtopot_countcmds(strpotentialy, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 145, 150, ctrlh)
+  CALL SWGWIN(0, 155, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd Y num of lines:', vstr, 23, hPotStrY)
-  CALL SWGWIN(155, 145, 40, ctrlh)
+  CALL SWGWIN(155, 155, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrYEdit)
   CALL SWGCBK(hPotStrYEdit, PotStrCbk)
 
   CALL strtopot_countcmds(strpotentialXY, mode)
   write (vstr, '(I2)') mode
-  CALL SWGWIN(0, 180, 150, ctrlh)
+  CALL SWGWIN(0, 190, 150, ctrlh)
   CALL WGLTXT(hPot, 'Cmd XY num of lines:', vstr, 23, hPotStrXY)
-  CALL SWGWIN(155, 180, 40, ctrlh)
+  CALL SWGWIN(155, 190, 40, ctrlh)
   CALL WGPBUT(hPot, 'Edit', hPotStrXYEdit)
   CALL SWGCBK(hPotStrXYEdit, PotStrCbk)
 
@@ -358,10 +356,8 @@ SUBROUTINE SHOW_IN_GUI
 
   CALL GWGTXT(hElMass, vstr)
   read (vstr, *) electronmass
-  if (SOLVE_METHOD == 1) then
-    CALL GWGTXT(hNonlin, vstr)
-    read (vstr, *) nonlin_as
-  end if
+  CALL GWGTXT(hNonlin, vstr)
+  read (vstr, *) nonlin_as
 
     ! Get Wave Function data
   CALL GWGLIS(hPsiMode, mode)
