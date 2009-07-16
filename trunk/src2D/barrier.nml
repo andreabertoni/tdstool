@@ -19,8 +19,8 @@
  /
  &GRID
  GRID_MODE       = "uniform                         ",
- NUMX    =         800,
- NUMY    =         800,
+ NUMX    =         256,
+ NUMY    =         256,
  SIZE_X  =  1.000000000000000E-006,
  SIZE_Y  =  1.000000000000000E-006,
  GRID_FILE_IN    = "                                                                                "
