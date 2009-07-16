@@ -1,4 +1,5 @@
 MODULE mod_sparse_fun
+  USE mod_staticdata
   IMPLICIT NONE
   CONTAINS
 
@@ -30,17 +31,18 @@ END SUBROUTINE
 ! with a non uniform orthogonal grid of size (numx+2) x (numy+2)
 ! whose coordinates are in xnodes e ynodes.
 ! It uses null Dirichlet border conditions.
-SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes)
+SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, alpha_magnetic)
   COMPLEX*16, ALLOCATABLE, INTENT(OUT) :: S(:), A(:)
   INTEGER, ALLOCATABLE, INTENT(OUT) :: ia(:), ja(:)
   INTEGER, INTENT(IN) :: numx, numy
   REAL*8, INTENT(IN) :: xnodes(:), ynodes(:)
+  REAL*8, INTENT(IN) :: alpha_magnetic
 
   REAL*8, ALLOCATABLE :: anodes(:), bnodes(:)
   INTEGER nx, ny
   INTEGER row  ! row index into the stiffness matrix
   INTEGER pt   ! index into the A values array
-  COMPLEX*16 k1, k2, k3, k4
+  COMPLEX*16 k1, k2, k3, k4, expc
 
   ALLOCATE (S(numx*numy))
   ALLOCATE (A(3*numx*numy))
@@ -62,6 +64,7 @@ SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes)
       k2 = (bnodes(ny)+bnodes(ny+1)) / (2*anodes(nx+1))
       k3 = (anodes(nx)+anodes(nx+1)) / (2*bnodes(ny))
       k4 = (anodes(nx)+anodes(nx+1)) / (2*bnodes(ny+1))
+      expc = exp(2*PIG*i*ny*alpha_magnetic);
 
       ia(row) = pt
       if (nx == 1) then
@@ -71,14 +74,14 @@ SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes)
           ja(pt) = row
           A(pt+1) = -k4
           ja(pt+1) = row+1;
-          A(pt+2) = -k2
+          A(pt+2) = -k2 * expc
           ja(pt+2) = row+numy;
           pt = pt + 3;
 	    else if (ny == numy) then
           ! angolo basso a sinistra
           A(pt) = k1+k2+k3+k4
           ja(pt) = row;
-          A(pt+1) = -k2
+          A(pt+1) = -k2 * expc
           ja(pt+1) = row+numy;
           pt = pt + 2;
 	else
@@ -87,7 +90,7 @@ SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes)
           ja(pt) = row;
           A(pt+1) = -k4
           ja(pt+1) = row+1
-          A(pt+2) = -k2
+          A(pt+2) = -k2 * expc
           ja(pt+2) = row+numy;
           pt = pt + 3;
 	end if
@@ -119,14 +122,14 @@ SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes)
           ja(pt) = row;
           A(pt+1) = -k4
           ja(pt+1) = row+1;
-          A(pt+2) = -k2
+          A(pt+2) = -k2 * expc
           ja(pt+2) = row+numy;
           pt = pt + 3;
         else if (ny == numy) then
           ! bordo basso
           A(pt) = k1+k2+k3+k4
           ja(pt) = row;
-          A(pt+1) = -k2
+          A(pt+1) = -k2 * expc
           ja(pt+1) = row+numy;
           pt = pt + 2;
         else
@@ -135,7 +138,7 @@ SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes)
           ja(pt) = row;
           A(pt+1) = -k4
           ja(pt+1) = row+1;
-          A(pt+2) = -k2
+          A(pt+2) = -k2 * expc
           ja(pt+2) = row+numy;
           pt = pt + 3;
         end if

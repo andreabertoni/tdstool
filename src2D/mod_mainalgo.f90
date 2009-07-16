@@ -14,14 +14,20 @@ SUBROUTINE BOXINTEGRATION_ALGO
   COMPLEX*16 k0, k1;
   COMPLEX*16, ALLOCATABLE :: b(:)
   INTEGER INFO, file_list_index
-  REAL*8 next_write_time
+  REAL*8 next_write_time, zero
   REAL*8, ALLOCATABLE :: potx(:), poty(:)
 
 ! PARDISO data
   INTEGER*8  pt_prd(64)
   INTEGER :: iparm_prd(64), msglvl_prd
   INTEGER, ALLOCATABLE :: perm_prd(:)
+  
+  zero = 0.
 
+  if (nonlin_as /= 0.) then
+    call dwgbut("Nonlinear term will be ignored in box integration method");
+  end if
+  
   call INDATA_COMPUTE(INFO, 0)
   if (INFO == 1) then
     return
@@ -42,7 +48,11 @@ SUBROUTINE BOXINTEGRATION_ALGO
   k0 = -i*HBAR/(2*mstar)
   k1 = -i/HBAR
 
-  call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes)
+  if (magnetic /= 0.) then
+    call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, ELCH*magnetic/(numx*numy*2*PIG*HBAR))
+  else
+    call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, zero)
+  end if
   pt = ia(1)
   irow = 1
   DO nx = 1,numx
@@ -69,7 +79,11 @@ SUBROUTINE BOXINTEGRATION_ALGO
   msglvl_prd = 0
 
   ! 13 = complex and unsymmetric, 12 = phases 1 & 2
-  call pardiso(pt_prd, 1, 1, 6, 12, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 1, b, b, INFO)
+  if (nonlin_as /= 0.) then
+    call pardiso(pt_prd, 1, 1, -4, 12, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 1, b, b, INFO)
+  else
+    call pardiso(pt_prd, 1, 1, 6, 12, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 1, b, b, INFO)
+  end if
 
   next_write_time = 0.
   file_list_index = 0
@@ -103,7 +117,11 @@ SUBROUTINE BOXINTEGRATION_ALGO
 !  close(30)
 !
     print*, 'ITER: ', iter
-    call pardiso(pt_prd, 1, 1, 6, 33, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
+    if (nonlin_as /= 0.) then
+      call pardiso(pt_prd, 1, 1, -4, 33, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
+    else
+      call pardiso(pt_prd, 1, 1, 6, 33, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
+    end if
     IF (INFO /= 0) THEN
       PRINT*, "pardiso fallita"
     END IF
@@ -133,8 +151,12 @@ SUBROUTINE BOXINTEGRATION_ALGO
 !END DO
 !close(10)
 
-  call pardiso(pt_prd, 1, 1, 6, -1, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, b, INFO)
-
+  if (nonlin_as /= 0.) then
+    call pardiso(pt_prd, 1, 1, -4, -1, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, b, INFO)
+  else
+    call pardiso(pt_prd, 1, 1, 6, -1, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, b, INFO)
+  end if
+  
   DEALLOCATE(perm_prd)
   DEALLOCATE (poty)
   DEALLOCATE (potx)
