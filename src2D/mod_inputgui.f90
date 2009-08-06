@@ -423,7 +423,7 @@ SUBROUTINE SHOW_IN_GUI
 !  CALL GWGTXT(hPotSTrY, strpotentialY)
 
     ! Output Data
-  CALL GWGTXT(hOutDir, write_folder)
+  CALL GWGTXT(hOutDir, run_name)
 
   CALL GWGBUT(hOutWGridTxt, mode)
   CALL GWGBUT(hOutWGridBin, mode2)

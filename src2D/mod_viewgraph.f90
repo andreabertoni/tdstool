@@ -166,9 +166,6 @@ SUBROUTINE ViewListCbk(ID)
 
   CALL Integrate_2D(int_box, psi_in, NUMX, NUMY, xnodes(2:NUMX+1), ynodes(2:NUMY+1), intx0, inty0, intx1, inty1)
   CALL Integrate_2D(int_all, psi_in, NUMX, NUMY, xnodes(2:NUMX+1), ynodes(2:NUMY+1), xnodes(1), ynodes(1), xnodes(NUMX+2), ynodes(NUMY+2))
-  if (abs(int_all) > 1.) then
-    CALL Integrate_2D(int_box, psi_in, NUMX, NUMY, xnodes(2:NUMX+1), ynodes(2:NUMY+1), intx0, inty0, intx1, inty1)
-  endif
 
   write (valstr, '(ES11.4)') int_box
   CALL SWGTXT(hIntegral1, TRIM(valstr))
@@ -296,8 +293,8 @@ SUBROUTINE ViewListCbk(ID)
 
   CALL SETVLT("RAIN")
   CALL COLOR("GREEN")
-  CALL RECTAN (INT(280. + 2200.*intx0/size_x), INT(200. + 2200.*inty0/size_y),  &
-    INT(2200.*(intx1-intx0)/size_x), INT(2200.*(inty1-inty0)/size_y))
+  CALL RECTAN (INT(280. + 2200.*intx0/size_x), INT(2400. - 2200.*inty0/size_y),  &
+    INT(2200.*(intx1-intx0)/size_x), INT(2200.*(inty0-inty1)/size_y))
 
   CALL DISFIN()
 
