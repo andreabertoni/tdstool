@@ -307,6 +307,7 @@ SUBROUTINE strtopot2d( npotloop, mstar, strpotential, numpx, numpy, px, py, pot 
 !
 ! keywords: 
 ! box      xLowerLeft  yLowerLeft  xUpperRight yUpperRight  val(eV)
+! gauss    x0  y0  sigma h(eV)
 !
 ! each argument "loop" is substituted with 
 !       potloopvar_from + (potloopvar_step * npotloop)
@@ -357,11 +358,21 @@ DO nn= 1, lenstr
         IF (px(npx)>=potdefvals(1) .AND. px(npx)<=potdefvals(3)) THEN
           DO npy= 1, numpy
             IF (py(npy)>=potdefvals(2) .AND. py(npy)<=potdefvals(4)) THEN
-              pot(npy,npx)= potdefvals(5)
+              pot(npy,npx)= pot(npy,npx) + potdefvals(5)
             END IF
           END DO
         END IF
       END DO
+
+    CASE ("gauss", "GAUSS")
+      CALL strtopot_valsread( npotloop, strvalues, 4, potdefvals(:) )
+      DO npx= 1, numpx
+        DO npy= 1, numpy
+          pot(npy,npx) = pot(npy,npx) - potdefvals(4)*exp( -((px(npx)-potdefvals(1))**2 + &
+&                         (py(npy)-potdefvals(2))**2) / (4*potdefvals(3)**2) );
+        END DO
+      END DO
+
     CASE DEFAULT 
       IF ( strkeyword(1:1)/="#" ) THEN
         print *, strpotential
@@ -439,13 +450,16 @@ SUBROUTINE strtopot_extractcmd(str_single_cmd, strpot, num_cmd)
 
   INTEGER :: lenstr, nn, nnp, sent
 
+  str_single_cmd = ""
   lenstr= LEN_TRIM(strpot)
+  if (lenstr == 0) then
+    return;
+  end if
   IF ( strpot(lenstr:lenstr) /= ";" ) THEN
     lenstr= lenstr+1
     strpot(lenstr:lenstr)= ";"
   END IF
 
-  str_single_cmd = ""
   nnp = 1
   sent = 1
   DO nn = 1, lenstr

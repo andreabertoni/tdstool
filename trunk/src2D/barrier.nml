@@ -1,7 +1,7 @@
  &DEVICE
  ELECTRONMASS    =  6.700000000000000E-002,
  NONLIN_AS       =  0.000000000000000E+000,
- MAGNETIC        =  0.000000000000000E+000
+ MAGNETIC        =  0.500000000000000     
  /
  &INITIAL_PSI
  PSI_MODE        = "gauss                           ",
@@ -15,7 +15,7 @@
  /
  &TIME
  DT      =  5.000000000000000E-015,
- MAXIT   =         300
+ MAXIT   =         150
  /
  &GRID
  GRID_MODE       = "uniform                         ",

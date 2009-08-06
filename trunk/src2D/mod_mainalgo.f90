@@ -16,6 +16,7 @@ SUBROUTINE BOXINTEGRATION_ALGO
   INTEGER INFO, file_list_index
   REAL*8 next_write_time, zero
   REAL*8, ALLOCATABLE :: potx(:), poty(:)
+  COMPLEX*16, ALLOCATABLE :: AA(:)
 
 ! PARDISO data
   INTEGER*8  pt_prd(64)
@@ -33,6 +34,7 @@ SUBROUTINE BOXINTEGRATION_ALGO
     return
   end if
 
+  ALLOCATE (AA(5*numx*numy))
   ALLOCATE (b(numx*numy))
   ALLOCATE (potx(1:numx))
   ALLOCATE (poty(1:numy))
@@ -51,7 +53,7 @@ SUBROUTINE BOXINTEGRATION_ALGO
   if (magnetic /= 0.) then
     call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, ELCH*magnetic/(numx*numy*2*PIG*HBAR))
   else
-    call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, zero)
+    call make_box_stiffness_2D_symmetric(S, A, ia, ja, numx, numy, xnodes, ynodes, zero)
   end if
   pt = ia(1)
   irow = 1
@@ -59,7 +61,8 @@ SUBROUTINE BOXINTEGRATION_ALGO
     DO ny = 1,numy
       DO WHILE (pt < ia(irow+1))
         if (ja(pt) == irow) then
-          A(pt) = S(irow) - (A(pt)*k0 + pot(ny, nx)*k1*S(irow))*0.5*dt
+!          A(pt) = S(irow) - (A(pt)*k0 + pot(ny, nx)*k1*S(irow))*0.5*dt
+          A(pt) = S(irow) - (A(pt)*k0)*0.5*dt
         else
           A(pt) = -A(pt) * (0.5*k0*dt)
         end if
@@ -78,13 +81,6 @@ SUBROUTINE BOXINTEGRATION_ALGO
   iparm_prd(3) = 4   ! number of threads
   msglvl_prd = 0
 
-  ! 13 = complex and unsymmetric, 12 = phases 1 & 2
-  if (nonlin_as /= 0.) then
-    call pardiso(pt_prd, 1, 1, -4, 12, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 1, b, b, INFO)
-  else
-    call pardiso(pt_prd, 1, 1, 6, 12, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 1, b, b, INFO)
-  end if
-
   next_write_time = 0.
   file_list_index = 0
 ! **** Time steps
@@ -95,15 +91,30 @@ SUBROUTINE BOXINTEGRATION_ALGO
     call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialX, numx, xnodes, potx)
     call strtopot1D_time((iter-1) * dt, 1, mstar, strpotentialY, numy, ynodes, poty)
     call strtopot2D(1, mstar, strpotentialXY, numx, numy, xnodes, ynodes, pot)
+
+    pt = ia(1)
+    irow = 1
     DO nx = 1, numx
       DO ny = 1, numy
         pot(ny, nx) = (pot(ny, nx) + pot_file_static(ny, nx) + potx(nx) + poty(ny))*ELCH
+        DO WHILE (pt < ia(irow+1))
+          if (ja(pt) == irow) then
+            AA(pt) = A(pt) - pot(ny, nx)*k1*S(irow)*0.5*dt
+          else
+            AA(pt) = A(pt)
+          end if
+          pt = pt+1
+        END DO
+      irow = irow + 1
       END DO
     END DO
 
-
 !    psi = (S-A) \ ((S+A)*psi);
-    call z_sparse_matvet(numx*numy, A, ia, ja, psi, b)
+    if (magnetic /= 0.) then
+      call z_sparse_matvet(numx*numy, AA, ia, ja, psi, b)
+    else
+      call z_sparse_matvet_symmetric(numx*numy, AA, ia, ja, psi, b)
+    end if
     DO nx = 1, numx*numy
       b(nx) = 2.*S(nx)*psi(nx)-b(nx)
     END DO
@@ -117,10 +128,10 @@ SUBROUTINE BOXINTEGRATION_ALGO
 !  close(30)
 !
     print*, 'ITER: ', iter
-    if (nonlin_as /= 0.) then
-      call pardiso(pt_prd, 1, 1, -4, 33, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
+    if (magnetic /= 0.) then
+      call pardiso(pt_prd, 1, 1, 13, 13, numx*numy, AA, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
     else
-      call pardiso(pt_prd, 1, 1, 6, 33, numx*numy, A, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
+      call pardiso(pt_prd, 1, 1, 6, 13, numx*numy, AA, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
     end if
     IF (INFO /= 0) THEN
       PRINT*, "pardiso fallita"
@@ -163,6 +174,7 @@ SUBROUTINE BOXINTEGRATION_ALGO
   DEALLOCATE (b)
   DEALLOCATE (ia)
   DEALLOCATE (ja)
+  DEALLOCATE (AA)
   DEALLOCATE (A)
   DEALLOCATE (S)
   DEALLOCATE (psi)
