@@ -51,10 +51,19 @@ SUBROUTINE BOXINTEGRATION_ALGO
   k1 = -i/HBAR
 
   if (magnetic /= 0.) then
-    call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, ELCH*magnetic/(numx*numy*2*PIG*HBAR))
+    call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, (size_x/(numx-1))*(size_y/(numy-1))*ELCH*magnetic/HBAR)
   else
     call make_box_stiffness_2D_symmetric(S, A, ia, ja, numx, numy, xnodes, ynodes, zero)
   end if
+
+!  open(10, FILE='matrice.txt')
+!  DO ny = 1,numx*numy
+!    DO nx = ia(ny), ia(ny+1)-1
+!      write(10, *) ny, ja(nx), A(nx)
+!    END DO
+!  END DO
+!  close(10)
+
   pt = ia(1)
   irow = 1
   DO nx = 1,numx
@@ -96,7 +105,7 @@ SUBROUTINE BOXINTEGRATION_ALGO
     irow = 1
     DO nx = 1, numx
       DO ny = 1, numy
-        pot(ny, nx) = (pot(ny, nx) + pot_file_static(ny, nx) + potx(nx) + poty(ny))*ELCH
+        pot(ny, nx) = (pot(ny, nx) + pot_file_static(ny, nx) + pot_filelist(ny, nx) + potx(nx) + poty(ny))*ELCH
         DO WHILE (pt < ia(irow+1))
           if (ja(pt) == irow) then
             AA(pt) = A(pt) - pot(ny, nx)*k1*S(irow)*0.5*dt

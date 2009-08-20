@@ -160,11 +160,12 @@ SUBROUTINE SHOW_IN_GUI
   write (vstr, '(ES11.5)') nonlin_as
   CALL WGTXT(hData2, vstr, hNonlin)
 
-  CALL SWGWIN(0, 30, 160, 30)
-  CALL WGLAB(hData2, 'Magnetic Field:', hNull)
-  CALL SWGWIN(165, 30, 80, ctrlh)
-  write (vstr, '(ES11.5)') magnetic
-  CALL WGTXT(hData2, vstr, hMagnetic)
+! TODO: uncomment for magnetic field
+!  CALL SWGWIN(0, 30, 160, 30)
+!  CALL WGLAB(hData2, 'Magnetic Field:', hNull)
+!  CALL SWGWIN(165, 30, 80, ctrlh)
+!  write (vstr, '(ES11.5)') magnetic
+!  CALL WGTXT(hData2, vstr, hMagnetic)
 
     ! Wave Function Frame
   CALL SWGWIN(0, 0, 80, 35)

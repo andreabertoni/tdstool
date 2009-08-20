@@ -27,7 +27,8 @@ MODULE mod_indata
 
   REAL*8, ALLOCATABLE :: pot(:,:)
   COMPLEX*16, ALLOCATABLE :: psi(:)
-  COMPLEX*16, ALLOCATABLE :: A(:), S(:)
+  COMPLEX*16, ALLOCATABLE :: A(:)
+  REAL*8, ALLOCATABLE :: S(:)
   INTEGER, ALLOCATABLE :: ia(:), ja(:)
 
   CHARACTER(80) :: psi_file_in   ! name of the psi (x,y) file
