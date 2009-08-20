@@ -51,7 +51,8 @@ END SUBROUTINE
 ! It uses null Dirichlet border conditions.
 
 SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, alpha_magnetic)
-  COMPLEX*16, ALLOCATABLE, INTENT(OUT) :: S(:), A(:)
+  COMPLEX*16, ALLOCATABLE, INTENT(OUT) :: A(:)
+  REAL*8, ALLOCATABLE, INTENT(OUT) :: S(:)
   INTEGER, ALLOCATABLE, INTENT(OUT) :: ia(:), ja(:)
   INTEGER, INTENT(IN) :: numx, numy
   REAL*8, INTENT(IN) :: xnodes(:), ynodes(:)
@@ -83,8 +84,9 @@ SUBROUTINE make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, alpha
       k2 = (bnodes(ny)+bnodes(ny+1)) / (2*anodes(nx+1))
       k3 = (anodes(nx)+anodes(nx+1)) / (2*bnodes(ny))
       k4 = (anodes(nx)+anodes(nx+1)) / (2*bnodes(ny+1))
-      expc = exp(2.*PIG*i*ny*alpha_magnetic);
-      expcm = exp(-2.*PIG*i*ny*alpha_magnetic);
+      expc = exp(i*(ny-1)*alpha_magnetic);
+      expcm = exp(-i*(ny-1)*alpha_magnetic);
+!      write (99, *) ny, nx, expc
 
       ia(row) = pt
       if (nx == 1) then
@@ -200,7 +202,8 @@ END SUBROUTINE
 
 
 SUBROUTINE make_box_stiffness_2D_symmetric(S, A, ia, ja, numx, numy, xnodes, ynodes, alpha_magnetic)
-  COMPLEX*16, ALLOCATABLE, INTENT(OUT) :: S(:), A(:)
+  COMPLEX*16, ALLOCATABLE, INTENT(OUT) :: A(:)
+  REAL*8, ALLOCATABLE, INTENT(OUT) :: S(:)
   INTEGER, ALLOCATABLE, INTENT(OUT) :: ia(:), ja(:)
   INTEGER, INTENT(IN) :: numx, numy
   REAL*8, INTENT(IN) :: xnodes(:), ynodes(:)
@@ -232,7 +235,7 @@ SUBROUTINE make_box_stiffness_2D_symmetric(S, A, ia, ja, numx, numy, xnodes, yno
       k2 = (bnodes(ny)+bnodes(ny+1)) / (2*anodes(nx+1))
       k3 = (anodes(nx)+anodes(nx+1)) / (2*bnodes(ny))
       k4 = (anodes(nx)+anodes(nx+1)) / (2*bnodes(ny+1))
-      expc = exp(2*PIG*i*ny*alpha_magnetic);
+      expc = exp(i*(ny-1)*alpha_magnetic);
 
       ia(row) = pt
       if (nx == 1) then

@@ -1,21 +1,21 @@
  &DEVICE
  ELECTRONMASS    =  6.700000000000000E-002,
  NONLIN_AS       =  0.000000000000000E+000,
- MAGNETIC        =  0.500000000000000     
+ MAGNETIC        =   1.00000000000000     
  /
  &INITIAL_PSI
  PSI_MODE        = "gauss                           ",
- X0      =  2.000000000000000E-007,
+ X0      =  5.000000000000000E-007,
  Y0      =  5.000000000000000E-007,
  SIGMAX  =  7.000000000000000E-008,
  SIGMAY  =  7.000000000000000E-008,
- XENERGY =  4.000000000000000E-002,
+ XENERGY =  0.000000000000000E+000,
  YENERGY =  0.000000000000000E+000,
  PSI_FILE_IN     = "                                                                                "
  /
  &TIME
- DT      =  5.000000000000000E-015,
- MAXIT   =         150
+ DT      =  8.000000000000001E-015,
+ MAXIT   =          80
  /
  &GRID
  GRID_MODE       = "uniform                         ",
@@ -64,6 +64,6 @@
  WRITE_POT       = "bin                           ",
  WRITE_PSI       = "bin                           ",
  WRITE_TIMESTEP  =  4.000000000000000E-014,
- WRITE_DOWNSAMPLE_X      =           4,
- WRITE_DOWNSAMPLE_Y      =           4
+ WRITE_DOWNSAMPLE_X      =           2,
+ WRITE_DOWNSAMPLE_Y      =           2
  /
