@@ -26,7 +26,7 @@ SUBROUTINE BOXINTEGRATION_ALGO
   zero = 0.
 
   if (nonlin_as /= 0.) then
-    call dwgbut("Nonlinear term will be ignored in box integration method");
+    call dwgmsg("Nonlinear term will be ignored in box integration method");
   end if
   
   call INDATA_COMPUTE(INFO, 0)

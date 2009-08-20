@@ -188,7 +188,7 @@ SUBROUTINE INDATA_FILL_WITH_DEFAULT
   electronmass = 0.067
   mstar = electronmass * ELMASS0
   magnetic = 0
-  nonlin_as = 1e-6
+  nonlin_as = 0
   psi_mode = 'gauss'
   x0 = 2e-7
   y0 = 5e-7
@@ -214,7 +214,7 @@ SUBROUTINE INDATA_FILL_WITH_DEFAULT
   run_name = "default"
   write_folder = "default_out"
   output_nested = 0
-  write_grid = "bin"
+  write_grid = "txt"
   write_pot = "bin"
   write_psi = "bin"
   write_timestep = 1e-13

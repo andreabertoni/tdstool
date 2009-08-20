@@ -34,6 +34,7 @@ SUBROUTINE MAIN_GUI
   CALL INDATA_GET(nml_file_name, INFO)
   if (INFO /= 0) then
     call INDATA_FILL_WITH_DEFAULT
+    nmlfile_name = nml_file_name
   end if
 
   MainMenuCmd = 1
