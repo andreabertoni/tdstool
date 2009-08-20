@@ -58,7 +58,7 @@ WORK IN PROGRESS: public downloads available on ...
 ***
 -->
 <br />
-VERSION 0.2 beta
+VERSION 0.4 beta
 <br />
 (please note that this is a work-in-progress version: we plan to release a stable beta version
 including the B field in October) 
@@ -67,12 +67,12 @@ including the B field in October)
 Windows executable for 2D domains<br />
 v. 0.4 - has both Box Integration method (allows for a nonuniform grid)
 and Split Step method (faster execution)
-<a href="executables/v0.4 20-8-2009/tdstool2D_box.exe"> DOWNLOAD</a></p>
+<a href="executables/v0.4 20-8-2009/tdstool2d.exe"> DOWNLOAD</a></p>
 <br />
 <br />
 Windows executable for 3D domains<br />
 v. 0.4 Split Step method
-<a href="executables/v0.4 20-8-2009/tdstool3D.exe"> DOWNLOAD</a></p>
+<a href="executables/v0.4 20-8-2009/tdstool3d.exe"> DOWNLOAD</a></p>
 <br />
 <br />
 Source FORTRAN90 files and Makefile for 2D domains<br />
