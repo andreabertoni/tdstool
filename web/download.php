@@ -60,35 +60,31 @@ WORK IN PROGRESS: public downloads available on ...
 <br />
 VERSION 0.2 beta
 <br />
-(please note that this is a work-in-progress version: we plan to release soon a single executable
-with both the two solution methods) 
+(please note that this is a work-in-progress version: we plan to release a stable beta version
+including the B field in October) 
 <br />
 <br />
 Windows executable for 2D domains<br />
-v. 0.2 Box Integration method (allows for a nonuniform grid)
-<a href="executables/v0.2 16-6-2009/tdstool2D_box.exe"> DOWNLOAD</a></p>
-<br />
-<br />
-Windows executable for 2D domains<br />
-v. 0.2 Split Step method (faster execution)
-<a href="executables/v0.2 16-6-2009/tdstool2D_split.exe"> DOWNLOAD</a></p>
+v. 0.4 - has both Box Integration method (allows for a nonuniform grid)
+and Split Step method (faster execution)
+<a href="executables/v0.4 20-8-2009/tdstool2D_box.exe"> DOWNLOAD</a></p>
 <br />
 <br />
 Windows executable for 3D domains<br />
-v. 0.2 Split Step method
-<a href="executables/v0.2 16-6-2009/tdstool3D.exe"> DOWNLOAD</a></p>
+v. 0.4 Split Step method
+<a href="executables/v0.4 20-8-2009/tdstool3D.exe"> DOWNLOAD</a></p>
 <br />
 <br />
 Source FORTRAN90 files and Makefile for 2D domains<br />
 (you'll need a Fortran compiler and several libraries: only reccommended for expert beta testers)<br />
-v. 0.2 Box Integration method and Split Step method
-<a href="executables/v0.2 16-6-2009/src2D.tar.gz"> DOWNLOAD</a></p>
+v. 0.4 Box Integration method and Split Step method
+<a href="executables/v0.4 20-8-2009/src2D.tar.gz"> DOWNLOAD</a></p>
 <br />
 <br />
 Source FORTRAN90 files and Makefile for 3D domains<br />
 (you'll need a Fortran compiler and several libraries: only reccommended for expert beta testers)<br />
-v. 0.2 Split Step method
-<a href="executables/v0.2 16-6-2009/src3D.tar.gz"> DOWNLOAD</a></p>
+v. 0.4 Split Step method
+<a href="executables/v0.4 20-8-2009/src3D.tar.gz"> DOWNLOAD</a></p>
 <br />
 <br />
 </div>
