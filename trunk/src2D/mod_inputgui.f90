@@ -365,8 +365,8 @@ SUBROUTINE SHOW_IN_GUI
   read (vstr, *) electronmass
   CALL GWGTXT(hNonlin, vstr)
   read (vstr, *) nonlin_as
-  CALL GWGTXT(hMagnetic, vstr)
-  read (vstr, *) magnetic
+!  CALL GWGTXT(hMagnetic, vstr)
+!  read (vstr, *) magnetic
 
     ! Get Wave Function data
   CALL GWGLIS(hPsiMode, mode)
