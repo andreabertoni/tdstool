@@ -306,6 +306,16 @@ Each 1-D function $V_x$ and $V_y$ is defined by a string, which is a sequence of
     Fills the interval $[a, b]$ with a parabolic potential having the minimum point in the centre of the interval. $P_0$ is the value in the minimum point and $P_0 + P_{max}$ is the value in $a$ and $b$.
     $P_0$ and $P_{max}$ are expressed in eV. It is defined as
     $ V_x(x) = P_0 + m^* \left(\frac{P_{max}}{\hbar} t \right)^2 $ with $t = \frac{x-a}{b-a} $
+  \item \begin{verbatim} CONST_MOVE <a> <b> <val> <speed> \end{verbatim}
+    The interval $[a, b]$ is filled with the constant value <val>. The interval is time dependent and moves with speed <speed>.
+  \item \begin{verbatim} CONST_OSCILL <a> <b> <v1> <v2> <period> \end{verbatim}
+    The interval $[a, b]$ is filled with a constant value which is time dependent and oscillates harmonically between value <v1> and value <v2> with period <period>.
+  \item \begin{verbatim}SINE <a> <b> <phase> <v1> <v2> <wavelength> \end{verbatim}
+    The interval $[a, b]$ is filled with a sine wave oscillating between the values <v1> and <v2> with wavelength <wavelength>. In the point $x = 0$ the sine has phase <phase>.
+  \item \begin{verbatim}SINEWAVE <phase> <v1> <v2> <wavelength> \end{verbatim}
+    The entire domain is filled with a sine wave oscillating between the values <v1> and <v2> with wavelength <wavelength>. In the point $x = 0$ the sine has phase <phase>.
+  \item \begin{verbatim}SINEWAVE <phase> <v1> <v2> <wavelength> <speed> \end{verbatim}
+    The entire domain is filled with a time dependent sine wave oscillating between the values <v1> and <v2> with wavelength <wavelength>, which is moving with speed <speed>. In the point $x = 0$ at time $t = 0$, the sine has phase <phase>.
 \end{itemize}
 
 The 2-D function $V_{xy}$ can only be expressed by means of constant valued boxes. There is a unique command:
