@@ -218,7 +218,7 @@ SUBROUTINE INDATA_FILL_WITH_DEFAULT
   run_name = "default"
   write_folder = "default_out"
   output_nested = 0
-  write_grid = "bin"
+  write_grid = "txt"
   write_pot = "bin"
   write_psi = "bin"
   write_timestep = 1e-13
