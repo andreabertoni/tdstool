@@ -224,6 +224,7 @@ SUBROUTINE INDATA_FILL_WITH_DEFAULT
   write_timestep = 1e-13
   write_downsample_x = 1
   write_downsample_y = 1
+  write_downsample_z = 1
 END SUBROUTINE
 
 SUBROUTINE INDATA_SAVE(nmlfile)
