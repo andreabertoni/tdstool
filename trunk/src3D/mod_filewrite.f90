@@ -279,10 +279,8 @@ SUBROUTINE write_3D_grid(path, fname, xnodes, ynodes, znodes, numx, numy, numz, 
   INTEGER, INTENT(IN) :: numx, numy, numz, downsample_x, downsample_y, downsample_z
   REAL*8, INTENT(IN) :: xnodes(:), ynodes(:), znodes(:)
 
-!  CHARACTER(4) :: filenum
   INTEGER nx, ny, nz
 
-!  filenum = STRING(iter)
   open(10, FILE=TRIM(path)//"/"//fname//".dat", STATUS='REPLACE')
   write (10, *) numx/downsample_x, numy/downsample_y, numz/downsample_z
   do nx = 2,numx+1,downsample_x
