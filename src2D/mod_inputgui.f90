@@ -161,12 +161,11 @@ SUBROUTINE SHOW_IN_GUI
   write (vstr, '(ES11.5)') nonlin_as
   CALL WGTXT(hData2, vstr, hNonlin)
 
-! TODO: uncomment for magnetic field
-!  CALL SWGWIN(0, 30, 160, 30)
-!  CALL WGLAB(hData2, 'Magnetic Field:', hNull)
-!  CALL SWGWIN(165, 30, 80, ctrlh)
-!  write (vstr, '(ES11.5)') magnetic
-!  CALL WGTXT(hData2, vstr, hMagnetic)
+  CALL SWGWIN(0, 30, 160, 30)
+  CALL WGLAB(hData2, 'Magnetic Field:', hNull)
+  CALL SWGWIN(165, 30, 80, ctrlh)
+  write (vstr, '(ES11.5)') magnetic
+  CALL WGTXT(hData2, vstr, hMagnetic)
 
     ! Wave Function Frame
   CALL SWGWIN(0, 0, 80, 35)
@@ -366,8 +365,8 @@ SUBROUTINE SHOW_IN_GUI
   read (vstr, *) electronmass
   CALL GWGTXT(hNonlin, vstr)
   read (vstr, *) nonlin_as
-!  CALL GWGTXT(hMagnetic, vstr)
-!  read (vstr, *) magnetic
+  CALL GWGTXT(hMagnetic, vstr)
+  read (vstr, *) magnetic
 
     ! Get Wave Function data
   CALL GWGLIS(hPsiMode, mode)
