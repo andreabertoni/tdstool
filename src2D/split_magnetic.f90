@@ -59,10 +59,10 @@ SUBROUTINE SPLITMAGNETIC_ALGO
 
   ALLOCATE( psik(0:numx-1, 0:numy-1) )
   ALLOCATE( phiho(0:numx-1, 0:numkx-1, 0:numky-1) )
-  ALLOCATE( phiho5(0:5*numx-1, 0:numkx-1) )
-  ALLOCATE( shiftedxgrid2(0:5*numx-1) )
+  ALLOCATE( phiho5(0:1*numx-1, 0:numkx-1) )
+  ALLOCATE( shiftedxgrid2(0:1*numx-1) )
   ALLOCATE( potho(0:numx-1) )
-  ALLOCATE( potho5(0:5*numx-1) )
+  ALLOCATE( potho5(0:1*numx-1) )
   ALLOCATE( energiesho(0:numkx-1, 0:numky-1) )
   ALLOCATE( xgrid(0:numx-1) )
   ALLOCATE( ygrid(0:numy-1) )
@@ -85,14 +85,14 @@ SUBROUTINE SPLITMAGNETIC_ALGO
 
   DO nky= 0, numky-1
     ky= kygrid(nky)
-    DO nx= 0, 5*numx-1
-      shiftedxgrid2(nx)= (nx-2*numx)*dx+dx/2 - lb2*ky
+    DO nx= 0, 1*numx-1
+      shiftedxgrid2(nx)= (nx-0*numx)*dx+dx/2 - lb2*ky
       potho5(nx)= mstar/2. * (omegac * shiftedxgrid2(nx))**2
     END DO
-    CALL solve1dLAPACK( 5*numx-1, numkx, numkx, constho, potho5, energiesho(:, nky), phiho5 )
+    CALL solve1dLAPACK( 1*numx-1, numkx, numkx, constho, potho5, energiesho(:, nky), phiho5 )
     DO nkx = 0, numkx-1
       DO nx= 0, numx-1
-        phiho(nx, nkx, nky) = phiho5(nx+2*numx, nkx);
+        phiho(nx, nkx, nky) = phiho5(nx+0*numx, nkx);
       END DO
     END DO
   END DO
