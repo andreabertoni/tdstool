@@ -56,7 +56,7 @@ SUBROUTINE MAIN_GUI
     else
       CALL SWGWIN(5, 35, 130, 25)
     end if
-    CALL WGBOX(hMainForm, 'Edit|Run Box Integration|Run Split Step|View|Quit', MainMenuCmd, hMainCmd)
+    CALL WGBOX(hMainForm, 'Edit|Run Split Step|Run Box Integration|View|Quit', MainMenuCmd, hMainCmd)
     CALL SWGWIN(130, 80, 50, 28)
     CALL WGOK(hMainForm, hMainOk)
 
@@ -70,21 +70,21 @@ SUBROUTINE MAIN_GUI
       if (write_pot == "none" .and. write_psi == "none") then
         CALL DWGBUT("No output is selected for this simulation.|Do you want to continue?", INFO)
         if (INFO == 1) then
-          CALL BOXINTEGRATION_ALGO
+          CALL SPLITSTEP_ALGO
           MainMenuCmd = MainMenuCmd + 1
         end if
       else
-        CALL BOXINTEGRATION_ALGO
+        CALL SPLITSTEP_ALGO
         MainMenuCmd = MainMenuCmd + 1
       endif
     else if (MainMenuCmd == 3) then
       if (write_pot == "none" .and. write_psi == "none") then
         CALL DWGBUT("No output is selected for this simulation.|Do you want to continue?", INFO)
         if (INFO == 1) then
-          CALL SPLITSTEP_ALGO
+          CALL BOXINTEGRATION_ALGO
         end if
       else
-        CALL SPLITSTEP_ALGO
+        CALL BOXINTEGRATION_ALGO
       endif
     else if (MainMenuCmd == 4) then
       CALL SHOW_GRAPH

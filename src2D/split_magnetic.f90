@@ -22,7 +22,7 @@ SUBROUTINE SPLITMAGNETIC_ALGO
   REAL*8, ALLOCATABLE :: xgrid(:), ygrid(:)
   REAL*8, ALLOCATABLE :: kxgrid(:), kygrid(:)
   COMPLEX*16, ALLOCATABLE :: psik(:,:)
-  REAL*8, ALLOCATABLE :: phiho(:,:, :)
+  REAL*4, ALLOCATABLE :: phiho(:,:, :)
   REAL*8, ALLOCATABLE :: phiho5(:,:)
   REAL*8, ALLOCATABLE :: shiftedxgrid2(:)
   REAL*8, ALLOCATABLE :: potho(:), potho5(:)
@@ -30,7 +30,9 @@ SUBROUTINE SPLITMAGNETIC_ALGO
   REAL*8 :: cnormx, cnormy, constho
   REAL*8 :: dx, dy, ky
   INTEGER :: nn, nx, ny, nkx, nky, numkx, numky
-  REAL*8 :: scale, omegac, lb2, dkx, dky
+  REAL*8 :: scale, omegac, lb2, dkx, dky, Bmax
+  CHARACTER(128) :: msg
+  INTEGER*8 :: total
 
   type(DFTI_DESCRIPTOR), POINTER :: planfw
   integer   lengths(1)
@@ -38,14 +40,6 @@ SUBROUTINE SPLITMAGNETIC_ALGO
   call INDATA_COMPUTE(INFO, 1)
   if (INFO == 1) then
     return
-  end if
-
-    ! Write Grid
-  if (write_grid == "txt" .or. write_grid == "both") then
-    call write_2D_grid(write_folder, "grid", xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
-  end if
-  if (write_grid == "bin" .or. write_grid == "both") then
-    call write_2D_grid_bin(write_folder, "grid", xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
   end if
 
   omegac= ELCH*magnetic/mstar
@@ -56,6 +50,27 @@ SUBROUTINE SPLITMAGNETIC_ALGO
   dy = size_y / numy
   dkx= 2*PIG/size_x
   dky= 2*PIG/size_y
+
+  total = numx*numkx*numky*4/(1024*1024)
+  if (total > 2048) then
+    call dwgmsg("The discretization grid exceeds the memory size")
+    return
+  end if
+  
+  Bmax = HBAR*2*PIG*numx / (ELCH*size_x*size_y);
+  if (magnetic > Bmax) then
+    write(msg, *) "The maximum magnetic field allowable for this simulation is ", Bmax, ". Do you whant to proceed anyway?"
+    call dwgbut(msg, INFO)
+    if (INFO == 0) return
+  end if
+  
+    ! Write Grid
+  if (write_grid == "txt" .or. write_grid == "both") then
+    call write_2D_grid(write_folder, "grid", xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
+  end if
+  if (write_grid == "bin" .or. write_grid == "both") then
+    call write_2D_grid_bin(write_folder, "grid", xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
+  end if
 
   ALLOCATE( psik(0:numx-1, 0:numy-1) )
   ALLOCATE( phiho(0:numx-1, 0:numkx-1, 0:numky-1) )
@@ -92,7 +107,7 @@ SUBROUTINE SPLITMAGNETIC_ALGO
     CALL solve1dLAPACK( 1*numx-1, numkx, numkx, constho, potho5, energiesho(:, nky), phiho5 )
     DO nkx = 0, numkx-1
       DO nx= 0, numx-1
-        phiho(nx, nkx, nky) = phiho5(nx+0*numx, nkx);
+        phiho(nx, nkx, nky) = REAL(phiho5(nx+0*numx, nkx), 4);
       END DO
     END DO
   END DO
