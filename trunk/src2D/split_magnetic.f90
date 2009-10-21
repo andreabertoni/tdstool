@@ -98,7 +98,9 @@ SUBROUTINE SPLITMAGNETIC_ALGO
   INFO = DftiCreateDescriptor( planfw, DFTI_DOUBLE, DFTI_COMPLEX, 1, lengths)
   INFO = DftiCommitDescriptor( planfw )
 
+  write (*,*) 'Computing Landau levels...'
   DO nky= 0, numky-1
+    write (*,*) nky+1, '/', numky
     ky= kygrid(nky)
     DO nx= 0, 1*numx-1
       shiftedxgrid2(nx)= (nx-0*numx)*dx+dx/2 - lb2*ky
@@ -124,6 +126,8 @@ SUBROUTINE SPLITMAGNETIC_ALGO
 ! **** Time steps
   next_write_time = 0.
   file_list_index = 0
+  
+  write (*,*) 'Compute itrations...'
   DO iter = 1, MAXIT
 
     ! Build time dependent potential

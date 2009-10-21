@@ -28,6 +28,9 @@ SUBROUTINE BOXINTEGRATION_ALGO
   if (nonlin_as /= 0.) then
     call dwgmsg("Nonlinear term will be ignored in box integration method");
   end if
+  if (magnetic /= 0.) then
+    call dwgmsg("Magnetic field term will be ignored in box integration method");
+  end if
   
   call INDATA_COMPUTE(INFO, 0)
   if (INFO == 1) then
@@ -50,11 +53,11 @@ SUBROUTINE BOXINTEGRATION_ALGO
   k0 = -i*HBAR/(2*mstar)
   k1 = -i/HBAR
 
-  if (magnetic /= 0.) then
-    call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, (size_x/(numx-1))*(size_y/(numy-1))*ELCH*magnetic/HBAR)
-  else
+!  if (magnetic /= 0.) then
+!    call make_box_stiffness_2D(S, A, ia, ja, numx, numy, xnodes, ynodes, (size_x/(numx-1))*(size_y/(numy-1))*ELCH*magnetic/HBAR)
+!  else
     call make_box_stiffness_2D_symmetric(S, A, ia, ja, numx, numy, xnodes, ynodes, zero)
-  end if
+!  end if
 
 !  open(10, FILE='matrice.txt')
 !  DO ny = 1,numx*numy
@@ -119,11 +122,11 @@ SUBROUTINE BOXINTEGRATION_ALGO
     END DO
 
 !    psi = (S-A) \ ((S+A)*psi);
-    if (magnetic /= 0.) then
-      call z_sparse_matvet(numx*numy, AA, ia, ja, psi, b)
-    else
+!    if (magnetic /= 0.) then
+!      call z_sparse_matvet(numx*numy, AA, ia, ja, psi, b)
+!    else
       call z_sparse_matvet_symmetric(numx*numy, AA, ia, ja, psi, b)
-    end if
+!    end if
     DO nx = 1, numx*numy
       b(nx) = 2.*S(nx)*psi(nx)-b(nx)
     END DO
@@ -137,11 +140,11 @@ SUBROUTINE BOXINTEGRATION_ALGO
 !  close(30)
 !
     print*, 'ITER: ', iter
-    if (magnetic /= 0.) then
-      call pardiso(pt_prd, 1, 1, 13, 13, numx*numy, AA, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
-    else
+!    if (magnetic /= 0.) then
+!      call pardiso(pt_prd, 1, 1, 13, 13, numx*numy, AA, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
+!    else
       call pardiso(pt_prd, 1, 1, 6, 13, numx*numy, AA, ia, ja, perm_prd, 1, iparm_prd, 0, b, psi, INFO)
-    end if
+!    end if
     IF (INFO /= 0) THEN
       PRINT*, "pardiso fallita"
     END IF
