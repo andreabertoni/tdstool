@@ -35,6 +35,14 @@
 <div class="BlockContent">
 <div class="BlockContent-body">
 <div>
+
+<ul>
+ <li><b>October 26, 2009</b>
+  <p>TDStool 0.5 beta version released and available for
+  <a href="download.php">download</a>. A Landau level-based split-step
+  method introducing the magnetic field.</p> 
+ </li>
+</ul>
 <ul>
  <li><b>August 19, 2009</b>
   <p>TDStool 0.4 beta version released and available for
@@ -47,12 +55,6 @@
  <li><b>June 16, 2009</b>
   <p>TDStool 0.2 beta version released and available for download. Go to the
   <a href="download.php">download page</a> for source code and Windows executables.</p>
- </li>
-</ul>
-<ul>
- <li><b>May 15, 2009</b>
-  <p>Web site up and running. Newsletter mailing list open.<br />
-  </p>
  </li>
 </ul>
  <div>

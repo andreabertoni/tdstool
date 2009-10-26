@@ -58,33 +58,34 @@ WORK IN PROGRESS: public downloads available on ...
 ***
 -->
 <br />
-VERSION 0.4 beta
-<br />
-(please note that this is a work-in-progress version: we plan to release a stable beta version
-including the B field in October) 
+VERSION 0.5 beta
 <br />
 <br />
 Windows executable for 2D domains<br />
-v. 0.4 - has both Box Integration method (allows for a nonuniform grid)
-and Split Step method (faster execution)
-<a href="executables/v0.4 20-8-2009/tdstool2d.exe"> DOWNLOAD</a></p>
+v. 0.5 - has both Box Integration method (allows for a nonuniform grid)
+and Split Step method (faster execution) wich supports also magnetic field and nonlinear term.
+<a href="executables/v0.5 26-10-2009/tdstool2d.zip"> DOWNLOAD</a></p>
+<br />
+<br />
+v. 0.5 for GPU - it supports all the CUDA-enabled GPUs. It only has the split-step with no magnetic field.
+<a href="executables/v0.5 26-10-2009/tdstool2d_gpu.zip"> DOWNLOAD</a></p>
 <br />
 <br />
 Windows executable for 3D domains<br />
-v. 0.4 Split Step method
-<a href="executables/v0.4 20-8-2009/tdstool3d.exe"> DOWNLOAD</a></p>
+v. 0.5 Split Step method
+<a href="executables/v0.5 26-10-2009/tdstool3d.zip"> DOWNLOAD</a></p>
 <br />
 <br />
 Source FORTRAN90 files and Makefile for 2D domains<br />
 (you'll need a Fortran compiler and several libraries: only reccommended for expert beta testers)<br />
-v. 0.4 Box Integration method and Split Step method
-<a href="executables/v0.4 20-8-2009/src2D.tar.gz"> DOWNLOAD</a></p>
+v. 0.5 Box Integration method and Split Step method
+<a href="executables/v0.5 26-10-2009/src2D.tar.gz"> DOWNLOAD</a></p>
 <br />
 <br />
 Source FORTRAN90 files and Makefile for 3D domains<br />
 (you'll need a Fortran compiler and several libraries: only reccommended for expert beta testers)<br />
-v. 0.4 Split Step method
-<a href="executables/v0.4 20-8-2009/src3D.tar.gz"> DOWNLOAD</a></p>
+v. 0.5 Split Step method
+<a href="executables/v0.5 26-10-2009/src3D.tar.gz"> DOWNLOAD</a></p>
 <br />
 <br />
 </div>
