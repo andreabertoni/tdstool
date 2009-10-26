@@ -55,6 +55,13 @@
 <br />
 
 <ul>
+ <li><b>October 26, 2009</b>
+  <p>TDStool 0.5 beta version released and available for
+  <a href="download.php">download</a>. A Landau level-based split-step
+  method introducing the magnetic field.</p> 
+ </li>
+</ul>
+<ul>
  <li><b>August 19, 2009</b>
   <p>TDStool 0.4 beta version released and available for
   <a href="download.php">download</a>. Time-dependent potential.
