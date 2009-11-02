@@ -25,6 +25,7 @@ MODULE mod_indata
   CHARACTER(32) :: psi_mode  ! gauss, file
   CHARACTER(32) :: grid_mode ! uniform, file, estimate, pot, adaptive
 
+  REAL*4, ALLOCATABLE :: psi_temp(:,:)
   REAL*8, ALLOCATABLE :: pot(:,:)
   COMPLEX*16, ALLOCATABLE :: psi(:)
   COMPLEX*16, ALLOCATABLE :: A(:)
@@ -437,6 +438,19 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL, SOLVE_METHOD)
 
     call create_gaussian_packet(psi, numx, numy, xnodes, ynodes, x0, y0, sigmax, sigmay, xenergy, yenergy)
 
+!    ALLOCATE (psi_temp(numx, numy))
+!    pt = 1
+!    do nx = 1, numx
+!      do ny = 1, numy
+!        psi_temp(nx, ny) = REAL(ABS(psi(pt))**2,4)
+!        pt = pt + 1
+!      end do
+!    end do
+!    OPEN(22, FILE="initial.bin", FORM="UNFORMATTED")
+!    WRITE(22) psi_temp
+!    CLOSE(22)
+!    DEALLOCATE (psi_temp)
+   
   else if (psi_mode == "file") then
 
     call READ_PSI_FILE(psi_file_in, INFO);
