@@ -1,0 +1,69 @@
+ &DEVICE
+ ELECTRONMASS    =  6.700000000000000E-002,
+ NONLIN_AS       =  0.000000000000000E+000,
+ MAGNETIC        =  0.000000000000000E+000
+ /
+ &INITIAL_PSI
+ PSI_MODE        = "gauss                           ",
+ X0      =  1.450000000000000E-007,
+ Y0      =  2.500000000000000E-007,
+ SIGMAX  =  2.200000000000000E-008,
+ SIGMAY  =  1.800000000000000E-008,
+ XENERGY =  3.000000000000000E-003,
+ YENERGY =  0.000000000000000E+000,
+ PSI_FILE_IN     = "                                                                                "
+ /
+ &TIME
+ DT      =  1.500000000000000E-014,
+ MAXIT   =         300
+ /
+ &GRID
+ GRID_MODE       = "uniform                         ",
+ NUMX    =         350,
+ NUMY    =         350,
+ SIZE_X  =  5.000000000000000E-007,
+ SIZE_Y  =  5.000000000000000E-007,
+ GRID_FILE_IN    = "                                                                                "
+ /
+ &POTENTIAL
+ ALLOW_POT_INTERPOLATION =           1,
+ STRPOTENTIALX   = "sinewave_move 0 0 18e-3 180e-9 5e4;                                                                              
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                        ",
+ STRPOTENTIALY   = "                                                                                                                 
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                        ",
+ STRPOTENTIALXY  = "box 0 0 1e-6 1e-6 10.0e-3;gauss 100e-9 250e-9 80e-9 10.0e-3;gauss 400e-9 250e-9 80e-9 10.0e-3;                   
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                        ",
+ POT_FILE_IN     = "                                                                                ",
+ POT_FILELIST_NAME       = "                                                                                "
+ /
+ &WRITE_OUT
+ RUN_NAME        = "2buche_wave                                                                                                      
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+",
+ WRITE_GRID      = "txt                           ",
+ WRITE_POT       = "bin                           ",
+ WRITE_PSI       = "bin                           ",
+ WRITE_TIMESTEP  =  6.000000000000000E-014,
+ WRITE_DOWNSAMPLE_X      =           1,
+ WRITE_DOWNSAMPLE_Y      =           1
+ /

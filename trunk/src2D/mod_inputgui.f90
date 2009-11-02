@@ -6,6 +6,7 @@ MODULE mod_inputgui
   USE mod_boxintegration
   USE mod_splitstep
   USE mod_viewgraph
+  USE mod_printgraph
   IMPLICIT NONE
   SAVE
 
@@ -56,7 +57,7 @@ SUBROUTINE MAIN_GUI
     else
       CALL SWGWIN(5, 35, 130, 25)
     end if
-    CALL WGBOX(hMainForm, 'Edit|Run Split Step|Run Box Integration|View|Quit', MainMenuCmd, hMainCmd)
+    CALL WGBOX(hMainForm, 'Edit|Run Split Step|Run Box Integration|View|Print in files|Quit', MainMenuCmd, hMainCmd)
     CALL SWGWIN(130, 80, 50, 28)
     CALL WGOK(hMainForm, hMainOk)
 
@@ -89,9 +90,11 @@ SUBROUTINE MAIN_GUI
     else if (MainMenuCmd == 4) then
       CALL SHOW_GRAPH
     else if (MainMenuCmd == 5) then
+      CALL PRINT_GRAPH
+    else if (MainMenuCmd == 6) then
       EXIT
     end if
-    if (MainMenuCmd < 5) then
+    if (MainMenuCmd < 6) then
       MainMenuCmd = MainMenuCmd + 1
     end if
   END DO

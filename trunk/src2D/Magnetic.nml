@@ -1,0 +1,69 @@
+ &DEVICE
+ ELECTRONMASS    =  6.700000000000000E-002,
+ NONLIN_AS       =  0.000000000000000E+000,
+ MAGNETIC        =  0.150000000000000     
+ /
+ &INITIAL_PSI
+ PSI_MODE        = "gauss                           ",
+ X0      =  2.750000000000000E-007,
+ Y0      =  6.200000000000000E-007,
+ SIGMAX  =  5.000000000000000E-008,
+ SIGMAY  =  5.000000000000000E-008,
+ XENERGY =  2.500000000000000E-002,
+ YENERGY =  0.000000000000000E+000,
+ PSI_FILE_IN     = "                                                                                "
+ /
+ &TIME
+ DT      =  1.500000000000000E-014,
+ MAXIT   =         120
+ /
+ &GRID
+ GRID_MODE       = "uniform                         ",
+ NUMX    =         256,
+ NUMY    =         256,
+ SIZE_X  =  1.000000000000000E-006,
+ SIZE_Y  =  1.000000000000000E-006,
+ GRID_FILE_IN    = "                                                                                "
+ /
+ &POTENTIAL
+ ALLOW_POT_INTERPOLATION =           1,
+ STRPOTENTIALX   = "const 5.0e-7 5.2e-7 13.0e-3;                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                        ",
+ STRPOTENTIALY   = "                                                                                                                 
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                        ",
+ STRPOTENTIALXY  = "                                                                                                                 
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                        ",
+ POT_FILE_IN     = "                                                                                ",
+ POT_FILELIST_NAME       = "                                                                                "
+ /
+ &WRITE_OUT
+ RUN_NAME        = "out_magnetic                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+                                                                                                                                     
+",
+ WRITE_GRID      = "txt                           ",
+ WRITE_POT       = "bin                           ",
+ WRITE_PSI       = "bin                           ",
+ WRITE_TIMESTEP  =  3.000000000000000E-014,
+ WRITE_DOWNSAMPLE_X      =           1,
+ WRITE_DOWNSAMPLE_Y      =           1
+ /
