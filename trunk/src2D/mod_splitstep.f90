@@ -21,12 +21,13 @@ SUBROUTINE SPLITSTEP_ALGO
   INTEGER INFO, file_list_index
   REAL*8 next_write_time
   REAL*8, ALLOCATABLE :: potx(:), poty(:)
+  real elapsed, elapsed2
   
 !  INTEGER*8 :: planfw, planbk
   type(DFTI_DESCRIPTOR), POINTER :: planfw
   integer   lengths(2)
   
-  if (magnetic > 1.0e-5) then
+  if (abs(magnetic) > 1.0e-5) then
     call SPLITMAGNETIC_ALGO
     return
   end if
@@ -43,6 +44,8 @@ SUBROUTINE SPLITSTEP_ALGO
   if (write_grid == "bin" .or. write_grid == "both") then
     call write_2D_grid_bin(write_folder, "grid", xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
   end if
+
+  call CPU_TIME(elapsed)
 
   alpha = -HBAR*HBAR/(2*mstar)
   beta = 4*PIG * nonlin_as * HBAR*HBAR / mstar
@@ -90,6 +93,46 @@ SUBROUTINE SPLITSTEP_ALGO
       END DO
     END DO
 
+!pot = 0.
+!DO nx = 1, 2
+!  DO ny = 1, numy
+!    pot(ny, nx) = 100*ELCH
+!  END DO
+!END DO
+!DO nx = numx-1, numx
+!  DO ny = 1, numy
+!    pot(ny, nx) = 100*ELCH
+!  END DO
+!END DO
+!DO nx = 1, numx
+!  DO ny = 1, 2
+!    pot(ny, nx) = 100*ELCH
+!  END DO
+!END DO
+!DO nx = 1, numx
+!  DO ny = numy-1, numy
+!    pot(ny, nx) = 100*ELCH
+!  END DO
+!END DO
+
+    if (((iter-1)*dt) >= next_write_time) then
+      if (write_psi == "txt" .or. write_psi == "both") then
+        call write_2D_cplx_in_file_gnuplot(write_folder, "psi", iter-1, psi, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
+      end if
+      if (write_psi == "bin" .or. write_psi == "both") then
+        call write_2D_cplx_in_file_bin(write_folder, "psi", iter-1, psi, numx, numy, write_downsample_x, write_downsample_y)
+      end if
+
+      if (write_pot == "txt" .or. write_pot == "both") then
+        call write_2D_real_in_file_gnuplot(write_folder, "potential", iter-1, pot, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
+      end if
+      if (write_pot == "bin" .or. write_pot == "both") then
+        call write_2D_real_in_file_bin(write_folder, "potential", iter-1, pot, numx, numy, write_downsample_x, write_downsample_y)
+      end if
+
+      next_write_time = next_write_time + write_timestep
+    end if
+
     ! ****** Nonlinear half step
     pt = 1;
     DO nx = 1, numx
@@ -125,23 +168,6 @@ psik = psi;
     END DO
 
     write (*,*) iter
-    if (((iter-1)*dt) >= next_write_time) then
-      if (write_psi == "txt" .or. write_psi == "both") then
-        call write_2D_cplx_in_file_gnuplot(write_folder, "psi", iter-1, psi, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
-      end if
-      if (write_psi == "bin" .or. write_psi == "both") then
-        call write_2D_cplx_in_file_bin(write_folder, "psi", iter-1, psi, numx, numy, write_downsample_x, write_downsample_y)
-      end if
-
-      if (write_pot == "txt" .or. write_pot == "both") then
-        call write_2D_real_in_file_gnuplot(write_folder, "potential", iter-1, pot, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)
-      end if
-      if (write_pot == "bin" .or. write_pot == "both") then
-        call write_2D_real_in_file_bin(write_folder, "potential", iter-1, pot, numx, numy, write_downsample_x, write_downsample_y)
-      end if
-
-      next_write_time = next_write_time + write_timestep
-    end if
   END DO
 
 !  CALL dfftw_destroy_plan( planfw )
@@ -159,6 +185,9 @@ psik = psi;
   DEALLOCATE (pot_filelist)
   DEALLOCATE (xnodes)
   DEALLOCATE (ynodes)
+
+  call CPU_TIME(elapsed2)
+  print *, 'Tempo', elapsed2 - elapsed
 
 END SUBROUTINE
 

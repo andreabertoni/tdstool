@@ -31,11 +31,16 @@ SUBROUTINE MAIN_GUI
   if (nml_file_name == "") then
     return
   end if
+!nml_file_name = 'C:\Documents and Settings\tserafini\Desktop\barriers\transportdoublebarrier.nml'
 
   CALL INDATA_GET(nml_file_name, INFO)
   if (INFO /= 0) then
     call INDATA_FILL_WITH_DEFAULT
   end if
+
+!MAXIT = 10
+!CALL SPLITSTEP_ALGO
+!STOP
 
   MainMenuCmd = 1
   DO
