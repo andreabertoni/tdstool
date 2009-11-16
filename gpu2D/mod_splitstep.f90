@@ -20,6 +20,7 @@ SUBROUTINE SPLITSTEP_ALGO
   INTEGER INFO, file_list_index
   REAL*8 next_write_time
   REAL*8, ALLOCATABLE :: potx(:), poty(:)
+  real elapsed, elapsed2, timess(4)
   
 !  INTEGER*8 :: planfw, planbk
   type(DFTI_DESCRIPTOR), POINTER :: planfw
@@ -60,6 +61,8 @@ SUBROUTINE SPLITSTEP_ALGO
 
   call GPUSPLIT_INIT(numx, numy, ELCH, REAL(k0), IMAG(k0), REAL(k1), IMAG(k1), beta, kx, ky, pot_file_static, psi);
 
+  call CPU_TIME(elapsed)
+
 ! **** Time steps
   next_write_time = 0.
   file_list_index = 0
@@ -72,8 +75,7 @@ SUBROUTINE SPLITSTEP_ALGO
     call strtopot2D(1, mstar, strpotentialXY, numx, numy, xnodes, ynodes, pot)
 
     call GPUSPLIT_DO_STEP(pot, pot_filelist, potx, poty, pot_file_changed)
-
-    write (*,*) iter
+    print *, iter
     if (((iter-1)*dt) >= next_write_time) then
       call GPUSPLIT_GET_PSI(psi)
       call GPUSPLIT_GET_POT(pot)
@@ -94,6 +96,9 @@ SUBROUTINE SPLITSTEP_ALGO
       next_write_time = next_write_time + write_timestep
     end if
   END DO
+
+  call CPU_TIME(elapsed2)
+  print *, 'Tempo', elapsed2 - elapsed
 
   DEALLOCATE (poty)
   DEALLOCATE (potx)

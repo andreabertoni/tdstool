@@ -40,8 +40,6 @@ MODULE mod_indata
   CHARACTER(999) :: strpotentialY = ""
   CHARACTER(999) :: strpotentialXY = ""
 
-    ! ATTENTION: in the potential from file, the sizes pot_numx_file and pot_numy_file
-    ! are the total number of nodes and not only the number of internal nodes, like in the numx and numy case
   REAL*8, ALLOCATABLE :: pot_file_raw(:,:)
   REAL*8, ALLOCATABLE :: pot_x_file(:), pot_y_file(:)
   INTEGER pot_numx_file, pot_numy_file
@@ -52,8 +50,6 @@ MODULE mod_indata
   TYPE(filelist_struct), ALLOCATABLE :: filelist_data(:)
   INTEGER :: filelist_count;
 
-    ! ATTENTION: in the psi from file, the sizes psi_numx_file and psi_numy_file
-    ! are the total number of nodes and not only the number of internal nodes, like in the numx and numy case
   COMPLEX*16, ALLOCATABLE :: psi_file(:,:)
   REAL*8, ALLOCATABLE :: psi_x_file(:), psi_y_file(:)
   INTEGER psi_numx_file, psi_numy_file
@@ -349,16 +345,20 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL, SOLVE_METHOD)
       CLOSE(22)
 
     else if (grid_mode == "pot") then
-      numx = pot_numx_file - 2
-      numy = pot_numy_file - 2
+      numx = pot_numx_file
+      numy = pot_numy_file
       ALLOCATE (pot(numy,numx))
       ALLOCATE (pot_file_static(numy,numx))
       ALLOCATE (pot_filelist(numy,numx))
       ALLOCATE (psi(numx*numy))
       ALLOCATE (xnodes(numx+2))
       ALLOCATE (ynodes(numy+2))
-      xnodes = pot_x_file
-      ynodes = pot_y_file
+      xnodes(2:numx+1) = pot_x_file
+      xnodes(1) = 2*xnodes(2) - xnodes(3)
+      xnodes(numx+2) = 2*xnodes(numx+1) - xnodes(numx)
+      ynodes(2:numy+1) = pot_y_file
+      ynodes(1) = 2*ynodes(2) - ynodes(3)
+      ynodes(numy+2) = 2*ynodes(numy+1) - ynodes(numy)
 
     else  ! uniform
       ALLOCATE (pot(numy,numx))
@@ -404,19 +404,20 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL, SOLVE_METHOD)
     if (grid_mode == "pot") then
       DO nx = 1, numx
         DO ny = 1, numy
-          pot_file_static(ny, nx)= pot_file_raw(ny+1, nx+1)
+          pot_file_static(ny, nx)= pot_file_raw(ny, nx)
         END DO
       END DO
     else
       ! check if resampling is really needed
-      if ((pot_numx_file-2) == numx .and. (pot_numy_file-2) == numy) then
+      if (pot_numx_file == numx .and. pot_numy_file == numy) then
         DO nx = 1, numx
           DO ny = 1, numy
-            pot_file_static(ny, nx)= pot_file_raw(ny+1, nx+1)
+            pot_file_static(ny, nx)= pot_file_raw(ny, nx)
           END DO
         END DO
       else if (allow_pot_interpolation > 0) then
-        CALL resample_matrix_2D(pot_file_raw, pot_x_file, pot_y_file, pot_numx_file, pot_numy_file, pot_file_static, xnodes(2:numx), ynodes(2:numy), numx, numy)
+        print *, "Error with interpolation"
+!        CALL resample_matrix_2D(pot_file_raw, pot_x_file, pot_y_file, pot_numx_file, pot_numy_file, pot_file_static, xnodes(2:numx), ynodes(2:numy), numx, numy)
       else
         print *, "Potential interpolation needed, but not allowed by user"
         STOP
@@ -437,6 +438,14 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL, SOLVE_METHOD)
   if (psi_mode == "gauss") then
 
     call create_gaussian_packet(psi, numx, numy, xnodes, ynodes, x0, y0, sigmax, sigmay, xenergy, yenergy)
+
+!  psi = 0.
+!  DO nx = 2, numx-1
+!    DO ny = 2, numy-1
+!      pt = ny + (nx-1)*numy
+!      psi(pt) = sin(2.*PIG * REAL(nx-2)/REAL(numx-3)) * sin(2.*PIG * REAL(ny-2)/REAL(numy-3))
+!    end do
+!  end do
 
 !    ALLOCATE (psi_temp(numx, numy))
 !    pt = 1
@@ -459,7 +468,7 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL, SOLVE_METHOD)
       STOP
     end if
 
-    if ((psi_numx_file - 2) /= numx .or. (psi_numy_file - 2) /= numy) then
+    if (psi_numx_file /= numx .or. psi_numy_file /= numy) then
       print *, "psi file grid not consistent with problem grid"
       STOP
     end if
@@ -467,7 +476,7 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL, SOLVE_METHOD)
     pt = 1;
     DO nx = 1, numx
       DO ny = 1, numy
-        psi(pt)= psi_file(ny+1, nx+1)
+        psi(pt)= psi_file(ny, nx)
         pt = pt + 1
       END DO
     END DO
@@ -567,7 +576,8 @@ SUBROUTINE READ_PSI_FILE(fname, INFO)
   CHARACTER(80), INTENT(IN) :: fname
   INTEGER, INTENT(OUT) :: INFO
   INTEGER nx, ny
-  REAL*8 x, y, val
+  REAL*8 :: x, y
+  COMPLEX*16 :: val
   CHARACTER(512) :: line, str1
   LOGICAL :: file_exists
 
@@ -677,19 +687,20 @@ SUBROUTINE manage_pot_filelist(time, index)
   if (grid_mode == "pot") then
     DO nx = 1, numx
       DO ny = 1, numy
-        pot_filelist(ny, nx)= pot_file_raw(ny+1, nx+1)
+        pot_filelist(ny, nx)= pot_file_raw(ny, nx)
       END DO
     END DO
   else
     ! check if resampling is really needed
-    if ((pot_numx_file-2) == numx .and. (pot_numy_file-2) == numy) then
+    if (pot_numx_file == numx .and. pot_numy_file == numy) then
       DO nx = 1, numx
         DO ny = 1, numy
-          pot_filelist(ny, nx)= pot_file_raw(ny+1, nx+1)
+          pot_filelist(ny, nx)= pot_file_raw(ny, nx)
         END DO
       END DO
     else if (allow_pot_interpolation > 0) then
-      CALL resample_matrix_2D(pot_file_raw, pot_x_file, pot_y_file, pot_numx_file, pot_numy_file, pot_filelist, xnodes(2:numx), ynodes(2:numy), numx, numy)
+       print *, "Error with interpolation"
+!      CALL resample_matrix_2D(pot_file_raw, pot_x_file, pot_y_file, pot_numx_file, pot_numy_file, pot_filelist, xnodes(2:numx), ynodes(2:numy), numx, numy)
     else
       print *, "Potential interpolation needed, but not allowed by user"
       STOP

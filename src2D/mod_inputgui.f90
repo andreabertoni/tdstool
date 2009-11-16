@@ -167,7 +167,7 @@ SUBROUTINE SHOW_IN_GUI
   CALL SWGWIN(0, 30, 160, 30)
   CALL WGLAB(hData2, 'Magnetic Field:', hNull)
   CALL SWGWIN(165, 30, 80, ctrlh)
-  write (vstr, '(ES11.5)') magnetic
+  write (vstr, *) magnetic
   CALL WGTXT(hData2, vstr, hMagnetic)
 
     ! Wave Function Frame

@@ -1,6 +1,8 @@
 #include <cuda.h>
 #include <cublas.h>
 #include <cufft.h>
+#include <stdio.h>
+#include <time.h>
 
 extern "C" void TESTCUDA(void)
 {
@@ -45,7 +47,7 @@ add_potential(int numx, int numy, float *pot, float *pot_file_static, float *pot
 {
   const int ix = __mul24(blockDim.x, blockIdx.x) + threadIdx.x;
   const int iy = __mul24(blockDim.y, blockIdx.y) + threadIdx.y;
-  int idx = mul24(ix, numy) + iy;
+  int idx = mul24(iy, numx) + ix;
 
   pot[idx] = (pot[idx] + pot_file_static[idx] + pot_filelist[idx] + potx[ix] + poty[iy])*ELCH;
 }
@@ -55,7 +57,7 @@ nonlinear_half_step(int numx, int numy, Complex *psi, float *pot, Complex k0, fl
 {
   const int ix = __mul24(blockDim.x, blockIdx.x) + threadIdx.x;
   const int iy = __mul24(blockDim.y, blockIdx.y) + threadIdx.y;
-  int idx = mul24(ix, numy) + iy;
+  int idx = mul24(iy, numx) + ix;
   Complex cpl, tmp;
   float v1, v2;
   v1 = pot[idx] + beta*(psi[idx].x*psi[idx].x + psi[idx].y*psi[idx].y);
@@ -72,7 +74,7 @@ nonlinear_half_step_scaled(int numx, int numy, Complex *psi, float *pot, Complex
 {
   const int ix = __mul24(blockDim.x, blockIdx.x) + threadIdx.x;
   const int iy = __mul24(blockDim.y, blockIdx.y) + threadIdx.y;
-  int idx = mul24(ix, numy) + iy;
+  int idx = mul24(iy, numx) + ix;
   Complex cpl, tmp;
   float v1, v2;
   v1 = pot[idx] + beta*(psi[idx].x*psi[idx].x + psi[idx].y*psi[idx].y);
@@ -89,7 +91,7 @@ linear_step(int numx, int numy, Complex *psi, float *kx, float *ky, Complex k1)
 {
   const int ix = __mul24(blockDim.x, blockIdx.x) + threadIdx.x;
   const int iy = __mul24(blockDim.y, blockIdx.y) + threadIdx.y;
-  int idx = mul24(ix, numy) + iy;
+  int idx = mul24(iy, numx) + ix;
   Complex cpl, tmp;
   float v1, v2;
   v1 = kx[ix] + ky[iy];
@@ -105,8 +107,8 @@ extern "C" void GPUSPLIT_INIT(int *numx, int *numy, double *elch, double *k0_rea
 		double *k1_real, double *k1_img, double *beta, double *Kx, double *Ky,
 		double *pot_file_static, double *psi)
 {
-  c_numx = *numx;
-  c_numy = *numy;
+  c_numy = *numx;
+  c_numx = *numy;
   c_elch = (float)(*elch);
   c_k0.x = (float)(*k0_real);
   c_k0.y = (float)(*k0_img);
@@ -123,9 +125,9 @@ extern "C" void GPUSPLIT_INIT(int *numx, int *numy, double *elch, double *k0_rea
   cudaMalloc(&g_Kx, 4*c_numx);
   cudaMalloc(&g_Ky, 4*c_numy);
   
-  double_to_float(c_tmpbuf, Kx, c_numx);
+  double_to_float(c_tmpbuf, Ky, c_numx);
   cudaMemcpy(g_Kx, c_tmpbuf, c_numx*sizeof(float), cudaMemcpyHostToDevice);
-  double_to_float(c_tmpbuf, Ky, c_numy);
+  double_to_float(c_tmpbuf, Kx, c_numy);
   cudaMemcpy(g_Ky, c_tmpbuf, c_numy*sizeof(float), cudaMemcpyHostToDevice);
   double_to_float(c_tmpbuf, pot_file_static, c_numx*c_numy);
   cudaMemcpy(g_pot_file_static, c_tmpbuf, c_numx*c_numy*sizeof(float), cudaMemcpyHostToDevice);
@@ -141,14 +143,16 @@ extern "C" void GPUSPLIT_DO_STEP(double *pot, double *pot_filelist, double *potx
 {
   double_to_float(c_tmpbuf, pot, c_numx*c_numy);
   cudaMemcpy(g_pot, c_tmpbuf, c_numx*c_numy*sizeof(float), cudaMemcpyHostToDevice);
+
   if (*filelist_changed)
   {
     double_to_float(c_tmpbuf, pot_filelist, c_numx*c_numy);
     cudaMemcpy(g_pot_filelist, c_tmpbuf, c_numx*c_numy*sizeof(float), cudaMemcpyHostToDevice);
   }
-  double_to_float(c_tmpbuf, potx, c_numx);
+  
+  double_to_float(c_tmpbuf, poty, c_numx);
   cudaMemcpy(g_potx, c_tmpbuf, c_numx*sizeof(float), cudaMemcpyHostToDevice);
-  double_to_float(c_tmpbuf, poty, c_numy);
+  double_to_float(c_tmpbuf, potx, c_numy);
   cudaMemcpy(g_poty, c_tmpbuf, c_numy*sizeof(float), cudaMemcpyHostToDevice);
 
   dim3 threadBlock(16, 16);
@@ -156,6 +160,7 @@ extern "C" void GPUSPLIT_DO_STEP(double *pot, double *pot_filelist, double *potx
   add_potential<<<kernelBlockGrid, threadBlock>>>(c_numx, c_numy, g_pot, g_pot_file_static, g_pot_filelist, g_potx, g_poty, c_elch);
 
   nonlinear_half_step<<<kernelBlockGrid, threadBlock>>>(c_numx, c_numy, g_psi, g_pot, c_k0, c_beta);
+
   cufftExecC2C(g_fft_hand, (cufftComplex *)g_psi, (cufftComplex *)g_psi, CUFFT_FORWARD);
   linear_step<<<kernelBlockGrid, threadBlock>>>(c_numx, c_numy, g_psi, g_Kx, g_Ky, c_k1);
   cufftExecC2C(g_fft_hand, (cufftComplex *)g_psi, (cufftComplex *)g_psi, CUFFT_INVERSE);
