@@ -93,28 +93,6 @@ SUBROUTINE SPLITSTEP_ALGO
       END DO
     END DO
 
-!pot = 0.
-!DO nx = 1, 2
-!  DO ny = 1, numy
-!    pot(ny, nx) = 100*ELCH
-!  END DO
-!END DO
-!DO nx = numx-1, numx
-!  DO ny = 1, numy
-!    pot(ny, nx) = 100*ELCH
-!  END DO
-!END DO
-!DO nx = 1, numx
-!  DO ny = 1, 2
-!    pot(ny, nx) = 100*ELCH
-!  END DO
-!END DO
-!DO nx = 1, numx
-!  DO ny = numy-1, numy
-!    pot(ny, nx) = 100*ELCH
-!  END DO
-!END DO
-
     if (((iter-1)*dt) >= next_write_time) then
       if (write_psi == "txt" .or. write_psi == "both") then
         call write_2D_cplx_in_file_gnuplot(write_folder, "psi", iter-1, psi, xnodes, ynodes, numx, numy, write_downsample_x, write_downsample_y)

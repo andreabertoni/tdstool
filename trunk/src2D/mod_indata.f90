@@ -439,14 +439,6 @@ SUBROUTINE INDATA_COMPUTE(OKCANCEL, SOLVE_METHOD)
 
     call create_gaussian_packet(psi, numx, numy, xnodes, ynodes, x0, y0, sigmax, sigmay, xenergy, yenergy)
 
-!  psi = 0.
-!  DO nx = 2, numx-1
-!    DO ny = 2, numy-1
-!      pt = ny + (nx-1)*numy
-!      psi(pt) = sin(2.*PIG * REAL(nx-2)/REAL(numx-3)) * sin(2.*PIG * REAL(ny-2)/REAL(numy-3))
-!    end do
-!  end do
-
 !    ALLOCATE (psi_temp(numx, numy))
 !    pt = 1
 !    do nx = 1, numx
