@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" dir="ltr" lang="en-US"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><title>Screenshot Gallery</title>
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><title>Screenshot and Movie Gallery</title>
 
 <script type="text/javascript" src="script.js"></script>
 <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
@@ -94,6 +94,53 @@ Wave through a double split in a potential barrier
 </td>
 <td valign="top" width="49%">
 Parameter edit interface
+</td>
+</tr>
+
+<tr>
+<td valign="top" width="49%">
+<a href="gallery/acwave.mpg">
+<img class="article" src="gallery/acwave_min.png" alt="movie1" title="screenshot gallery" style="float: left;" /> </a>
+</td>
+<td valign="top" width="2%">
+</td>
+<td valign="top" width="49%">
+<a href="gallery/edit.png">
+<img class="article" src="gallery/doublebarrier_min.png" alt="movie2" title="screenshot gallery" style="float: left;" /> </a>
+</td>
+</tr>
+<tr>
+<td valign="top" width="49%">
+Gaussian packet transported by an acoustic wave
+</td>
+<td valign="top" width="2%">
+</td>
+<td valign="top" width="49%">
+Wave through a double barrier
+</td>
+</tr>
+
+<tr>
+<td valign="top" width="49%">
+<a href="gallery/magnetic.mpg">
+<img class="article" src="gallery/magnetic_min.png" alt="movie1" title="screenshot gallery" style="float: left;" /> </a>
+</td>
+<td valign="top" width="2%">
+</td>
+<td valign="top" width="49%">
+<!-- <a href="gallery/edit.png">
+<img class="article" src="gallery/doublebarrier_min.png" alt="movie2" title="screenshot gallery" style="float: left;" /> </a>
+-->
+</td>
+</tr>
+<tr>
+<td valign="top" width="49%">
+Wave travelling through a barrier with a magnetic field
+</td>
+<td valign="top" width="2%">
+</td>
+<td valign="top" width="49%">
+
 </td>
 </tr>
 

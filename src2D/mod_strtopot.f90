@@ -358,7 +358,7 @@ DO nn= 1, lenstr
         IF (px(npx)>=potdefvals(1) .AND. px(npx)<=potdefvals(3)) THEN
           DO npy= 1, numpy
             IF (py(npy)>=potdefvals(2) .AND. py(npy)<=potdefvals(4)) THEN
-              pot(npy,npx)= pot(npy,npx) + potdefvals(5)
+              pot(npy,npx)= potdefvals(5) !+ pot(npy,npx)
             END IF
           END DO
         END IF
