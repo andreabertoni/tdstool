@@ -105,7 +105,7 @@ Parameter edit interface
 <td valign="top" width="2%">
 </td>
 <td valign="top" width="49%">
-<a href="gallery/edit.png">
+<a href="gallery/doublebarrier.avi">
 <img class="article" src="gallery/doublebarrier_min.png" alt="movie2" title="screenshot gallery" style="float: left;" /> </a>
 </td>
 </tr>
@@ -122,7 +122,7 @@ Wave through a double barrier
 
 <tr>
 <td valign="top" width="49%">
-<a href="gallery/magnetic.mpg">
+<a href="gallery/magnetic.avi">
 <img class="article" src="gallery/magnetic_min.png" alt="movie1" title="screenshot gallery" style="float: left;" /> </a>
 </td>
 <td valign="top" width="2%">
